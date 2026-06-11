@@ -30,4 +30,225 @@ body{font-family:var(--f);background:var(--bg2);color:var(--tx);display:flex;jus
 
 /* Layout */
 .rw{display:flex;flex:1;overflow:hidden}
-.sb{width:280px;background:var(--bg);flex-shrink
+.sb{width:280px;background:var(--bg);flex-shrink:0;display:flex;flex-direction:column}
+.sb-i{flex:1;overflow-y:auto;padding-top:8px}
+.sb-s{padding:8px 12px 6px}
+.sb-sf{display:flex;align-items:center;gap:6px;padding:7px 10px;background:var(--bg2);border-radius:10px}
+.sb-sf input{flex:1;border:none;outline:none;background:none;font-size:13px;font-family:var(--f);color:var(--tx)}
+.sb-sf input::placeholder{color:var(--tx3)}
+.sb-sf svg{color:var(--tx2);flex-shrink:0}
+.sb-h{padding:10px 14px 4px;font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.03em}
+.sb-r{display:flex;align-items:center;gap:10px;padding:7px 12px;margin:0 8px;border-radius:10px;cursor:pointer;transition:background .1s}
+.sb-r:hover{background:var(--bg2)}
+.sb-r.sel{background:var(--ub);color:var(--ut)}.sb-r.sel .sb-tt{color:var(--ut)}.sb-r.sel .sb-st{color:rgba(255,255,255,.7)}
+.sb-av{width:32px;height:32px;border-radius:50%;background:#34C759;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:white;flex-shrink:0}
+.sb-tt{font-size:15px;font-weight:600}.sb-st{font-size:13px;color:var(--tx2);margin-top:1px}
+.sb-dot{width:6px;height:6px;border-radius:50%;background:var(--ub);margin-left:auto}
+.sb-ag{display:flex;align-items:center;gap:8px;padding:6px 12px;margin:0 8px;border-radius:10px;cursor:pointer;transition:background .1s}
+.sb-ag:hover{background:var(--bg2)}
+.sb-aav{width:28px;height:28px;border-radius:50%;background:#FF9500;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-aav svg{width:14px;height:14px;color:white}
+.sb-c{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 26px;margin:0 8px;border-radius:10px;cursor:pointer;transition:background .1s}
+.sb-c:hover{background:var(--bg2)}
+.sb-c.sel{background:var(--ub);color:var(--ut)}.sb-c.sel .sb-ct{color:var(--ut)}.sb-c.sel .sb-cs{color:rgba(255,255,255,.7)}
+.sb-ct{font-size:14px;font-weight:500}.sb-cs{font-size:12px;color:var(--tx2)}
+.sb-bt{padding:10px 12px;display:flex;gap:8px}
+.b{height:32px;border-radius:10px;border:none;font-size:13px;font-weight:600;font-family:var(--f);cursor:pointer;transition:transform .1s,opacity .1s}
+.b:active{transform:scale(.97)}
+.bp{flex:1;background:var(--ubg);color:white;display:flex;align-items:center;justify-content:center;gap:5px}
+.bi{width:32px;flex-shrink:0;background:var(--bg2);display:flex;align-items:center;justify-content:center;color:var(--tx2)}
+
+/* Detail — 纯白，无纹理 */
+.dt{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.pg{display:none;flex-direction:column;flex:1;overflow:hidden}.pg.on{display:flex}
+
+/* Chat Header — 无底线，靠间距 */
+.ch{padding:10px 20px;display:flex;align-items:center;gap:10px;flex-shrink:0;background:var(--bg)}
+.ch-av{width:30px;height:30px;border-radius:50%;background:#FF9500;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ch-av svg{width:15px;height:15px;color:white}
+.ch-n{font-size:17px;font-weight:700}.ch-m{font-size:13px;color:var(--tx2);margin-top:1px}
+.ch-rt{margin-left:auto;display:flex;align-items:center;gap:6px}
+.ch-dot{width:7px;height:7px;border-radius:50%;background:#34C759}
+.ch-lat{font-size:11px;color:var(--tx2)}
+
+/* Messages */
+.ms{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:2px}
+.mr{display:flex;gap:8px;animation:mIn .3s ease both;padding:1px 0}
+.mr.u{justify-content:flex-end}
+@keyframes mIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.mr .bd{max-width:70%;display:flex;flex-direction:column}
+.mr.u .bd{align-items:flex-end}
+.mr.u .bb{padding:10px 16px;font-size:16px;line-height:1.5;background:var(--ubg);color:var(--ut);border-radius:18px 18px 4px 18px;overflow-wrap:break-word;word-break:normal}
+.mr.a .bb{padding:10px 16px;font-size:16px;line-height:1.5;background:var(--ab);color:var(--at);border-radius:18px 18px 18px 4px;overflow-wrap:break-word;word-break:normal}
+.mr-av{width:26px;height:26px;border-radius:50%;background:#FF9500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.mr-av svg{width:13px;height:13px;color:white}
+.dl{display:flex;justify-content:flex-end;align-items:center;gap:3px;margin-top:2px;font-size:11px;color:var(--tx3)}
+.dl.d2{color:var(--tx2)}
+
+/* Thinking bubble */
+.th{background:var(--ab);border-radius:14px;margin-bottom:3px;overflow:hidden}
+.th-h{display:flex;align-items:center;gap:6px;padding:7px 12px;cursor:pointer;font-size:11px;color:var(--tx2);font-weight:500}
+.th-b{padding:10px 14px;font-size:12px;color:var(--tx2);line-height:1.6;border-top:1px solid var(--bdr)}.th-b.h{display:none}
+
+/* Input — 无顶线，纯间距分隔 */
+.inp{padding:10px 16px 14px;display:flex;align-items:flex-end;gap:8px;flex-shrink:0;background:var(--bg)}
+.inp-b{width:32px;height:32px;border:none;background:var(--bg2);cursor:pointer;color:var(--tx2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.inp-b:hover{background:var(--bdr)}
+.inp-f{flex:1}.inp-f input{width:100%;padding:10px 16px;border:none;border-radius:20px;background:var(--bg2);font-size:16px;font-family:var(--f);outline:none;color:var(--tx)}
+.inp-f input::placeholder{color:var(--tx3)}
+.inp-s{width:32px;height:32px;border:none;background:var(--ubg);cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;transition:transform .1s,opacity .1s}
+.inp-s:hover{opacity:.9}.inp-s:active{transform:scale(.93)}
+
+/* Popover */
+.po{position:absolute;z-index:50;background:var(--bg);border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.08);overflow:hidden}
+.po.h{display:none}.po-t{font-size:13px;font-weight:700;padding:12px 16px 8px}
+.po-di{height:1px;background:var(--bdr);margin:2px 8px}.po-r{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:var(--f);color:var(--tx);margin:0 4px;width:calc(100% - 8px)}
+.po-r:hover{background:var(--bg2)}
+.po-r svg{color:var(--tx2);flex-shrink:0}.po-r .s{font-size:11px;color:var(--tx3);margin-left:auto}
+.po-g{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:6px}
+.po-it{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 8px;border-radius:10px;cursor:pointer;border:none;background:none;font-family:var(--f);transition:background .1s}
+.po-it:hover{background:var(--bg2)}
+.po-it svg{color:var(--ub)}.po-it span{font-size:11px;color:var(--tx2);font-weight:500}
+
+/* Sheet */
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;z-index:100}.sheet.h{display:none}
+.sh-b{width:600px;max-height:520px;background:var(--bg);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden}
+.sh-h{padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.sh-tt{font-size:17px;font-weight:700}.sh-bd{flex:1;overflow-y:auto}
+.sh-sec{padding:10px 20px 4px;font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.03em}
+.sh-r{display:flex;align-items:center;gap:12px;padding:10px 20px;cursor:pointer;transition:background .1s;border-radius:10px;margin:0 6px}
+.sh-r:hover{background:var(--bg2)}
+.sh-ri{width:28px;height:28px;border-radius:8px;background:var(--bg2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sh-rl{flex:1;font-size:14px;font-weight:500}.sh-ra{color:var(--tx3);flex-shrink:0}
+.sh-conn{padding:10px 20px;display:flex;align-items:center;gap:12px}
+.sh-cd{width:8px;height:8px;border-radius:50%;flex-shrink:0}.sh-cd.on{background:#34C759}.sh-cd.off{background:#FF3B30}
+.tg{width:36px;height:22px;border-radius:11px;background:var(--tx3);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;border:none}.tg::after{content:'';position:absolute;width:18px;height:18px;background:white;border-radius:50%;top:2px;left:2px;box-shadow:0 1px 2px rgba(0,0,0,.1);transition:transform .25s cubic-bezier(.34,1.56,.64,1)}.tg.on{background:#34C759}.tg.on::after{transform:translateX(14px)}
+.sh-tg{display:flex;align-items:flex-start;gap:12px;padding:10px 20px;border-radius:10px;margin:0 6px;transition:background .1s}
+.sh-tg:hover{background:var(--bg2)}
+.sh-tg .v{flex:1;font-size:14px;font-weight:500}.sh-tg .d{font-size:12px;color:var(--tx2);margin-top:2px}
+
+/* Sub page */
+.sub{display:none}.sub.on{display:flex;flex-direction:column;flex:1;overflow:hidden}
+.sub-h{padding:12px 20px;display:flex;align-items:center;gap:10px;flex-shrink:0}.sub-bk{font-size:14px;color:var(--tx2);background:none;border:none;cursor:pointer;font-family:var(--f);display:flex;align-items:center;gap:5px;font-weight:500}.sub-bk:hover{color:var(--ub)}.sub-tt{font-size:17px;font-weight:700}.sub-bd{flex:1;overflow-y:auto;padding:8px 0}
+
+/* Welcome */
+.wl{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:60px 40px;background:var(--bg)}
+.wl-ic{width:64px;height:64px;border-radius:50%;background:var(--ubg);display:flex;align-items:center;justify-content:center}
+.wl-ic svg{color:white}
+.wl-tt{font-size:26px;font-weight:800;letter-spacing:-.02em}.wl-st{font-size:13px;color:var(--tx2);font-weight:500}
+.wl-step{display:flex;flex-direction:column;gap:12px;width:100%;max-width:320px;margin-top:4px}
+.wl-s{display:flex;align-items:center;gap:12px}
+.wl-si{width:28px;height:28px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wl-si svg{color:var(--ub)}
+.wl-btn{padding:10px 24px;border-radius:12px;border:none;background:var(--ubg);color:white;font-size:14px;font-weight:600;font-family:var(--f);cursor:pointer;display:flex;align-items:center;gap:6px;transition:transform .1s,opacity .1s}
+.wl-btn:hover{opacity:.9}.wl-btn:active{transform:scale(.97)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--tx3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--tx2)}
+</style>
+</head>
+<body>
+<div class="w">
+<div class="tb">
+<div class="tb-l"><s class="r"></s><s class="y"></s><s class="g"></s></div>
+<div class="tb-t">MyPilot</div>
+<div style="width:52px;display:flex;justify-content:flex-end">
+<button class="tb-btn" onclick="td()">
+<svg id="m" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+<svg id="s" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+</button></div></div>
+<div class="rw">
+<div class="sb">
+<div class="sb-i"><div class="sb-s"><div class="sb-sf"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input placeholder="搜索消息..."></div></div>
+<div class="sb-h">OpenClaw 实例</div>
+<div class="sb-r sel" onclick="sc(this)">
+<div class="sb-av">M</div><div><div class="sb-tt">MyPilot Main</div><div class="sb-st">relay.clawpilot.com</div></div><div class="sb-dot"></div></div>
+<div class="sb-h">未来</div>
+<div class="sb-ag"><div class="sb-aav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><div><div class="sb-tt">未来</div><div class="sb-st">qwen-qlm-2.1</div></div><svg style="margin-left:auto" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
+<div class="sb-h" style="padding-left:26px">今天</div>
+<div class="sb-c sel" onclick="sx(this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" style="flex-shrink:0"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div style="flex:1;min-width:0"><div class="sb-ct" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">项目架构讨论</div><div class="sb-cs" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">嗯，让我分析一下...</div></div></div>
+<div class="sb-c" onclick="sx(this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="2" style="flex-shrink:0"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div style="flex:1;min-width:0"><div class="sb-ct" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">API 接口设计</div><div class="sb-cs" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">已生成 API 文档</div></div></div>
+<div class="sb-c" onclick="sx(this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="2" style="flex-shrink:0"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div style="flex:1;min-width:0"><div class="sb-ct" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Bug 排查记录</div><div class="sb-cs" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">修复了 WebSocket 连接</div></div></div>
+<div style="padding:3px 14px 3px 28px"><button style="background:none;border:none;cursor:pointer;color:var(--tx2);font-size:11px;font-family:var(--f);display:flex;align-items:center;gap:4px;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>新对话</button></div></div>
+<div class="sb-bt"><button class="b bp" onclick="os('add')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>添加实例</button><button class="b bi" onclick="os('settings')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg></button></div></div>
+<div class="dt">
+<div class="pg on" id="p-chat">
+<div class="ch"><div class="ch-av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><div><div style="display:flex;align-items:center;gap:4px"><span class="ch-n">未来</span></div><div class="ch-m">火山引擎 / qwen-qlm-2.1</div></div><div class="ch-rt"><div class="ch-dot"></div><span class="ch-lat">已连接</span></div></div>
+<div class="ms">
+<div class="mr a" style="animation-delay:.05s"><div class="mr-av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><div class="bd"><div class="th" onclick="this.children[1].classList.toggle('h')"><div class="th-h"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>思考过程</div><div class="th-b h">用户问候。先自我介绍，再询问需求。</div></div><div class="bb">你好。我可以帮你解答问题、分析文档、编写代码，或者联网搜索。有什么需要？</div></div></div>
+<div class="mr u" style="animation-delay:.12s"><div class="bd"><div class="bb">帮我分析这个项目的架构</div><div class="dl d2"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="margin-left:-4px"><path d="M5 13l4 4L19 7"/></svg></div></div></div>
+<div class="mr a" style="animation-delay:.2s"><div class="mr-av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><div class="bd"><div class="th" onclick="this.children[1].classList.toggle('h')"><div class="th-h"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>思考过程</div><div class="th-b h">三层架构：macOS SwiftUI 客户端 → Node.js daemon 中继 → OpenClaw AI 引擎。</div></div><div class="bb"><p style="margin-bottom:6px">三层架构：</p><p style="font-size:15px;font-weight:600;margin-bottom:3px">MyPilot App</p><p style="font-size:13px;color:var(--tx2);margin-bottom:6px;padding-left:10px">macOS SwiftUI，WebSocket 通信，消息持久化</p><p style="font-size:15px;font-weight:600;margin-bottom:3px">MyPilot Link</p><p style="font-size:13px;color:var(--tx2);margin-bottom:6px;padding-left:10px">Node.js daemon，端口 52378，配对码认证</p><p style="font-size:15px;font-weight:600">OpenClaw Core</p><p style="font-size:13px;color:var(--tx2);padding-left:10px">模型推理、Agent 调度、搜索服务集成</p></div></div></div>
+</div>
+<div class="inp"><button class="inp-b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.44 11.05-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg></button>
+<button class="inp-b" onclick="tp('more')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.1"/><circle cx="12" cy="12" r="1.1"/><circle cx="12" cy="19" r="1.1"/></svg></button>
+<div class="inp-f"><input placeholder="发消息..."></div>
+<button class="inp-s"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+<div class="po h" id="po-more" style="bottom:56px;left:40px"><div class="po-g"><button class="po-it"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>插件库</span></button>
+<button class="po-it" onclick="tp('set');tp('more')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg><span>设置</span></button>
+<button class="po-it"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg><span>截屏</span></button>
+<button class="po-it"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>角色</span></button></div></div>
+<div class="po h" id="po-set" style="bottom:56px;left:300px;width:240px"><div class="po-t">快速设置</div><div class="po-di"></div>
+<div class="sh-tg" style="padding:8px 14px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ub)" stroke-width="2" style="flex-shrink:0"><path d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg><div class="v">详细输出</div><button class="tg on" onclick="this.classList.toggle('on')"></button></div>
+<div class="sh-tg" style="padding:8px 14px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ub)" stroke-width="2" style="flex-shrink:0"><path d="M12 2a4 4 0 00-4 4v1H6a2 2 0 00-2 2v3a2 2 0 001 1.73V21a1 1 0 001 1h12a1 1 0 001-1v-7.27A2 2 0 0020 12V9a2 2 0 00-2-2h-2V6a4 4 0 00-4-4z"/></svg><div class="v">推理模式</div><button class="tg" onclick="this.classList.toggle('on')"></button></div>
+<div class="po-di"></div><button class="po-r"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/></svg>重启会话</button></div></div></div>
+<div class="pg" id="p-welcome"><div class="wl"><div class="wl-ic"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 16l2-6 2 6 2-4 2 4 2-6 2 6"/></svg></div><div><div class="wl-tt" style="text-align:center">MyPilot</div><div class="wl-st" style="text-align:center">私有化 OpenClaw 客户端</div></div><div class="wl-step">
+<div class="wl-s"><div class="wl-si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg></div><div><div style="font-size:14px;font-weight:700">部署 OpenClaw</div><div style="font-size:12px;color:var(--tx2)">在服务器上安装 Gateway</div></div></div>
+<div class="wl-s"><div class="wl-si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></div><div><div style="font-size:14px;font-weight:700">安装 MyPilot Link</div><div style="font-size:12px;color:var(--tx2)">npm i -g @mypilot/link && mypilot start</div></div></div>
+<div class="wl-s"><div class="wl-si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg></div><div><div style="font-size:14px;font-weight:700">添加实例</div><div style="font-size:12px;color:var(--tx2)">输入地址和配对码连接</div></div></div></div>
+<button class="wl-btn" onclick="showChat()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>添加实例</button></div></div></div></div></div>
+
+<div class="sheet h" id="sh-settings" onclick="if(event.target===this)cs('settings')"><div class="sh-b"><div class="sh-h"><button style="background:none;border:none;color:var(--ub);font-size:15px;cursor:pointer;font-family:var(--f);font-weight:600" onclick="cs('settings')">关闭</button><div class="sh-tt">设置</div><div style="width:40px"></div></div>
+<div class="sh-bd" id="sr">
+<div class="sh-conn"><div class="sh-cd on"></div><div><div style="font-size:17px;font-weight:700">MyPilot Main</div><div style="font-size:12px;color:var(--tx2)">已连接 · relay.clawpilot.com</div></div><button style="margin-left:auto;padding:6px 14px;border:none;border-radius:10px;background:var(--bg2);font-size:12px;cursor:pointer;font-family:var(--f);color:var(--tx);font-weight:600">测试连接</button></div>
+<div class="sh-sec">配置</div>
+<div class="sh-r" onclick="onSub('network')"><div class="sh-ri"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ub)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg></div><span class="sh-rl">网络设置</span><svg class="sh-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+<div class="sh-r" onclick="onSub('agentfiles')"><div class="sh-ri"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ub)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span class="sh-rl">Agent 文件</span><svg class="sh-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+<div class="sh-r" onclick="onSub('im')"><div class="sh-ri"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ub)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><span class="sh-rl">IM 通信渠道</span><svg class="sh-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+<div class="sh-sec">管理</div>
+<div class="sh-r" onclick="onSub('agents')"><div class="sh-ri"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ub)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="sh-rl">Agents 管理</span><svg class="sh-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+<div class="sh-r" onclick="onSub('tasks')"><div class="sh-ri"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ub)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="sh-rl">定时任务</span><svg class="sh-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+<div class="sh-r" onclick="onSub('diag')"><div class="sh-ri"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ub)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><span class="sh-rl">诊断中心</span><svg class="sh-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+<div class="sh-sec">其他</div>
+<div class="sh-r"><div class="sh-ri"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg></div><span class="sh-rl">高级设置</span><svg class="sh-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+</div></div></div>
+
+<div class="sheet h" id="sh-add" onclick="if(event.target===this)cs('add')"><div class="sh-b" style="width:440px;max-height:400px"><div class="sh-h"><button style="background:none;border:none;color:var(--tx2);font-size:15px;cursor:pointer;font-family:var(--f);font-weight:600" onclick="cs('add')">取消</button><div class="sh-tt">添加实例</div><div style="width:40px"></div></div>
+<div class="sh-bd" style="padding:24px;display:flex;flex-direction:column;align-items:center;gap:16px">
+<div style="width:56px;height:56px;border-radius:50%;background:var(--ubg);display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg></div>
+<div style="font-size:18px;font-weight:800">输入服务器地址</div>
+<input placeholder="http://118.145.240.41:52378" style="width:100%;padding:10px 14px;border:1px solid var(--bdr);border-radius:12px;font-size:14px;font-family:monospace;outline:none;color:var(--tx);background:var(--bg)">
+<div style="font-size:12px;color:var(--tx2);text-align:left;width:100%;line-height:1.7">1. npm install -g @mypilot/link<br>2. mypilot start<br>3. 输入 daemon 地址<br>4. 输入配对码完成配对</div>
+<input placeholder="XXXX-XXXX-XXXX (配对码)" style="width:100%;padding:10px 14px;border:1px solid var(--bdr);border-radius:12px;font-size:14px;font-family:monospace;outline:none;color:var(--tx);background:var(--bg);margin-top:-6px">
+<button style="width:100%;padding:12px;border-radius:12px;border:none;background:var(--ubg);color:white;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--f)">配对并连接</button></div></div></div>
+
+<div class="sheet h" id="sub-network"><div class="sh-b"><div class="sh-h"><button class="sub-bk" onclick="gb()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>返回</button><div class="sh-tt">网络设置</div><div style="width:40px"></div></div>
+<div class="sh-bd"><div class="sh-conn"><div class="sh-cd on"></div><div><div style="font-size:15px;font-weight:700">MyPilot Main</div><div style="font-size:12px;color:var(--tx2)">已连接</div></div></div>
+<div class="sh-sec">隐私</div>
+<div class="sh-tg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ub)" stroke-width="2" style="flex-shrink:0;margin-top:2px"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg><div class="v">隐私模式<div class="d">不上传第三方</div></div><button class="tg on" onclick="this.classList.toggle('on')"></button></div>
+<div class="sh-tg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ub)" stroke-width="2" style="flex-shrink:0;margin-top:2px"><path d="M12 2a4 4 0 00-4 4v1H6a2 2 0 00-2 2v3a2 2 0 001 1.73V21a1 1 0 001 1h12a1 1 0 001-1v-7.27A2 2 0 0020 12V9a2 2 0 00-2-2h-2V6a4 4 0 00-4-4z"/></svg><div class="v">智能记忆<div class="d">自动脱敏和记忆</div></div><button class="tg on" onclick="this.classList.toggle('on')"></button></div>
+<div class="sh-sec">执行权限</div>
+<div class="sh-tg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" stroke-width="2" style="flex-shrink:0;margin-top:2px"><polyline points="4 17 10 11 4 5"/></svg><div class="v">命令执行</div><button class="tg" onclick="this.classList.toggle('on')"></button></div>
+<div class="sh-tg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ub)" stroke-width="2" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/></svg><div class="v">网络访问</div><button class="tg on" onclick="this.classList.toggle('on')"></button></div>
+<div class="sh-sec">搜索服务</div>
+<div class="sh-r"><div class="sh-ri"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--ub)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span class="sh-rl">Brave Search</span><span style="font-size:12px;color:#34C759;font-weight:600;margin-left:auto">已配置</span></div>
+<div class="sh-r"><div class="sh-ri"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="2"><circle cx="11" cy="11" r="8"/></svg></div><span class="sh-rl">Gemini</span><span style="font-size:12px;color:var(--tx3);font-weight:600;margin-left:auto">未配置</span></div>
+</div></div></div>
+
+<script>
+function td(){var d=document.documentElement.classList.toggle('dark');localStorage.setItem('md',d?'1':'0');document.getElementById('m').style.display=d?'none':'';document.getElementById('s').style.display=d?'':''}
+function sc(e){document.querySelectorAll('.sb-r').forEach(function(r){r.classList.remove('sel')});e.classList.add('sel')}
+function sx(e){document.querySelectorAll('.sb-c').forEach(function(r){r.classList.remove('sel')});e.classList.add('sel')}
+function tp(n){document.getElementById('po-'+n).classList.toggle('h')}
+function os(n){document.querySelectorAll('.sheet').forEach(function(s){s.classList.add('h')});var e=document.getElementById('sh-'+n);if(e)e.classList.remove('h')}
+function cs(n){document.getElementById('sh-'+n).classList.add('h')}
+function showChat(){document.getElementById('p-chat').classList.add('on');document.getElementById('p-welcome').classList.remove('on')}
+var st=[];
+function onSub(n){st.push('sr');document.getElementById('sr').style.display='none';var e=document.getElementById('sub-'+n);if(e){e.classList.remove('h');e.style.display='flex'}}
+function gb(){var p=st.pop();document.querySelectorAll('[id^="sub-"]').forEach(function(s){s.classList.add('h');s.style.display='none'});if(p)document.getElementById(p).style.display=''}
+(function(){if(localStorage.getItem('md')==='1'){document.documentElement.classList.add('dark');document.getElementById('m').style.display='none';document.getElementById('s').style.display=''}})();
+</script>
+</body>
+</html>
