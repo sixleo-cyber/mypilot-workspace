@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MyPilot — iMessage Style V10</title>
+<style>
+:root{
+  --bg:#FFFFFF;--bg2:#F5F5F7;--bdr:#E5E5EA;--tx:#000;--tx2:#8E8E93;--tx3:#C7C7CC;
+  --ub:#007AFF;--ubg:#007AFF;--ut:#FFF;
+  --ab:#E5E5EA;--at:#000;
+  --f:-apple-system,BlinkMacSystemFont,'SF Pro Text','Noto Sans SC',sans-serif;
+}
+html.dark{
+  --bg:#000;--bg2:#1C1C1E;--bdr:#2C2C2E;--tx:#FFF;--tx2:#8E8E93;--tx3:#48484A;
+  --ub:#0A84FF;--ubg:#0A84FF;--ut:#FFF;
+  --ab:#2C2C2E;--at:#FFF;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+body{font-family:var(--f);background:var(--bg2);color:var(--tx);display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
+.w{width:1060px;height:720px;background:var(--bg);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.12)}
+
+/* Toolbar — 纯色，无玻璃 */
+.tb{height:38px;display:flex;align-items:center;padding:0 14px;flex-shrink:0;background:var(--bg)}
+.tb-l{display:flex;gap:7px;width:52px}
+.tb-l s{width:11px;height:11px;border-radius:50%;display:block}
+.tb-l .r{background:#FF5F57}.tb-l .y{background:#FEBC2E}.tb-l .g{background:#28C840}
+.tb-t{flex:1;text-align:center;font-size:13px;font-weight:600;color:var(--tx2)}
+.tb-btn{width:26px;height:26px;border:none;background:none;border-radius:6px;cursor:pointer;color:var(--tx2);display:flex;align-items:center;justify-content:center}
+.tb-btn:hover{background:rgba(120,120,128,.1)}
+
+/* Layout */
+.rw{display:flex;flex:1;overflow:hidden}
+.sb{width:280px;background:var(--bg);flex-shrink

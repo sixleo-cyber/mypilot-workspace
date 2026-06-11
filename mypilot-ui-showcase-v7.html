@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyPilot — macOS App</title>
+<style>
+:root {
+  --bg: #F6F2EE; --bg-alt: #FDFCFA; --surface: #FDFCFA;
+  --border: #E8E0D8; --text: #1F1B18; --text-dim: #8C7B6E;
+  --text-faint: #B8A898; --track: #E8E0D8;
+  --accent: #E8734A; --warn: #F59E0B; --info: #E8734A; --danger: #DC2626;
+  --user-bg: #1F1B18; --user-text: #FFFFFF;
+  --ai-bg: #FDFCFA; --ai-text: #1F1B18; --ai-bd: #E8E0D8;
+  --think-bg: #F8F4F0;
+  --font: -apple-system, 'Inter', 'Noto Sans SC', system-ui, sans-serif;
+  --mono: 'SF Mono', ui-monospace, monospace;
+  --r-sm: 4px; --r-md: 8px; --r-lg: 12px; --r-xl: 18px; --r-full: 9999px;
+}
+html.dark {
+  --bg: #12100E; --bg-alt: #1B1917; --surface: #1B1917;
+  --border: #292623; --text: #F0EDEA; --text-dim: #8C7B6E;
+  --text-faint: #5C5044; --track: #292623;
+  --user-bg: #F0EDEA; --user-text: #12100E;
+  --ai-bg: #1B1917; --ai-text: #F0EDEA; --ai-bd: #292623;
+  --think-bg: #1F1D1B;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:#E8E0D8;color:var(--text);display:flex;justify-content:center;align-items:center;min-height:100vh;padding:32px 16px;transition:background .3s}
+html.dark body{background:#000}
+
+.win{width:1100px;height:700px;background:var(--bg);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 0 1px rgba(0,0,0,.07),0 20px 60px -20px rgba(0,0,0,.16);transition:background .3s,box-shadow .3s}
+html.dark .win{box-shadow:0 0 0 1px rgba(255,255,255,.04),0 20px 60px -20px rgba(0,0,0,.6)}
+
+.tb{height:38px;display:flex;align-items:center;padding:0 14px;flex-shrink:0;user-select:none}
+.tb-l{display:flex;gap:7px;width:52px;flex-shrink:0}
+.tb-l span{width:12px;height:12px;border-radius:50%}
+.tb-l .r{background:#FF5F57}.tb-l .y{background:#FEBC2E}.tb-l .g{background:#28C840}
+.tb-t{flex:1;text-align:center;font-size:12px;font-weight:500;color:var(--text-dim)}
+.tb-btn{width:26px;height:26px;border:none;background:none;border-radius:6px;cursor:pointer;color:var(--text-dim);display:flex;align-items:center;justify-content:center;transition:background .12s}
+.tb-btn:hover{background:rgba(0,0,0,.06)}
+html.dark .tb-btn:hover{background:rgba(255,255,255,.06)}
+
+.main{display:flex;flex:1;overflow:hidden}
+
+/* Sidebar */
+.sb{width:248px;background:var(--bg-alt);flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid var(--border);transition:background .3s,border-color .3s}
+.sb-in{flex:1;overflow-y:auto;padding-bottom:8px}
+.sb-search{padding:10px 10px 4px}
+.sb-search-box{display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);transition:background .3s,border-color .3s}
+.sb-search-box input{flex:1;border:none;outline:none;background:none;font-size:12px;font-family:var(--font);color:var(--text)}
+.sb-search-box input::placeholder{color:var(--text-faint)}
+.sb-search-box svg{color:var(--text-dim);flex-shrink:0}
+.sb-sec{padding:10px 14px 2px;font-size:10px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em}
+.sb-row{display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;transition:background .1s}
+.sb-row:hover{background:rgba(0,0,0,.025)}html.dark .sb-row:hover{background:rgba(255,255,255,.025)}
+.sb-row.sel{background:rgba(0,0,0,.04)}html.dark .sb-row.sel{background:rgba(255,255,255,.04)}
+.sb-av{width:26px;height:26px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:white;flex-shrink:0}
+.sb-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);margin-left:auto;flex-shrink:0}
+.sb-agt{display:flex;align-items:center;gap:6px;padding:4px 12px;cursor:pointer;transition:background .1s}
+.sb-agt:hover{background:rgba(0,0,0,.025)}html.dark .sb-agt:hover{background:rgba(255,255,255,.025)}
+.sb-agtav{width:20px;height:20px;border-radius:50%;background:var(--warn);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-agtav svg{width:10px;height:10px;color:white}
+.sb-cnv{display:flex;align-items:center;gap:6px;padding:4px 12px 4px 24px;cursor:pointer;transition:background .1s}
+.sb-cnv:hover{background:rgba(0,0,0,.025)}html.dark .sb-cnv:hover{background:rgba(255,255,255,.025)}
+.sb-cnv.sel{background:rgba(0,0,0,.04)}html.dark .sb-cnv.sel{background:rgba(255,255,255,.04)}
+.sb-bt{padding:12px;display:flex;gap:10px;border-top:1px solid var(--border);transition:border-color .3s}
+.btn{height:34px;border-radius:var(--r-lg);border:none;font-size:13px;font-weight:500;font-family:var(--font);cursor:pointer;transition:opacity .12s}
+.btn:hover{opacity:.88}
+.btn-p{flex:1;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;gap:5px}
+.btn-i{width:34px;flex-shrink:0;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-dim);transition:background .3s,border-color .3s}
+
+/* Detail */
+.dt{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;background:var(--bg);transition:background .3s}
+.pg{display:none;flex-direction:column;flex:1;overflow:hidden}
+.pg.on{display:flex}
+
+/* Chat Header */
+.ch{padding:9px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0;border-bottom:1px solid var(--border);transition:border-color .3s}
+.ch-av{width:26px;height:26px;border-radius:50%;background:var(--warn);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ch-av svg{width:13px;height:13px;color:white}
+.ch-name{font-size:16px;font-weight:600}
+.ch-model{font-size:11px;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;gap:3px}
+.ch-model:hover{color:var(--text)}
+.ch-rt{margin-left:auto;display:flex;align-items:center;gap:5px}
+.ch-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ch-dot.on{background:var(--accent)}
+.ch-lat{font-size:10px;color:var(--accent)}
+.ch-conn{font-size:10px;color:var(--text-dim)}
+
+/* Token */
+.tk{padding:8px 18px 2px;flex-shrink:0}
+.tk-tr{height:2px;background:var(--track);border-radius:1px;overflow:hidden;transition:background .3s}
+.tk-fl{height:100%;background:var(--accent);border-radius:1px;width:22%;transition:width .8s}
+.tk-info{display:flex;justify-content:space-between;margin-top:3px;font-size:10px;color:var(--text-dim)}
+
+/* Messages */
+.ms{flex:1;overflow-y:auto;padding:20px 18px;display:flex;flex-direction:column;gap:14px}
+.mr{display:flex;gap:8px;animation:mi .28s cubic-bezier(.22,1,.36,1) both}
+.mr.u{justify-content:flex-end}
+@keyframes mi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.mr .bd{max-width:72%}
+.mr.u .bb{padding:10px 16px;font-size:14px;line-height:1.6;background:var(--user-bg);color:var(--user-text);border-radius:var(--r-xl) var(--r-xl) var(--r-sm) var(--r-xl);transition:background .3s,color .3s}
+.mr.a .bb{padding:10px 16px;font-size:14px;line-height:1.6;background:var(--ai-bg);color:var(--ai-text);border-radius:var(--r-xl) var(--r-xl) var(--r-xl) var(--r-sm);transition:background .3s,color .3s}
+.mr.a-av{width:24px;height:24px;border-radius:50%;background:var(--warn);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:4px}
+.mr.a-av svg{width:12px;height:12px;color:white}
+.dl{display:flex;justify-content:flex-end;align-items:center;gap:2px;margin-top:3px;font-size:9px;color:var(--text-dim)}
+.dl.d2{color:var(--accent)}
+
+/* Thinking */
+.th{background:var(--think-bg);border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:6px;overflow:hidden;transition:background .3s,border-color .3s}
+.th-hd{display:flex;align-items:center;gap:5px;padding:7px 10px;cursor:pointer;user-select:none;font-size:10px;font-weight:600;color:var(--text-dim)}
+.th-bd{padding:10px;font-size:11px;color:var(--text-dim);line-height:1.55;border-top:1px solid var(--border);max-height:140px;overflow-y:auto;transition:border-color .3s}
+.th-bd.h{display:none}
+
+/* System Prompt Bar */
+.sp{background:var(--think-bg);border-bottom:1px solid var(--border);padding:6px 18px;display:flex;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;font-size:10px;color:var(--text-dim);transition:background .3s,border-color .3s}
+.sp-bd{padding:10px 18px;font-size:11px;color:var(--text-dim);line-height:1.55;border-bottom:1px solid var(--border);max-height:120px;overflow-y:auto;flex-shrink:0;transition:border-color .3s}
+.sp-bd.h{display:none}
+
+/* Disconnected Banner */
+.dc{display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(220,38,38,.06);border-bottom:1px solid var(--border);flex-shrink:0}
+.dc-dot{width:8px;height:8px;border-radius:50%;background:var(--danger);flex-shrink:0}
+.dc-msg{font-size:10px;color:var(--text-dim);flex:1}
+.dc-btn{font-size:10px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:var(--font);padding:2px 6px;border-radius:var(--r-sm)}
+.dc-btn:hover{background:rgba(0,0,0,.05)}
+
+/* Code */
+.code{background:var(--user-bg);color:var(--user-text);font-family:var(--mono);font-size:11px;padding:10px 14px;border-radius:var(--r-md);margin-top:6px;overflow-x:auto;white-space:pre;line-height:1.5;transition:background .3s,color .3s}
+
+/* Input */
+.inp{padding:8px 14px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-top:1px solid var(--border);position:relative;transition:border-color .3s}
+.inp-b{width:26px;height:26px;border:none;background:none;cursor:pointer;color:var(--text-dim);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .1s,color .1s}
+.inp-b:hover{background:rgba(0,0,0,.05);color:var(--text)}
+html.dark .inp-b:hover{background:rgba(255,255,255,.05);color:var(--text)}
+.inp-f{flex:1}
+.inp-f input{width:100%;padding:7px 14px;border:1px solid var(--border);border-radius:var(--r-full);background:var(--bg-alt);font-size:13px;font-family:var(--font);outline:none;color:var(--text);transition:background .3s,border-color .3s}
+.inp-f input::placeholder{color:var(--text-dim)}
+.inp-s{width:30px;height:30px;border:none;background:var(--accent);cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;transition:opacity .12s}
+.inp-s:hover{opacity:.88}
+
+/* Attachment card */
+.att{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(253,252,250,.8);border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:4px;font-size:12px;transition:background .3s,border-color .3s}
+
+/* Welcome */
+.wl{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:60px 40px;background:var(--bg);transition:background .3s}
+.wl-ic{width:72px;height:72px;border-radius:50%;background:rgba(232,115,74,.08);display:flex;align-items:center;justify-content:center}
+.wl-tt{font-size:22px;font-weight:600}
+.wl-st{font-size:11px;color:var(--text-dim)}
+.wl-steps{display:flex;flex-direction:column;gap:12px;width:100%;max-width:340px}
+.wl-step{display:flex;align-items:center;gap:12px}
+.wl-si{width:32px;height:32px;border-radius:50%;background:rgba(232,115,74,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wl-si svg{color:var(--accent)}
+.wl-btn{padding:9px 24px;border-radius:var(--r-lg);border:none;background:var(--accent);color:white;font-size:14px;font-weight:500;font-family:var(--font);cursor:pointer;display:flex;align-items:center;gap:7px;transition:opacity .12s}
+.wl-btn:hover{opacity:.88}
+.wl-ver{font-size:9px;color:var(--text-faint);margin-top:auto}
+
+/* Popover */
+.po{position:absolute;z-index:50;background:var(--surface);border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.12),0 0 0 1px rgba(0,0,0,.04);transition:background .3s,box-shadow .3s;min-width:180px}
+.po.h{display:none}
+.po-title{font-size:14px;font-weight:600;padding:10px 14px 8px;color:var(--text)}
+.po-div{height:1px;background:var(--border);margin:4px 0}
+.po-row{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;transition:background .1s;border:none;background:none;width:100%;text-align:left;font-family:var(--font);color:var(--text)}
+.po-row:hover{background:rgba(0,0,0,.04)}html.dark .po-row:hover{background:rgba(255,255,255,.04)}
+.po-row svg{color:var(--text-dim);flex-shrink:0}
+.po-row .sub{font-size:11px;color:var(--text-dim);margin-left:auto}
+.po-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:6px}
+.po-it{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 7px;border-radius:6px;cursor:pointer;border:none;background:none;font-family:var(--font);transition:background .1s}
+.po-it:hover{background:rgba(0,0,0,.04)}html.dark .po-it:hover{background:rgba(255,255,255,.04)}
+.po-it svg{color:var(--accent)}
+.po-it span{font-size:10px;color:var(--text-dim)}
+
+/* Sheet (Settings) */
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(3px)}
+.sheet.h{display:none}
+.sheet-box{width:700px;max-height:580px;background:var(--bg-alt);border-radius:10px;box-shadow:0 16px 48px rgba(0,0,0,.16);display:flex;flex-direction:column;overflow:hidden;transition:background .3s}
+.sheet-hd{padding:12px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;transition:border-color .3s}
+.sheet-tt{font-size:15px;font-weight:600}
+.sheet-bd{flex:1;overflow-y:auto}
+.sheet-nav{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;transition:border-color .3s}
+.sheet-navb{padding:8px 0;background:none;border:none;font-family:var(--font);font-size:11px;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
+.sheet-navb:first-child{margin-left:18px;padding-left:0}
+.sheet-navb.on{color:var(--text);border-bottom-color:var(--accent)}
+.sheet-navb+.sheet-navb{margin-left:20px}
+
+.sheet-sec{padding:8px 18px 2px;font-size:10px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em}
+.sheet-row{display:flex;align-items:center;gap:10px;padding:9px 18px;cursor:pointer;transition:background .1s}
+.sheet-row:hover{background:rgba(0,0,0,.02)}html.dark .sheet-row:hover{background:rgba(255,255,255,.02)}
+.sheet-ric{width:26px;height:26px;border-radius:6px;background:rgba(0,0,0,.04);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+html.dark .sheet-ric{background:rgba(255,255,255,.04)}
+.sheet-rl{flex:1;font-size:13px}
+.sheet-ra{color:var(--text-faint);flex-shrink:0}
+.sheet-conn{padding:8px 18px;display:flex;align-items:center;gap:10px}
+.sheet-cd{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.sheet-cd.on{background:var(--accent)}.sheet-cd.off{background:var(--warn)}
+
+/* Toggle */
+.tg{width:36px;height:20px;border-radius:10px;background:var(--track);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;border:none}
+.tg::after{content:'';position:absolute;width:16px;height:16px;background:white;border-radius:50%;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.12);transition:transform .2s}
+.tg.on{background:var(--accent)}
+.tg.on::after{transform:translateX(16px)}
+
+/* Form elements */
+.sheet-toggle{display:flex;align-items:flex-start;gap:10px;padding:9px 18px}
+.sheet-toggle .v{flex:1;font-size:13px}
+.sheet-toggle .d{font-size:11px;color:var(--text-dim)}
+
+/* Sub-page */
+.subpage{display:none}
+.subpage.on{display:flex;flex-direction:column;flex:1;overflow:hidden}
+.sub-hd{padding:14px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sub-back{font-size:13px;color:var(--text-dim);background:none;border:none;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:4px}
+.sub-back:hover{color:var(--accent)}
+.sub-tt{font-size:16px;font-weight:600}
+.sub-bd{flex:1;overflow-y:auto;padding:12px 0}
+
+/* Dark mode body transition for settings elements */
+html.dark .sheet-ric{background:rgba(255,255,255,.04)}
+</style>
+</head>
+<body>
+
+<div class="win">
+  <div class="tb">
+    <div class="tb-l"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+    <div class="tb-t">MyPilot</div>
+    <div style="width:52px;display:flex;justify-content:flex-end;flex-shrink:0">
+      <button class="tb-btn" onclick="toggleDark()">
+        <svg id="moon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        <svg id="sun" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- SIDEBAR -->
+    <div class="sb">
+      <div class="sb-in">
+        <div class="sb-search">
+          <div class="sb-search-box">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" placeholder="搜索历史消息..." onclick="toggleSearch()">
+          </div>
+        </div>
+        <div class="sb-sec">OpenClaw 实例</div>
+        <div class="sb-row sel" onclick="selectInst(this);showWelcome(false)">
+          <div class="sb-av">M</div>
+          <div><div style="font-size:13px;font-weight:600">MyPilot Main</div><div style="font-size:10px;color:var(--text-dim)">relay.clawpilot.com</div></div>
+          <div class="sb-dot"></div>
+        </div>
+        <div style="margin-top:6px">
+          <div class="sb-sec">未来</div>
+          <div class="sb-agt">
+            <div class="sb-agtav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+            <div><div style="font-size:12px;font-weight:600">未来</div><div style="font-size:10px;color:var(--text-dim)">qwen-qlm-2.1</div></div>
+            <svg style="margin-left:auto" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+        </div>
+        <div class="sb-sec" style="padding-left:24px">今天</div>
+        <div class="sb-cnv sel" onclick="selConv(this)">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2" style="flex-shrink:0"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">项目架构讨论</div><div style="font-size:9px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">嗯，让我分析一下...</div></div>
+        </div>
+        <div class="sb-cnv" onclick="selConv(this)">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2" style="flex-shrink:0"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <div style="flex:1;min-width:0"><div style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">API 接口设计</div><div style="font-size:9px;color:var(--text-faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">已生成 API 文档</div></div>
+        </div>
+        <div class="sb-sec" style="padding-left:24px">昨天</div>
+        <div class="sb-cnv" onclick="selConv(this)">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2" style="flex-shrink:0"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <div style="flex:1;min-width:0"><div style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Bug 排查记录</div><div style="font-size:9px;color:var(--text-faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">修复了 WebSocket 连接问题</div></div>
+        </div>
+        <div class="sb-sec" style="padding-left:24px">更早</div>
+        <div class="sb-cnv" onclick="selConv(this)">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2" style="flex-shrink:0"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <div style="flex:1;min-width:0"><div style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">部署配置讨论</div><div style="font-size:9px;color:var(--text-faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">已配置 Nginx 反向代理</div></div>
+        </div>
+        <div style="padding:2px 12px 2px 24px">
+          <button style="background:none;border:none;cursor:pointer;color:var(--text-dim);font-size:10px;font-family:var(--font);display:flex;align-items:center;gap:3px">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> 新对话
+          </button>
+        </div>
+      </div>
+      <div class="sb-bt">
+        <button class="btn btn-p" onclick="openSheet('add-instance')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>添加实例</button>
+        <button class="btn btn-i" onclick="openSheet('settings')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg></button>
+      </div>
+    </div>
+
+    <!-- DETAIL -->
+    <div class="dt">
+      <!-- CHAT PAGE -->
+      <div class="pg on" id="pg-chat">
+        <!-- Header -->
+        <div class="ch">
+          <div class="ch-av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+          <div>
+            <div style="display:flex;align-items:center;gap:3px"><span class="ch-name">未来</span><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="3" style="cursor:pointer"><path d="m6 9 6 6 6-6"/></svg></div>
+            <div class="ch-model" onclick="document.getElementById('po-model').classList.toggle('h')">火山引擎 / qwen-qlm-2.1 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></div>
+          </div>
+          <div class="ch-rt">
+            <div class="ch-dot on"></div><span class="ch-lat">12ms</span><span class="ch-conn">已连接</span>
+            <button style="background:none;border:none;cursor:pointer;padding:2px;color:var(--text-dim);display:flex" title="导出"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+        </div>
+
+        <!-- Token -->
+        <div class="tk"><div class="tk-tr"><div class="tk-fl"></div></div><div class="tk-info"><span>≈7,200 tokens</span><span>22% / 32k</span></div></div>
+
+        <!-- System Prompt Bar -->
+        <div class="sp" onclick="this.nextElementSibling.classList.toggle('h')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2"><path d="M12 2a4 4 0 00-4 4v1H6a2 2 0 00-2 2v3a2 2 0 001 1.73V21a1 1 0 001 1h12a1 1 0 001-1v-7.27A2 2 0 0020 12V9a2 2 0 00-2-2h-2V6a4 4 0 00-4-4z"/></svg>系统提示词</div>
+        <div class="sp-bd h">你是一个专业、友善且高效的 AI 助手。使用中文进行回复。回答应当简洁明了，同时确保准确性。在不确定时主动询问用户。</div>
+
+        <!-- Messages -->
+        <div class="ms">
+          <!-- AI 1 -->
+          <div class="mr a" style="animation-delay:.05s">
+            <div class="mr a-av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+            <div class="bd">
+              <div class="th" onclick="this.children[1].classList.toggle('h')">
+                <div class="th-hd"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2"><path d="M12 2a4 4 0 00-4 4v1H6a2 2 0 00-2 2v3a2 2 0 001 1.73V21a1 1 0 001 1h12a1 1 0 001-1v-7.27A2 2 0 0020 12V9a2 2 0 00-2-2h-2V6a4 4 0 00-4-4z"/></svg>思考过程</div>
+                <div class="th-bd h">用户问候需要回应。这是一个多轮对话的开始，我应该先介绍自己，然后询问用户的具体需求。</div>
+              </div>
+              <div class="bb">你好！我是你的 AI 助手。我可以帮你解答问题、分析文档、编写代码，或者进行联网搜索。有什么可以帮你的吗？</div>
+            </div>
+          </div>
+
+          <!-- User -->
+          <div class="mr u" style="animation-delay:.12s">
+            <div class="bd">
+              <div class="bb">帮我分析一下这个项目的架构设计</div>
+              <div class="dl d2"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="margin-left:-3px"><path d="M5 13l4 4L19 7"/></svg></div>
+            </div>
+          </div>
+
+          <!-- AI 2 -->
+          <div class="mr a" style="animation-delay:.2s">
+            <div class="mr a-av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+            <div class="bd">
+              <div class="th" onclick="this.children[1].classList.toggle('h')">
+                <div class="th-hd"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2"><path d="M12 2a4 4 0 00-4 4v1H6a2 2 0 00-2 2v3a2 2 0 001 1.73V21a1 1 0 001 1h12a1 1 0 001-1v-7.27A2 2 0 0020 12V9a2 2 0 00-2-2h-2V6a4 4 0 00-4-4z"/></svg>思考过程</div>
+                <div class="th-bd h">MyPilot 是典型的三层架构：客户端层是 macOS SwiftUI 原生应用，中继层是 Node.js daemon（mypilot-link），AI 引擎是 OpenClaw Core。我需要清晰地解释每一层的职责。</div>
+              </div>
+              <div class="bb">
+                <p style="margin-bottom:6px">MyPilot 是一个典型的<strong>客户端-服务端架构</strong>，主要分为三层：</p>
+                <p style="margin-bottom:3px;font-weight:600;font-size:13px;color:var(--accent)">📱 客户端层 — MyPilot App</p>
+                <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;padding-left:12px">macOS 原生 SwiftUI 应用。NavigationSplitView 布局，负责 UI 渲染、消息持久化、本地搜索。通过 WebSocket 与中继层通信。</p>
+                <p style="margin-bottom:3px;font-weight:600;font-size:13px;color:var(--warn)">🔗 中继层 — MyPilot Link</p>
+                <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;padding-left:12px">Node.js daemon，npm 全局安装。提供本地 HTTP API（端口 52378），WebSocket 中继，设备身份管理和配对码认证。</p>
+                <p style="margin-bottom:3px;font-weight:600;font-size:13px;color:var(--info)">🧠 AI 引擎 — OpenClaw Core</p>
+                <p style="font-size:11px;color:var(--text-dim);padding-left:12px">模型推理与 Agent 调度。支持多模型切换（火山引擎、DeepSeek、OpenAI），Agent 文件系统（SOUL.md、AGENTS.md），搜索服务集成。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- User with attachment -->
+          <div class="mr u" style="animation-delay:.28s">
+            <div class="bd">
+              <div class="att">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:500">架构图.pdf</div><div style="font-size:9px;color:var(--text-faint)">245 KB · PDF</div></div>
+              </div>
+              <div class="bb">这份架构图可以参考</div>
+              <div class="dl"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input -->
+        <div class="inp">
+          <button class="inp-b" title="附件"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.44 11.05-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg></button>
+          <button class="inp-b" onclick="document.getElementById('po-more').classList.toggle('h')" title="更多"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></svg></button>
+          <div class="inp-f"><input type="text" placeholder="发消息... 输入 / 查看指令" onkeyup="if(this.value.startsWith('/'))document.getElementById('po-cmd').classList.remove('h');else document.getElementById('po-cmd').classList.add('h')"></div>
+          <button class="inp-s"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+          <!-- More Popover -->
+          <div class="po h" id="po-more" style="bottom:48px;left:40px">
+            <div class="po-grid">
+              <button class="po-it"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>插件库</span></button>
+              <button class="po-it" onclick="document.getElementById('po-sug').classList.toggle('h')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>AI 建议</span></button>
+              <button class="po-it" onclick="document.getElementById('po-set').classList.toggle('h')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg><span>设置</span></button>
+              <button class="po-it"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg><span>截屏</span></button>
+              <button class="po-it"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>图片</span></button>
+              <button class="po-it" onclick="document.getElementById('po-agent').classList.toggle('h')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>角色</span></button>
+            </div>
+          </div>
+
+          <!-- Model Picker Popover -->
+          <div class="po h" id="po-model" style="top:88px;left:28px;min-width:240px">
+            <div class="po-title">切换模型</div>
+            <div class="po-div"></div>
+            <button class="po-row" style="font-weight:600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>火山引擎 / qwen-qlm-2.1<span class="sub" style="color:var(--accent)">当前</span></button>
+            <button class="po-row"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/></svg>DeepSeek / deepseek-chat<span class="sub">128k</span></button>
+            <button class="po-row"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>OpenAI / gpt-4o<span class="sub">128k</span></button>
+            <button class="po-row"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>Claude / claude-opus<span class="sub">200k</span></button>
+          </div>
+
+          <!-- Command Picker Popover -->
+          <div class="po h" id="po-cmd" style="bottom:52px;left:100px;min-width:220px">
+            <div class="po-title">可用指令</div><div class="po-div"></div>
+            <button class="po-row"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 00-4 4v1H6a2 2 0 00-2 2v3a2 2 0 001 1.73V21a1 1 0 001 1h12a1 1 0 001-1v-7.27A2 2 0 0020 12V9a2 2 0 00-2-2h-2V6a4 4 0 00-4-4z"/></svg>/help<span class="sub">显示帮助</span></button>
+            <button class="po-row"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>/models<span class="sub">模型列表</span></button>
+            <button class="po-row"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>/status<span class="sub">连接状态</span></button>
+            <button class="po-row"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l18 18M8.5 4a7 7 0 010 16M10 4.5a7 7 0 017.5 7.5"/></svg>/clear<span class="sub">清除对话</span></button>
+            <button class="po-row"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="4" height="18"/><rect x="17" y="3" width="4" height="18"/></svg>/stop<span class="sub">停止生成</span></button>
+            <button class="po-row"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>/search<span class="sub">联网搜索</span></button>
+          </div>
+
+          <!-- QuickSettings Popover -->
+          <div class="po h" id="po-set" style="bottom:48px;left:300px;width:240px">
+            <div class="po-title">快速设置</div><div class="po-div"></div>
+            <button class="po-row"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg>切换模型<span class="sub">qwen-qlm-2.1</span></button>
+            <div class="po-div"></div>
+            <div class="sheet-toggle" style="padding:8px 14px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="flex-shrink:0"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div class="v">详细输出<div class="d">显示更多推理细节</div></div><button class="tg on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="sheet-toggle" style="padding:8px 14px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="flex-shrink:0"><path d="M12 2a4 4 0 00-4 4v1H6a2 2 0 00-2 2v3a2 2 0 001 1.73V21a1 1 0 001 1h12a1 1 0 001-1v-7.27A2 2 0 0020 12V9a2 2 0 00-2-2h-2V6a4 4 0 00-4-4z"/></svg><div class="v">推理模式<div class="d">深度思考后再回答</div></div><button class="tg" onclick="this.classList.toggle('on')"></button></div>
+            <div class="po-div"></div>
+            <button class="po-row"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/></svg>重启会话<span class="sub">清除上下文</span></button>
+          </div>
+
+          <!-- Agent Switcher Popover -->
+          <div class="po h" id="po-agent" style="bottom:48px;left:300px;width:220px">
+            <div class="po-title">切换角色</div><div class="po-div"></div>
+            <button class="po-row" style="font-weight:600"><div style="width:22px;height:22px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>未来<span class="sub" style="color:var(--accent)">当前</span></button>
+            <button class="po-row"><div style="width:22px;height:22px;border-radius:50%;background:var(--text-faint);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M12 2a4 4 0 00-4 4v1H6a2 2 0 00-2 2v3a2 2 0 001 1.73V21a1 1 0 001 1h12a1 1 0 001-1v-7.27A2 2 0 0020 12V9a2 2 0 00-2-2h-2V6a4 4 0 00-4-4z"/></svg></div>助手<span class="sub">gpt-4o</span></button>
+          </div>
+
+          <!-- Suggestion Panel Popover -->
+          <div class="po h" id="po-sug" style="bottom:48px;left:300px;width:260px">
+            <div class="po-title">AI 建议</div><div class="po-div"></div>
+            <button class="po-row"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>总结当前文件<span class="sub" style="font-size:10px;color:var(--text-faint)">项目结构</span></button>
+            <button class="po-row"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 9v2m0 4h.01"/></svg>帮我排查问题<span class="sub" style="font-size:10px;color:var(--text-faint)">错误日志</span></button>
+            <button class="po-row"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M9 18V5l12-2v13"/></svg>优化建议<span class="sub" style="font-size:10px;color:var(--text-faint)">代码分析</span></button>
+            <button class="po-row"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3"/></svg>搜索最新信息<span class="sub" style="font-size:10px;color:var(--text-faint)">联网搜索</span></button>
+            <button class="po-row"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/></svg>帮我写代码<span class="sub" style="font-size:10px;color:var(--text-faint)">编码辅助</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- WELCOME PAGE -->
+      <div class="pg" id="pg-welcome">
+        <div class="wl">
+          <div class="wl-ic"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><path d="M5 16l2-6 2 6 2-4 2 4 2-6 2 6"/></svg></div>
+          <div><div class="wl-tt" style="text-align:center">MyPilot</div><div class="wl-st" style="text-align:center">私有化 OpenClaw 客户端</div></div>
+          <div class="wl-steps">
+            <div class="wl-step"><div class="wl-si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg></div><div><div style="font-size:15px;font-weight:600">部署 OpenClaw</div><div style="font-size:11px;color:var(--text-dim)">在服务器上安装 OpenClaw Gateway</div></div></div>
+            <div class="wl-step"><div class="wl-si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></div><div><div style="font-size:15px;font-weight:600">安装 MyPilot Link</div><div style="font-size:11px;color:var(--text-dim)">npm i -g @mypilot/link && mypilot start</div></div></div>
+            <div class="wl-step"><div class="wl-si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg></div><div><div style="font-size:15px;font-weight:600">添加实例</div><div style="font-size:11px;color:var(--text-dim)">输入服务器地址和配对码连接</div></div></div>
+          </div>
+          <button class="wl-btn" onclick="showWelcome(false)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>添加实例</button>
+          <div class="wl-ver">v1.0.0 · 数据完全私有</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS SHEET -->
+<div class="sheet h" id="sheet-settings" onclick="if(event.target===this)closeSheet('settings')">
+  <div class="sheet-box">
+    <div class="sheet-hd">
+      <button style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;font-family:var(--font);font-weight:500" onclick="closeSheet('settings')">关闭</button>
+      <div class="sheet-tt">设置</div>
+      <div style="width:36px"></div>
+    </div>
+    <div class="sheet-bd" id="settings-root">
+      <div class="sheet-conn"><div class="sheet-cd on"></div><div><div style="font-size:16px;font-weight:600">MyPilot Main</div><div style="font-size:11px;color:var(--text-dim)">已连接 · relay.clawpilot.com</div></div><button style="margin-left:auto;padding:5px 12px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface);font-size:11px;cursor:pointer;font-family:var(--font);color:var(--text);transition:background .3s">测试连接</button></div>
+      <div class="sheet-sec">配置</div>
+      <div class="sheet-row" onclick="openSub('network')"><div class="sheet-ric"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div><span class="sheet-rl">网络设置</span><svg class="sheet-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+      <div class="sheet-row" onclick="openSub('agentfiles')"><div class="sheet-ric"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span class="sheet-rl">Agent 文件</span><svg class="sheet-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+      <div class="sheet-row" onclick="openSub('imchannels')"><div class="sheet-ric"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><span class="sheet-rl">IM 通信渠道</span><svg class="sheet-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+      <div class="sheet-sec">管理</div>
+      <div class="sheet-row" onclick="openSub('agents')"><div class="sheet-ric"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div><span class="sheet-rl">Agents 管理</span><svg class="sheet-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+      <div class="sheet-row" onclick="openSub('tasks')"><div class="sheet-ric"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="sheet-rl">定时任务</span><svg class="sheet-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+      <div class="sheet-row" onclick="openSub('browser')"><div class="sheet-ric"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div><span class="sheet-rl">文件浏览器</span><svg class="sheet-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+      <div class="sheet-row" onclick="openSub('diag')"><div class="sheet-ric"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><span class="sheet-rl">诊断中心</span><svg class="sheet-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+      <div class="sheet-sec">其他</div>
+      <div class="sheet-row" onclick="openSub('advanced')"><div class="sheet-ric"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg></div><span class="sheet-rl">高级设置</span><svg class="sheet-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+      <div class="sheet-row"><div class="sheet-ric"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div><span class="sheet-rl">订阅管理</span><svg class="sheet-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD INSTANCE SHEET -->
+<div class="sheet h" id="sheet-add-instance" onclick="if(event.target===this)closeSheet('add-instance')">
+  <div class="sheet-box" style="width:460px;max-height:440px">
+    <div class="sheet-hd"><button style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;font-family:var(--font);font-weight:500" onclick="closeSheet('add-instance')">取消</button><div class="sheet-tt">添加实例</div><div style="width:36px"></div></div>
+    <div class="sheet-bd" style="padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>
+      <div style="font-size:18px;font-weight:600">输入服务器地址</div>
+      <input type="text" placeholder="例如: http://118.145.240.41:52378" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--r-md);font-size:14px;font-family:var(--mono);outline:none;color:var(--text);background:var(--bg-alt)">
+      <div style="font-size:11px;color:var(--text-dim);text-align:left;width:100%;line-height:1.6">1. 在服务器安装 mypilot-link：npm install -g @mypilot/link<br>2. 启动 daemon：mypilot start<br>3. 输入 daemon 地址（默认端口 52378）<br>4. 输入终端显示的配对码完成配对</div>
+      <input type="text" placeholder="XXXX-XXXX-XXXX (配对码)" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--r-md);font-size:14px;font-family:var(--mono);outline:none;color:var(--text);background:var(--bg-alt);margin-top:-4px">
+      <button style="width:100%;padding:10px;border-radius:var(--r-lg);border:none;background:var(--accent);color:white;font-size:15px;font-weight:500;cursor:pointer;font-family:var(--font)">配对并连接</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS SUB-PAGE: 网络设置 -->
+<div class="sheet h" id="sub-network"><div class="sheet-box">
+  <div class="sheet-hd"><button class="sub-back" onclick="goBack()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>返回</button><div class="sheet-tt">网络设置</div><div style="width:36px"></div></div>
+  <div class="sub-bd">
+    <div class="sheet-conn"><div class="sheet-cd on"></div><div><div style="font-size:14px;font-weight:600">MyPilot Main</div><div style="font-size:11px;color:var(--text-dim)">已连接 · relay.clawpilot.com</div></div><button style="margin-left:auto;padding:5px 12px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface);font-size:11px;cursor:pointer;font-family:var(--font);color:var(--text)">测试连接</button></div>
+    <div class="sheet-sec">隐私</div>
+    <div class="sheet-toggle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="flex-shrink:0;margin-top:2px"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg><div class="v">隐私模式<div class="d">AI 不会将你的对话上传任何第三方</div></div><button class="tg on" onclick="this.classList.toggle('on')"></button></div>
+    <div class="sheet-toggle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="flex-shrink:0;margin-top:2px"><path d="M12 2a4 4 0 00-4 4v1H6a2 2 0 00-2 2v3a2 2 0 001 1.73V21a1 1 0 001 1h12a1 1 0 001-1v-7.27A2 2 0 0020 12V9a2 2 0 00-2-2h-2V6a4 4 0 00-4-4z"/></svg><div class="v">智能记忆<div class="d">AI 已自动开启隐私脱敏和记忆</div></div><button class="tg on" onclick="this.classList.toggle('on')"></button></div>
+    <div class="sheet-sec">执行权限</div>
+    <div class="sheet-toggle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" style="flex-shrink:0;margin-top:2px"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg><div class="v">命令执行<div class="d">允许 Agent 执行系统命令</div></div><button class="tg" onclick="this.classList.toggle('on')"></button></div>
+    <div class="sheet-toggle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/></svg><div class="v">网络访问<div class="d">允许 Agent 主动发起网络请求</div></div><button class="tg on" onclick="this.classList.toggle('on')"></button></div>
+    <div class="sheet-sec">搜索服务</div>
+    <div class="sheet-row"><div class="sheet-ric" style="background:rgba(0,0,0,.04)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span class="sheet-rl">Brave Search</span><span style="font-size:11px;color:var(--accent);margin-left:auto">已配置</span></div>
+    <div class="sheet-row"><div class="sheet-ric"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><span class="sheet-rl">Gemini</span><span style="font-size:11px;color:var(--text-faint);margin-left:auto">未配置</span></div>
+    <div class="sheet-row"><div class="sheet-ric"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><span class="sheet-rl">LLM Context</span><span style="font-size:11px;color:var(--text-faint);margin-left:auto">未配置</span></div>
+  </div>
+</div></div>
+
+<!-- SETTINGS SUB-PAGE: Agents Management -->
+<div class="sheet h" id="sub-agents"><div class="sheet-box">
+  <div class="sheet-hd"><button class="sub-back" onclick="goBack()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>返回</button><div class="sheet-tt">Agents 管理</div><div style="width:36px"></div></div>
+  <div class="sub-bd">
+    <div class="sheet-row" style="border-bottom:1px solid var(--border);margin-bottom:4px">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--warn);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:600">未来</div><div style="font-size:11px;color:var(--text-dim)">qwen-qlm-2.1</div></div>
+      <span style="font-size:10px;color:var(--accent);background:rgba(232,115,74,.08);padding:2px 8px;border-radius:var(--r-full)">活跃</span>
+      <svg class="sheet-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+    </div>
+    <div class="sheet-row" style="border-bottom:1px solid var(--border);margin-bottom:4px">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--text-faint);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><circle cx="12" cy="12" r="10"/></svg></div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:500">助手</div><div style="font-size:11px;color:var(--text-dim)">gpt-4o</div></div>
+      <svg class="sheet-ra" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+    </div>
+    <div style="padding:8px 18px"><button style="width:100%;padding:10px;border-radius:var(--r-lg);border:none;background:var(--accent);color:white;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font)">创建新 Agent</button></div>
+  </div>
+</div></div>
+
+<!-- SETTINGS SUB-PAGE: 运行统计 -->
+<div class="sheet h" id="sub-stats"><div class="sheet-box">
+  <div class="sheet-hd"><button class="sub-back" onclick="goBack()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>返回</button><div class="sheet-tt">运行统计</div><div style="width:36px"></div></div>
+  <div class="sub-bd">
+    <div style="padding:20px 18px;text-align:center"><div style="font-size:36px;font-weight:600;font-variant-numeric:tabular-nums">128,500</div><div style="font-size:12px;color:var(--text-dim);margin-top:4px">本月 Tokens · <span style="color:var(--accent)">↓ 12% 较上月</span></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 18px 20px">
+      <div style="text-align:center;padding:14px 8px;background:var(--think-bg);border-radius:var(--r-md)"><div style="font-size:22px;font-weight:600">342</div><div style="font-size:10px;color:var(--text-dim);margin-top:2px">会话数量</div></div>
+      <div style="text-align:center;padding:14px 8px;background:var(--think-bg);border-radius:var(--r-md)"><div style="font-size:22px;font-weight:600">2.3s</div><div style="font-size:10px;color:var(--text-dim);margin-top:2px">平均响应</div></div>
+      <div style="text-align:center;padding:14px 8px;background:var(--think-bg);border-radius:var(--r-md)"><div style="font-size:22px;font-weight:600">98.5%</div><div style="font-size:10px;color:var(--text-dim);margin-top:2px">可用率</div></div>
+    </div>
+    <div class="sheet-sec">系统健康</div>
+    <div class="sheet-toggle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="flex-shrink:0"><path d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg><div class="v">CPU 使用率<div class="d">4 核心 · 2.8 GHz</div></div><div style="display:flex;align-items:center;gap:8px"><div style="width:80px;height:4px;background:var(--track);border-radius:2px;overflow:hidden"><div style="width:32%;height:100%;background:var(--accent);border-radius:2px"></div></div><span style="font-size:11px;color:var(--text-dim);font-family:var(--mono)">32%</span></div></div>
+    <div class="sheet-toggle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2" style="flex-shrink:0"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2"/></svg><div class="v">内存使用<div class="d">8 GB 总计</div></div><div style="display:flex;align-items:center;gap:8px"><div style="width:80px;height:4px;background:var(--track);border-radius:2px;overflow:hidden"><div style="width:68%;height:100%;background:var(--warn);border-radius:2px"></div></div><span style="font-size:11px;color:var(--text-dim);font-family:var(--mono)">5.4 GB</span></div></div>
+    <div class="sheet-sec">模型使用分布</div>
+    <div style="padding:8px 18px 20px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px">
+      <div><div style="display:flex;align-items:center;gap:4px;margin-bottom:4px"><div style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></div><span style="font-size:11px;color:var(--text-dim)">qwen-qlm</span></div><div style="font-size:18px;font-weight:600">45%</div></div>
+      <div><div style="display:flex;align-items:center;gap:4px;margin-bottom:4px"><div style="width:8px;height:8px;border-radius:50%;background:var(--warn)"></div><span style="font-size:11px;color:var(--text-dim)">deepseek</span></div><div style="font-size:18px;font-weight:600">30%</div></div>
+      <div><div style="display:flex;align-items:center;gap:4px;margin-bottom:4px"><div style="width:8px;height:8px;border-radius:50%;background:var(--info)"></div><span style="font-size:11px;color:var(--text-dim)">gpt-4o</span></div><div style="font-size:18px;font-weight:600">15%</div></div>
+      <div><div style="display:flex;align-items:center;gap:4px;margin-bottom:4px"><div style="width:8px;height:8px;border-radius:50%;background:var(--text-faint)"></div><span style="font-size:11px;color:var(--text-dim)">claude</span></div><div style="font-size:18px;font-weight:600">10%</div></div>
+    </div>
+  </div>
+</div></div>
+
+<script>
+function toggleDark(){var d=document.documentElement.classList.toggle('dark');localStorage.setItem('mp-d',d?'1':'0');document.getElementById('moon').style.display=d?'none':'';document.getElementById('sun').style.display=d?'':''}
+function selConv(e){document.querySelectorAll('.sb-cnv').forEach(function(c){c.classList.remove('sel')});e.classList.add('sel')}
+function selectInst(e){document.querySelectorAll('.sb-row').forEach(function(r){r.classList.remove('sel')});e.classList.add('sel')}
+function showWelcome(hide){document.getElementById('pg-chat').classList.toggle('on',!hide);document.getElementById('pg-welcome').classList.toggle('on',hide)}
+function toggleSearch(){}
+function openSheet(n){document.querySelectorAll('.sheet').forEach(function(s){s.classList.add('h')});var e=document.getElementById('sheet-'+n);if(e)e.classList.remove('h')}
+function closeSheet(n){document.getElementById('sheet-'+n).classList.add('h')}
+var subStack=[];
+function openSub(name){subStack.push('settings-root');document.getElementById('settings-root').style.display='none';var s=document.getElementById('sub-'+name);if(s){s.classList.remove('h');s.style.display='flex'}}
+function goBack(){var prev=subStack.pop();document.querySelectorAll('[id^="sub-"]').forEach(function(s){s.classList.add('h');s.style.display='none'});if(prev){var e=document.getElementById(prev);if(e)e.style.display=''}}
+(function(){if(localStorage.getItem('mp-d')==='1'){document.documentElement.classList.add('dark');document.getElementById('moon').style.display='none';document.getElementById('sun').style.display=''}})();
+</script>
+</body>
+</html>
