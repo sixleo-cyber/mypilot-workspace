@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyPilot UI Visual Design v4 — Nature Palette</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        ink: {
+                            50: '#FAFBF7',
+                            100: '#F2F4EC',
+                            200: '#D4D9C8',
+                            300: '#A8B092',
+                            400: '#7C8760',
+                            500: '#5A6342',
+                            600: '#424A30',
+                            700: '#2E3322',
+                            800: '#1C1F14',
+                            900: '#0D0F09',
+                        },
+                        amber: {
+                            50: '#FFFBF0',
+                            100: '#FFF3D6',
+                            200: '#FFE4A8',
+                            300: '#F6AD02',
+                            400: '#E09D00',
+                            500: '#C28A00',
+                            600: '#9E7000',
+                            700: '#7A5700',
+                            800: '#563E00',
+                            900: '#322400',
+                        },
+                        lime: {
+                            50: '#FAFDF0',
+                            100: '#F0F8D4',
+                            200: '#E0F0A8',
+                            300: '#ACCE22',
+                            400: '#9ABD1A',
+                            500: '#82A015',
+                            600: '#6A8310',
+                            700: '#52660C',
+                            800: '#3A4908',
+                            900: '#222C04',
+                        },
+                        leaf: {
+                            50: '#F0FBF2',
+                            100: '#D4F5DA',
+                            200: '#A8EBB4',
+                            300: '#0DA945',
+                            400: '#0B963D',
+                            500: '#097D33',
+                            600: '#076429',
+                            700: '#054B1F',
+                            800: '#033215',
+                            900: '#01190B',
+                        },
+                        surface: '#FFFFFF',
+                        elevated: '#FAFBF7',
+                        separator: '#E8EBE0',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        * { scrollbar-width: none; }
+        *::-webkit-scrollbar { display: none; }
+
+        body {
+            font-family: 'Inter', 'Noto Sans SC', system-ui, sans-serif;
+            background: #F2F4EC;
+            overflow-x: hidden;
+            color: #1C1F14;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        html.dark body {
+            background: #0D0F09;
+            color: #F2F4EC;
+        }
+
+        /* === Device frames === */
+        .device-ios {
+            border-radius: 48px;
+            box-shadow: 0 32px 64px -16px rgba(13,15,9,0.12), 0 0 0 10px #1C1F14;
+        }
+        .device-ipad {
+            border-radius: 28px;
+            box-shadow: 0 32px 64px -16px rgba(13,15,9,0.12), 0 0 0 8px #1C1F14;
+        }
+        .device-mac {
+            border-radius: 12px;
+            box-shadow: 0 24px 48px -12px rgba(13,15,9,0.08);
+        }
+
+        /* === Motion === */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .anim-slide-up { animation: slideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; }
+        .anim-slide-right { animation: slideInRight 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; }
+        .anim-scale { animation: scaleIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; }
+        .anim-fade { animation: fadeIn 0.4s ease forwards; opacity: 0; }
+
+        .delay-1 { animation-delay: 0.06s; }
+        .delay-2 { animation-delay: 0.12s; }
+        .delay-3 { animation-delay: 0.18s; }
+        .delay-4 { animation-delay: 0.24s; }
+
+        /* === Section divider === */
+        .section-divider {
+            border-bottom: 1px solid #E8EBE0;
+            padding: 14px 0;
+            transition: background 0.15s ease, border-color 0.3s ease;
+        }
+        html.dark .section-divider {
+            border-bottom-color: #2E3322;
+        }
+        .section-divider:last-child { border-bottom: none; }
+
+        /* === Hero metric === */
+        .hero-metric {
+            font-size: 40px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            line-height: 1;
+            color: #1C1F14;
+            transition: color 0.3s ease;
+        }
+        html.dark .hero-metric {
+            color: #F2F4EC;
+        }
+
+        /* === Minimal toggle === */
+        .minimal-toggle {
+            width: 44px;
+            height: 26px;
+            background: #D4D9C8;
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.25s ease;
+            flex-shrink: 0;
+        }
+        html.dark .minimal-toggle {
+            background: #2E3322;
+        }
+        .minimal-toggle::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            box-shadow: 0 1px 3px rgba(13,15,9,0.1);
+            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .minimal-toggle.active {
+            background: #0DA945;
+        }
+        .minimal-toggle.active::after {
+            transform: translateX(18px);
+        }
+
+        /* === Message bubbles === */
+        .msg-user {
+            background: #1C1F14;
+            color: white;
+            border-radius: 18px 18px 4px 18px;
+            animation: scaleIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            opacity: 0;
+        }
+        html.dark .msg-user {
+            background: #F2F4EC;
+            color: #0D0F09;
+        }
+        .msg-ai {
+            background: #F2F4EC;
+            border: 1px solid #D4D9C8;
+            color: #1C1F14;
+            border-radius: 18px 18px 18px 4px;
+            animation: slideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            opacity: 0;
+        }
+        html.dark .msg-ai {
+            background: #1C1F14;
+            border-color: #2E3322;
+            color: #F2F4EC;
+        }
+
+        /* === Progress bar === */
+        .minimal-progress {
+            height: 3px;
+            background: #E8EBE0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        html.dark .minimal-progress {
+            background: #2E3322;
+        }
+        .minimal-progress-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* === Status dot === */
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #0DA945;
+        }
+
+        /* === Page transitions === */
+        .page-v4 { display: none; }
+        .page-v4.active { display: block; }
+
+        /* === Onboarding === */
+        .onboarding-slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 32px;
+            transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .onboarding-slide.prev { transform: translateX(-100%); opacity: 0; }
+        .onboarding-slide.next { transform: translateX(100%); opacity: 0; }
+        .onboarding-slide.current { transform: translateX(0); opacity: 1; }
+
+        /* === Chart bars === */
+        .chart-bar {
+            border-radius: 2px 2px 0 0;
+            transition: height 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* === Glass header === */
+        .glass-header {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(20px) saturate(1.1);
+            -webkit-backdrop-filter: blur(20px) saturate(1.1);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        html.dark .glass-header {
+            background: rgba(13,15,9,0.85);
+        }
+
+        /* === Dark mode transitions for common elements === */
+        html.dark .device-bg {
+            background: #0D0F09 !important;
+        }
+        html.dark .device-bg-light {
+            background: #1C1F14 !important;
+        }
+        html.dark .text-ink-900 { color: #F2F4EC !important; }
+        html.dark .text-ink-800 { color: #D4D9C8 !important; }
+        html.dark .text-ink-700 { color: #A8B092 !important; }
+        html.dark .text-ink-600 { color: #7C8760 !important; }
+        html.dark .text-ink-500 { color: #5A6342 !important; }
+        html.dark .text-ink-400 { color: #7C8760 !important; }
+        html.dark .text-ink-300 { color: #5A6342 !important; }
+        html.dark .bg-ink-50 { background: #1C1F14 !important; }
+        html.dark .bg-ink-100 { background: #2E3322 !important; }
+        html.dark .bg-ink-200 { background: #424A30 !important; }
+        html.dark .border-ink-100 { border-color: #2E3322 !important; }
+        html.dark .border-ink-200 { border-color: #424A30 !important; }
+        html.dark .border-gray-100 { border-color: #2E3322 !important; }
+        html.dark .border-gray-200 { border-color: #424A30 !important; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-header border-b border-ink-200/60 dark:border-ink-800/60">
+        <div class="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-leaf-300 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-base font-semibold text-ink-900 tracking-tight">MyPilot</h1>
+                    <p class="text-[11px] text-ink-400 font-medium">v4 Nature Palette</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <!-- Dark mode toggle -->
+                <button onclick="toggleDarkMode()" id="dark-mode-btn" class="w-9 h-9 rounded-full bg-ink-100 dark:bg-ink-800 flex items-center justify-center transition-colors" title="切换深色模式">
+                    <svg id="moon-icon" class="w-5 h-5 text-ink-600 dark:text-ink-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                    <svg id="sun-icon" class="w-5 h-5 text-amber-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                </button>
+                <div class="flex items-center gap-1 bg-ink-100/50 dark:bg-ink-800/50 rounded-full p-1">
+                    <button onclick="showPageV4('chat')" id="btn-v4-chat" class="px-4 py-2 rounded-full text-sm font-medium transition-all bg-ink-900 text-white">聊天</button>
+                    <button onclick="showPageV4('onboarding')" id="btn-v4-onboarding" class="px-4 py-2 rounded-full text-sm font-medium transition-all text-ink-500 hover:bg-white/60">引导</button>
+                    <button onclick="showPageV4('settings')" id="btn-v4-settings" class="px-4 py-2 rounded-full text-sm font-medium transition-all text-ink-500 hover:bg-white/60">设置</button>
+                    <button onclick="showPageV4('agents')" id="btn-v4-agents" class="px-4 py-2 rounded-full text-sm font-medium transition-all text-ink-500 hover:bg-white/60">Agents</button>
+                    <button onclick="showPageV4('stats')" id="btn-v4-stats" class="px-4 py-2 rounded-full text-sm font-medium transition-all text-ink-500 hover:bg-white/60">统计</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-20 pb-20 px-8">
+        <div class="max-w-7xl mx-auto">
+
+            <!-- Hero -->
+            <div class="text-center mb-16 anim-slide-up">
+                <p class="text-sm font-medium text-leaf-300 mb-3 tracking-wide uppercase">Version 4.0</p>
+                <h2 class="text-5xl font-semibold text-ink-900 mb-4 tracking-tight" style="letter-spacing:-0.03em">自然，生机，平衡</h2>
+                <p class="text-base text-ink-400 max-w-md mx-auto font-light">以自然色系为基调，琥珀、青柠、叶绿三色交织，营造有机且现代的界面体验。</p>
+            </div>
+
+            <!-- Platform Toggle -->
+            <div class="flex justify-center mb-12 anim-slide-up delay-1">
+                <div class="flex items-center gap-1 bg-ink-100/50 dark:bg-ink-800/50 rounded-full p-1">
+                    <button onclick="showDeviceV4('ios')" id="btn-v4-dev-ios" class="px-5 py-2 rounded-full text-sm font-medium transition-all bg-ink-900 text-white">iPhone</button>
+                    <button onclick="showDeviceV4('ipad')" id="btn-v4-dev-ipad" class="px-5 py-2 rounded-full text-sm font-medium transition-all text-ink-500 hover:bg-white/60">iPad</button>
+                    <button onclick="showDeviceV4('mac')" id="btn-v4-dev-mac" class="px-5 py-2 rounded-full text-sm font-medium transition-all text-ink-500 hover:bg-white/60">Mac</button>
+                </div>
+            </div>
+
+            <!-- ========== ONBOARDING PAGE ========== -->
+            <div id="page-v4-onboarding" class="page-v4">
+                <div class="flex justify-center items-start gap-12 flex-wrap">
+                    <div id="onboarding-v4-ios" class="device-ios w-[375px] h-[812px] bg-black overflow-hidden relative anim-scale">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[35px] bg-black rounded-full z-50"></div>
+                        <div class="absolute top-2 left-6 right-6 flex justify-between text-white text-xs font-medium z-40">
+                            <span>9:41</span>
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5z"/></svg>
+                        </div>
+                        <div class="h-full bg-ink-900 pt-14 relative overflow-hidden">
+                            <div class="absolute top-20 left-[-60px] w-40 h-40 bg-lime-300/10 rounded-full"></div>
+                            <div class="absolute bottom-40 right-[-40px] w-32 h-32 bg-amber-300/10 rounded-full"></div>
+
+                            <div class="onboarding-slide current" id="ob-v4-slide-1">
+                                <div class="w-16 h-16 bg-lime-300/15 rounded-2xl flex items-center justify-center mb-8 anim-scale">
+                                    <svg class="w-8 h-8 text-lime-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-3xl font-semibold text-white mb-3 text-center">MyPilot</h3>
+                                <p class="text-white/50 text-center text-base leading-relaxed px-4">你的 AI 副驾驶<br/>随时随地，智能随行</p>
+                                <div class="mt-auto w-full">
+                                    <div class="flex justify-center gap-1.5 mb-6">
+                                        <div class="w-6 h-1.5 bg-lime-300 rounded-full"></div>
+                                        <div class="w-1.5 h-1.5 bg-white/30 rounded-full"></div>
+                                        <div class="w-1.5 h-1.5 bg-white/30 rounded-full"></div>
+                                    </div>
+                                    <button onclick="nextObV4()" class="w-full bg-lime-300 text-ink-900 rounded-xl py-3.5 text-base font-semibold">开始体验</button>
+                                </div>
+                            </div>
+
+                            <div class="onboarding-slide next" id="ob-v4-slide-2">
+                                <div class="w-16 h-16 bg-amber-300/15 rounded-2xl flex items-center justify-center mb-8">
+                                    <svg class="w-8 h-8 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-3xl font-semibold text-white mb-3 text-center">自然对话</h3>
+                                <p class="text-white/50 text-center text-base leading-relaxed px-4">像和朋友聊天一样与 AI 交流<br/>支持文字、语音、图片多种方式</p>
+                                <div class="mt-auto w-full">
+                                    <div class="flex justify-center gap-1.5 mb-6">
+                                        <div class="w-1.5 h-1.5 bg-white/30 rounded-full"></div>
+                                        <div class="w-6 h-1.5 bg-amber-300 rounded-full"></div>
+                                        <div class="w-1.5 h-1.5 bg-white/30 rounded-full"></div>
+                                    </div>
+                                    <button onclick="nextObV4()" class="w-full bg-amber-300 text-ink-900 rounded-xl py-3.5 text-base font-semibold">下一步</button>
+                                </div>
+                            </div>
+
+                            <div class="onboarding-slide next" id="ob-v4-slide-3">
+                                <div class="w-16 h-16 bg-leaf-300/15 rounded-2xl flex items-center justify-center mb-8">
+                                    <svg class="w-8 h-8 text-leaf-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-3xl font-semibold text-white mb-3 text-center">隐私优先</h3>
+                                <p class="text-white/50 text-center text-base leading-relaxed px-4">你的对话完全私密<br/>本地处理，不上传第三方</p>
+                                <div class="mt-auto w-full">
+                                    <div class="flex justify-center gap-1.5 mb-6">
+                                        <div class="w-1.5 h-1.5 bg-white/30 rounded-full"></div>
+                                        <div class="w-1.5 h-1.5 bg-white/30 rounded-full"></div>
+                                        <div class="w-6 h-1.5 bg-leaf-300 rounded-full"></div>
+                                    </div>
+                                    <button onclick="showPageV4('chat')" class="w-full bg-leaf-300 text-ink-900 rounded-xl py-3.5 text-base font-semibold">进入应用</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== CHAT PAGE ========== -->
+            <div id="page-v4-chat" class="page-v4 active">
+                <div class="flex justify-center items-start gap-12 flex-wrap">
+                    <!-- iOS Chat -->
+                    <div id="chat-v4-ios" class="device-ios w-[375px] h-[812px] bg-black overflow-hidden relative anim-scale">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[35px] bg-black rounded-full z-50"></div>
+                        <div class="absolute top-2 left-6 right-6 flex justify-between text-white text-xs font-medium z-40">
+                            <span>9:41</span>
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5z"/></svg>
+                        </div>
+                        <div class="h-full bg-white dark:bg-ink-900 pt-12 flex flex-col transition-colors">
+                            <div class="glass-header px-5 py-3 flex items-center justify-between border-b border-ink-100 dark:border-ink-800">
+                                <button class="text-leaf-300 text-sm font-medium">关闭</button>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 bg-leaf-300 rounded-full flex items-center justify-center">
+                                        <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-semibold text-ink-900">未来</div>
+                                        <div class="text-[11px] text-ink-400 flex items-center gap-1">
+                                            <span class="status-dot"></span>
+                                            qwen-qlm-2.1
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="w-8 h-8 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-ink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
+                                </button>
+                            </div>
+
+                            <!-- Token Bar -->
+                            <div class="px-5 py-2 bg-ink-50/50 dark:bg-ink-800/50">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex-1 minimal-progress">
+                                        <div class="minimal-progress-fill bg-leaf-300" style="width: 45%"></div>
+                                    </div>
+                                    <span class="text-[11px] text-ink-400 font-mono">12.5k / 32k</span>
+                                </div>
+                            </div>
+
+                            <!-- Messages -->
+                            <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4">
+                                <div class="flex gap-3 anim-slide-up delay-1">
+                                    <div class="w-8 h-8 bg-leaf-300 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    </div>
+                                    <div class="msg-ai px-4 py-3 max-w-[78%]">
+                                        <p class="text-sm text-ink-800 dark:text-ink-100 leading-relaxed">你好！我是你的 AI 助手。我可以帮你解答问题、分析文档、编写代码，或者进行联网搜索。</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-3 justify-end anim-slide-up delay-2">
+                                    <div class="msg-user px-4 py-3 max-w-[78%]">
+                                        <p class="text-sm text-white dark:text-ink-900 leading-relaxed">帮我分析一下这个项目的架构设计</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-3 anim-slide-up delay-3">
+                                    <div class="w-8 h-8 bg-leaf-300 rounded-full flex items-center justify-center flex-shrink-0 mt-1"></div>
+                                    <div class="msg-ai px-4 py-3 max-w-[82%]">
+                                        <p class="text-sm text-ink-800 dark:text-ink-100 leading-relaxed mb-3">这是一个典型的客户端-服务端架构：</p>
+                                        <div class="bg-ink-900 dark:bg-ink-800 rounded-lg p-3">
+                                            <code class="text-[11px] text-lime-300 font-mono leading-relaxed">MyPilot/<br/>├── App/ SwiftUI<br/>├── Gateway/ Node.js<br/>└── Core/ AI Engine</code>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Input -->
+                            <div class="bg-white dark:bg-ink-900 border-t border-ink-100 dark:border-ink-800 px-5 py-3 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <button class="w-9 h-9 rounded-full bg-ink-100 dark:bg-ink-800 flex items-center justify-center hover:bg-ink-200 dark:hover:bg-ink-700 transition-colors">
+                                        <svg class="w-5 h-5 text-ink-500 dark:text-ink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                                    </button>
+                                    <div class="flex-1 bg-ink-100 dark:bg-ink-800 rounded-full px-4 py-2 transition-colors">
+                                        <input type="text" placeholder="开始聊天吧..." class="bg-transparent text-sm outline-none w-full text-ink-900 dark:text-ink-100 placeholder-ink-400 dark:placeholder-ink-600">
+                                    </div>
+                                    <button class="w-9 h-9 bg-leaf-300 rounded-full flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-ink-200 dark:bg-ink-700 rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- iPad Chat -->
+                    <div id="chat-v4-ipad" class="device-ipad w-[820px] h-[600px] bg-black overflow-hidden relative hidden anim-scale delay-1">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-2 h-2 bg-ink-800 rounded-full z-50"></div>
+                        <div class="h-full bg-white dark:bg-ink-900 pt-8 flex transition-colors">
+                            <div class="w-60 bg-ink-50/60 dark:bg-ink-800/60 border-r border-ink-100 dark:border-ink-800 flex flex-col transition-colors">
+                                <div class="p-4">
+                                    <div class="bg-white dark:bg-ink-800 rounded-lg px-3 py-2 flex items-center gap-2 border border-ink-100 dark:border-ink-700 transition-colors">
+                                        <svg class="w-4 h-4 text-ink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                        <input type="text" placeholder="搜索..." class="bg-transparent text-sm outline-none flex-1 text-ink-900 dark:text-ink-100 placeholder-ink-400 dark:placeholder-ink-600">
+                                    </div>
+                                </div>
+                                <div class="flex-1 overflow-y-auto px-3">
+                                    <div class="text-[11px] font-semibold text-ink-400 uppercase tracking-wider px-2 mb-2">实例</div>
+                                    <div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-white dark:bg-ink-800 border border-ink-100 dark:border-ink-700 mb-1 transition-colors">
+                                        <div class="w-9 h-9 bg-lime-300 rounded-lg flex items-center justify-center"><span class="text-white text-sm font-bold">M</span></div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="text-sm font-semibold text-ink-900 truncate">MyPilot Main</div>
+                                            <div class="text-xs text-ink-400 truncate">relay.clawpilot.com</div>
+                                        </div>
+                                        <span class="status-dot"></span>
+                                    </div>
+                                    <div class="text-[11px] font-semibold text-ink-400 uppercase tracking-wider px-2 mb-2 mt-4">Agents</div>
+                                    <div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-ink-50 dark:bg-ink-800/50 mb-1 transition-colors">
+                                        <div class="w-8 h-8 bg-leaf-300 rounded-full flex items-center justify-center"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                        <div class="flex-1 min-w-0"><div class="text-sm font-medium text-ink-900">未来</div><div class="text-xs text-ink-400">qwen-qlm-2.1</div></div>
+                                        <svg class="w-4 h-4 text-leaf-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    </div>
+                                </div>
+                                <div class="p-3 border-t border-ink-100 dark:border-ink-800 transition-colors">
+                                    <button class="w-full bg-leaf-300 text-white rounded-lg py-2.5 text-sm font-medium flex items-center justify-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>添加实例
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col">
+                                <div class="glass-header px-6 py-3 flex items-center justify-between border-b border-ink-100 dark:border-ink-800 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-leaf-300 rounded-full flex items-center justify-center"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                        <div><div class="text-sm font-semibold text-ink-900">未来</div><div class="text-xs text-ink-400 flex items-center gap-1"><span class="status-dot"></span>已连接</div></div>
+                                    </div>
+                                    <div class="flex items-center gap-2 px-3 py-1 bg-ink-100 dark:bg-ink-800 rounded-full transition-colors">
+                                        <div class="w-14 h-1 bg-ink-200 dark:bg-ink-700 rounded-full overflow-hidden"><div class="h-full bg-leaf-300 rounded-full" style="width: 45%"></div></div>
+                                        <span class="text-[10px] text-ink-500 font-mono">45%</span>
+                                    </div>
+                                </div>
+                                <div class="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+                                    <div class="flex gap-3">
+                                        <div class="w-8 h-8 bg-leaf-300 rounded-full flex items-center justify-center flex-shrink-0 mt-1"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                        <div class="msg-ai px-4 py-3 max-w-[65%]"><p class="text-sm text-ink-800 dark:text-ink-100 leading-relaxed">你好！我是你的 AI 助手。有什么可以帮你的吗？</p></div>
+                                    </div>
+                                    <div class="flex gap-3 justify-end">
+                                        <div class="msg-user px-4 py-3 max-w-[65%]"><p class="text-sm text-white dark:text-ink-900 leading-relaxed">帮我分析一下这个项目的架构设计</p></div>
+                                    </div>
+                                </div>
+                                <div class="bg-white dark:bg-ink-900 border-t border-ink-100 dark:border-ink-800 px-6 py-3 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex-1 bg-ink-100 dark:bg-ink-800 rounded-full px-4 py-2 transition-colors"><input type="text" placeholder="开始聊天吧..." class="bg-transparent text-sm outline-none w-full text-ink-900 dark:text-ink-100 placeholder-ink-400 dark:placeholder-ink-600"></div>
+                                        <button class="w-9 h-9 bg-leaf-300 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mac Chat -->
+                    <div id="chat-v4-mac" class="device-mac w-[900px] h-[600px] bg-white dark:bg-ink-900 overflow-hidden relative hidden anim-scale delay-2 transition-colors">
+                        <div class="h-8 bg-ink-100/80 dark:bg-ink-800/80 border-b border-ink-200/60 dark:border-ink-700/60 flex items-center px-4 gap-2 transition-colors">
+                            <div class="flex gap-2"><div class="w-3 h-3 rounded-full bg-[#FF5F57]"></div><div class="w-3 h-3 rounded-full bg-[#FEBC2E]"></div><div class="w-3 h-3 rounded-full bg-[#28C840]"></div></div>
+                            <div class="flex-1 text-center text-xs text-ink-400 font-medium">MyPilot</div>
+                            <div class="w-14"></div>
+                        </div>
+                        <div class="h-[calc(100%-32px)] flex">
+                            <div class="w-52 bg-ink-50/40 dark:bg-ink-800/40 border-r border-ink-100 dark:border-ink-800 flex flex-col transition-colors">
+                                <div class="px-4 py-3">
+                                    <div class="bg-white dark:bg-ink-800 rounded-lg px-3 py-1.5 flex items-center gap-2 border border-ink-200/60 dark:border-ink-700 transition-colors">
+                                        <svg class="w-3.5 h-3.5 text-ink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                        <input type="text" placeholder="搜索..." class="bg-transparent text-xs outline-none flex-1 text-ink-900 dark:text-ink-100 placeholder-ink-400 dark:placeholder-ink-600">
+                                    </div>
+                                </div>
+                                <div class="px-3 mb-2">
+                                    <div class="text-[10px] font-semibold text-ink-400 uppercase tracking-wider px-1 mb-1">实例</div>
+                                    <div class="bg-white dark:bg-ink-800 rounded-lg p-2 border border-ink-100 dark:border-ink-700 flex items-center gap-2 transition-colors">
+                                        <div class="w-7 h-7 bg-lime-300 rounded-lg flex items-center justify-center"><span class="text-white text-xs font-bold">M</span></div>
+                                        <div class="flex-1 min-w-0"><div class="text-xs font-semibold text-ink-900 truncate">MyPilot Main</div></div>
+                                        <span class="status-dot"></span>
+                                    </div>
+                                </div>
+                                <div class="flex-1 overflow-y-auto px-3">
+                                    <div class="text-[10px] font-semibold text-ink-400 uppercase tracking-wider px-1 mb-1">Agents</div>
+                                    <div class="space-y-0.5">
+                                        <div class="flex items-center gap-2 px-2 py-1.5 rounded-md bg-white/80 dark:bg-ink-800/80 transition-colors">
+                                            <div class="w-5 h-5 bg-leaf-300 rounded-md flex items-center justify-center"><svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                            <div class="flex-1 min-w-0"><div class="text-xs font-medium text-ink-900">未来</div></div>
+                                            <svg class="w-3 h-3 text-leaf-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-3 border-t border-ink-100 dark:border-ink-800 transition-colors">
+                                    <button class="w-full bg-leaf-300 text-white rounded-lg py-1.5 text-xs font-medium flex items-center justify-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>添加实例</button>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col">
+                                <div class="h-11 bg-white dark:bg-ink-900 border-b border-ink-100 dark:border-ink-800 flex items-center px-5 justify-between transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-6 h-6 bg-leaf-300 rounded-md flex items-center justify-center"><svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                        <div><div class="text-sm font-semibold text-ink-900">未来</div><div class="text-[10px] text-ink-400 flex items-center gap-1"><span class="status-dot"></span>qwen-qlm-2.1</div></div>
+                                    </div>
+                                    <div class="flex items-center gap-2 px-3 py-1 bg-ink-50 dark:bg-ink-800 rounded-md transition-colors">
+                                        <div class="w-12 h-1 bg-ink-200 dark:bg-ink-700 rounded-full overflow-hidden"><div class="h-full bg-leaf-300 rounded-full" style="width: 45%"></div></div>
+                                        <span class="text-[10px] text-ink-500 font-mono">45%</span>
+                                    </div>
+                                </div>
+                                <div class="flex-1 overflow-y-auto bg-white dark:bg-ink-900 px-6 py-5 space-y-4 transition-colors">
+                                    <div class="flex gap-3">
+                                        <div class="w-7 h-7 bg-leaf-300 rounded-md flex items-center justify-center flex-shrink-0 mt-1"><svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                        <div class="msg-ai px-4 py-3 max-w-[60%]"><p class="text-sm text-ink-800 dark:text-ink-100 leading-relaxed">你好！我是你的 AI 助手。有什么可以帮你的吗？</p></div>
+                                    </div>
+                                    <div class="flex gap-3 justify-end">
+                                        <div class="msg-user px-4 py-3 max-w-[60%]"><p class="text-sm text-white dark:text-ink-900 leading-relaxed">帮我分析一下这个项目的架构设计</p></div>
+                                    </div>
+                                </div>
+                                <div class="bg-ink-50/60 dark:bg-ink-800/60 border-t border-ink-100 dark:border-ink-800 px-6 py-3 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex-1 bg-white dark:bg-ink-800 border border-ink-200 dark:border-ink-700 rounded-lg px-4 py-2 flex items-center gap-2 transition-colors"><input type="text" placeholder="开始聊天吧..." class="bg-transparent text-sm outline-none flex-1 text-ink-900 dark:text-ink-100 placeholder-ink-400 dark:placeholder-ink-600"></div>
+                                        <button class="w-9 h-9 bg-leaf-300 rounded-lg flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== SETTINGS PAGE ========== -->
+            <div id="page-v4-settings" class="page-v4">
+                <div class="flex justify-center items-start gap-12 flex-wrap">
+                    <!-- iOS Settings -->
+                    <div id="settings-v4-ios" class="device-ios w-[375px] h-[812px] bg-black overflow-hidden relative anim-scale">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[35px] bg-black rounded-full z-50"></div>
+                        <div class="absolute top-2 left-6 right-6 flex justify-between text-white text-xs font-medium z-40">
+                            <span>9:41</span>
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5z"/></svg>
+                        </div>
+                        <div class="h-full bg-white dark:bg-ink-900 pt-12 flex flex-col transition-colors">
+                            <div class="glass-header px-5 py-3 flex items-center justify-between border-b border-ink-100 dark:border-ink-800 transition-colors">
+                                <button class="text-leaf-300 text-sm font-medium">关闭</button>
+                                <div class="text-sm font-semibold text-ink-900">设置</div>
+                                <div class="w-10"></div>
+                            </div>
+                            <div class="flex-1 overflow-y-auto">
+                                <div class="px-5 pt-6 pb-4">
+                                    <div class="flex items-center gap-3 mb-1">
+                                        <span class="status-dot"></span>
+                                        <div class="text-base font-semibold text-ink-900">MyPilot Main</div>
+                                    </div>
+                                    <div class="text-sm text-ink-400 ml-5">已连接 · relay.clawpilot.com</div>
+                                    <button class="mt-3 ml-5 px-4 py-2 bg-ink-100 dark:bg-ink-800 rounded-lg text-sm font-medium text-ink-700 hover:bg-ink-200 dark:hover:bg-ink-700 transition-colors">测试连接</button>
+                                </div>
+
+                                <div class="mt-2">
+                                    <div class="px-5 py-1.5 text-[11px] font-semibold text-ink-400 uppercase tracking-wider">配置</div>
+                                    <div class="bg-white dark:bg-ink-900 transition-colors">
+                                        <div class="section-divider flex items-center justify-between mx-5">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 bg-ink-100 dark:bg-ink-800 rounded-lg flex items-center justify-center transition-colors"><svg class="w-4 h-4 text-ink-600 dark:text-ink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+                                                <span class="text-sm font-medium text-ink-900">Agent 文件</span>
+                                            </div>
+                                            <svg class="w-4 h-4 text-ink-300 dark:text-ink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                        </div>
+                                        <div class="section-divider flex items-center justify-between mx-5">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 bg-ink-100 dark:bg-ink-800 rounded-lg flex items-center justify-center transition-colors"><svg class="w-4 h-4 text-leaf-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg></div>
+                                                <span class="text-sm font-medium text-ink-900">网络设置</span>
+                                            </div>
+                                            <svg class="w-4 h-4 text-ink-300 dark:text-ink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <div class="px-5 py-1.5 text-[11px] font-semibold text-ink-400 uppercase tracking-wider">管理</div>
+                                    <div class="bg-white dark:bg-ink-900 transition-colors">
+                                        <div class="section-divider flex items-center justify-between mx-5">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 bg-ink-100 dark:bg-ink-800 rounded-lg flex items-center justify-center transition-colors"><svg class="w-4 h-4 text-ink-600 dark:text-ink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg></div>
+                                                <span class="text-sm font-medium text-ink-900">高级设置</span>
+                                            </div>
+                                            <svg class="w-4 h-4 text-ink-300 dark:text-ink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-ink-200 dark:bg-ink-700 rounded-full transition-colors"></div>
+                        </div>
+                    </div>
+
+                    <!-- iPad Settings -->
+                    <div id="settings-v4-ipad" class="device-ipad w-[820px] h-[600px] bg-black overflow-hidden relative hidden anim-scale delay-1">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-2 h-2 bg-ink-800 rounded-full z-50"></div>
+                        <div class="h-full bg-white dark:bg-ink-900 pt-8 flex transition-colors">
+                            <div class="w-56 bg-ink-50/60 dark:bg-ink-800/60 border-r border-ink-100 dark:border-ink-800 flex flex-col transition-colors">
+                                <div class="p-4 border-b border-ink-100 dark:border-ink-800 transition-colors"><div class="text-lg font-semibold text-ink-900">设置</div></div>
+                                <div class="flex-1 overflow-y-auto px-3 py-2">
+                                    <div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-white dark:bg-ink-800 border border-ink-100 dark:border-ink-700 mb-1 transition-colors">
+                                        <div class="w-8 h-8 bg-leaf-50 dark:bg-leaf-900/30 rounded-lg flex items-center justify-center transition-colors"><svg class="w-4 h-4 text-leaf-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg></div>
+                                        <div class="text-sm font-medium text-ink-900">网络设置</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col bg-white dark:bg-ink-900 overflow-y-auto transition-colors">
+                                <div class="px-6 py-5"><div class="text-2xl font-semibold text-ink-900">网络设置</div></div>
+                                <div class="px-6 pb-5">
+                                    <div class="flex items-center gap-3 mb-1">
+                                        <span class="status-dot"></span>
+                                        <div class="text-lg font-semibold text-ink-900">MyPilot Main</div>
+                                    </div>
+                                    <div class="text-sm text-ink-400 ml-5">已连接 · relay.clawpilot.com</div>
+                                </div>
+                                <div class="px-6 py-1 text-[11px] font-semibold text-ink-400 uppercase tracking-wider">隐私</div>
+                                <div class="px-6">
+                                    <div class="section-divider flex items-center justify-between">
+                                        <div><div class="text-sm font-medium text-ink-900">隐私模式</div><div class="text-xs text-ink-400 mt-0.5">AI 不会将你的对话上传任何第三方</div></div>
+                                        <div class="minimal-toggle active" onclick="this.classList.toggle('active')"></div>
+                                    </div>
+                                    <div class="section-divider flex items-center justify-between">
+                                        <div><div class="text-sm font-medium text-ink-900">智能记忆</div><div class="text-xs text-ink-400 mt-0.5">自动开启隐私脱敏和记忆</div></div>
+                                        <div class="minimal-toggle active" onclick="this.classList.toggle('active')"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mac Settings -->
+                    <div id="settings-v4-mac" class="device-mac w-[900px] h-[600px] bg-white dark:bg-ink-900 overflow-hidden relative hidden anim-scale delay-2 transition-colors">
+                        <div class="h-8 bg-ink-100/80 dark:bg-ink-800/80 border-b border-ink-200/60 dark:border-ink-700/60 flex items-center px-4 gap-2 transition-colors">
+                            <div class="flex gap-2"><div class="w-3 h-3 rounded-full bg-[#FF5F57]"></div><div class="w-3 h-3 rounded-full bg-[#FEBC2E]"></div><div class="w-3 h-3 rounded-full bg-[#28C840]"></div></div>
+                            <div class="flex-1 text-center text-xs text-ink-400 font-medium">Agent 文件</div>
+                            <div class="w-14"></div>
+                        </div>
+                        <div class="h-[calc(100%-32px)] flex">
+                            <div class="w-48 bg-ink-50/40 dark:bg-ink-800/40 border-r border-ink-100 dark:border-ink-800 flex flex-col transition-colors">
+                                <div class="px-4 py-2.5 border-b border-ink-100 dark:border-ink-800 transition-colors"><div class="text-[11px] font-semibold text-ink-400 uppercase tracking-wider">文件列表</div></div>
+                                <div class="flex-1 overflow-y-auto p-2">
+                                    <div class="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-white dark:bg-ink-800 border border-ink-100 dark:border-ink-700 mb-1 transition-colors">
+                                        <div class="w-5 h-5 bg-ink-100 dark:bg-ink-700 rounded flex items-center justify-center transition-colors"><svg class="w-3 h-3 text-ink-600 dark:text-ink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                        <div><div class="text-xs font-semibold text-ink-900">SOUL.md</div><div class="text-[10px] text-ink-400">2.4 KB</div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col">
+                                <div class="px-5 py-3 border-b border-ink-100 dark:border-ink-800 flex items-center justify-between transition-colors">
+                                    <div><div class="text-sm font-semibold text-ink-900">SOUL.md</div><div class="text-[11px] text-ink-400">2.4 KB · 2026-06-06 14:32</div></div>
+                                    <div class="flex gap-2">
+                                        <button class="px-3 py-1.5 bg-white dark:bg-ink-800 border border-ink-200 dark:border-ink-700 rounded-lg text-xs font-medium text-ink-600 dark:text-ink-300 hover:bg-ink-50 dark:hover:bg-ink-700 transition-colors">重置</button>
+                                        <button class="px-3 py-1.5 bg-leaf-300 rounded-lg text-xs font-medium text-white">保存</button>
+                                    </div>
+                                </div>
+                                <div class="flex-1 bg-ink-50/30 dark:bg-ink-800/30 p-5 transition-colors">
+                                    <div class="bg-white dark:bg-ink-800 rounded-lg border border-ink-100 dark:border-ink-700 h-full p-5 font-mono text-xs text-ink-700 dark:text-ink-300 leading-relaxed overflow-auto transition-colors">
+                                        <span class="text-ink-300 dark:text-ink-600"># SOUL — 人格与行为定义</span><br/><br/>
+                                        <span class="text-ink-300 dark:text-ink-600">## 核心人格</span><br/>
+                                        你是一个专业、友善且高效的 AI 助手。<br/>
+                                        你的回答应当简洁明了，同时确保准确性。<br/><br/>
+                                        <span class="text-ink-300 dark:text-ink-600">## 行为准则</span><br/>
+                                        - 始终尊重用户的隐私<br/>
+                                        - 在不确定时主动询问<br/>
+                                        - 使用中文进行回复
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== AGENTS PAGE ========== -->
+            <div id="page-v4-agents" class="page-v4">
+                <div class="flex justify-center items-start gap-12 flex-wrap">
+                    <!-- iOS Agents -->
+                    <div id="agents-v4-ios" class="device-ios w-[375px] h-[812px] bg-black overflow-hidden relative anim-scale">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[35px] bg-black rounded-full z-50"></div>
+                        <div class="absolute top-2 left-6 right-6 flex justify-between text-white text-xs font-medium z-40">
+                            <span>9:41</span>
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5z"/></svg>
+                        </div>
+                        <div class="h-full bg-white dark:bg-ink-900 pt-12 flex flex-col transition-colors">
+                            <div class="glass-header px-5 py-3 flex items-center justify-between border-b border-ink-100 dark:border-ink-800 transition-colors">
+                                <button class="text-leaf-300 text-sm font-medium">返回</button>
+                                <div class="text-sm font-semibold text-ink-900">Agents</div>
+                                <div class="w-10"></div>
+                            </div>
+                            <div class="flex-1 overflow-y-auto">
+                                <div class="px-5 pt-5">
+                                    <div class="flex items-center gap-4 py-4 border-b border-ink-100 dark:border-ink-800 transition-colors">
+                                        <div class="w-12 h-12 bg-lime-300 rounded-2xl flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="text-base font-semibold text-ink-900">未来</div>
+                                            <div class="text-sm text-ink-400">qwen-qlm-2.1</div>
+                                        </div>
+                                        <span class="px-2.5 py-1 bg-leaf-50 dark:bg-leaf-900/30 text-leaf-300 text-xs font-medium rounded-full transition-colors">活跃</span>
+                                    </div>
+                                </div>
+                                <div class="px-5 mt-2 mb-6">
+                                    <button class="w-full bg-leaf-300 text-white rounded-xl py-3.5 text-sm font-semibold flex items-center justify-center gap-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                        创建新 Agent
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-ink-200 dark:bg-ink-700 rounded-full transition-colors"></div>
+                        </div>
+                    </div>
+
+                    <!-- iPad Agents -->
+                    <div id="agents-v4-ipad" class="device-ipad w-[820px] h-[600px] bg-black overflow-hidden relative hidden anim-scale delay-1">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-2 h-2 bg-ink-800 rounded-full z-50"></div>
+                        <div class="h-full bg-white dark:bg-ink-900 pt-8 flex transition-colors">
+                            <div class="w-56 bg-ink-50/60 dark:bg-ink-800/60 border-r border-ink-100 dark:border-ink-800 flex flex-col transition-colors">
+                                <div class="p-4 border-b border-ink-100 dark:border-ink-800 transition-colors"><div class="text-lg font-semibold text-ink-900">Agents</div></div>
+                                <div class="flex-1 overflow-y-auto px-3 py-2">
+                                    <div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-white dark:bg-ink-800 border border-ink-100 dark:border-ink-700 mb-1 transition-colors">
+                                        <div class="w-8 h-8 bg-lime-300 rounded-full flex items-center justify-center"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></div>
+                                        <div class="text-sm font-medium text-ink-900">未来</div>
+                                    </div>
+                                </div>
+                                <div class="p-3 border-t border-ink-100 dark:border-ink-800 transition-colors">
+                                    <button class="w-full bg-leaf-300 text-white rounded-lg py-2.5 text-sm font-medium flex items-center justify-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>创建新 Agent</button>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col bg-white dark:bg-ink-900 overflow-y-auto transition-colors">
+                                <div class="px-6 py-5 flex items-center justify-between">
+                                    <div class="text-2xl font-semibold text-ink-900">未来</div>
+                                    <div class="flex gap-2">
+                                        <button class="px-4 py-2 bg-ink-100 dark:bg-ink-800 rounded-lg text-sm font-medium text-ink-700 dark:text-ink-300 hover:bg-ink-200 dark:hover:bg-ink-700 transition-colors">删除 Agent</button>
+                                        <button class="px-4 py-2 bg-leaf-300 rounded-lg text-sm font-medium text-white">保存修改</button>
+                                    </div>
+                                </div>
+                                <div class="px-6">
+                                    <div class="text-[11px] font-semibold text-ink-400 uppercase tracking-wider mb-2">基本信息</div>
+                                    <div class="border-t border-ink-100 dark:border-ink-800 transition-colors">
+                                        <div class="section-divider flex items-center justify-between">
+                                            <span class="text-sm text-ink-500">ID</span>
+                                            <span class="text-sm font-mono text-ink-900">future</span>
+                                        </div>
+                                        <div class="section-divider flex items-center justify-between">
+                                            <span class="text-sm text-ink-500">名称</span>
+                                            <input type="text" value="未来" class="text-sm text-right bg-transparent outline-none text-ink-900 dark:text-ink-100">
+                                        </div>
+                                        <div class="section-divider flex items-center justify-between">
+                                            <span class="text-sm text-ink-500">模型</span>
+                                            <div class="flex items-center gap-2"><span class="text-sm font-mono text-ink-900">火山引擎 / qwen-qlm-2.1</span><svg class="w-3 h-3 text-ink-300 dark:text-ink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mac Agents -->
+                    <div id="agents-v4-mac" class="device-mac w-[900px] h-[600px] bg-white dark:bg-ink-900 overflow-hidden relative hidden anim-scale delay-2 transition-colors">
+                        <div class="h-8 bg-ink-100/80 dark:bg-ink-800/80 border-b border-ink-200/60 dark:border-ink-700/60 flex items-center px-4 gap-2 transition-colors">
+                            <div class="flex gap-2"><div class="w-3 h-3 rounded-full bg-[#FF5F57]"></div><div class="w-3 h-3 rounded-full bg-[#FEBC2E]"></div><div class="w-3 h-3 rounded-full bg-[#28C840]"></div></div>
+                            <div class="flex-1 text-center text-xs text-ink-400 font-medium">Agents 管理</div>
+                            <div class="w-14"></div>
+                        </div>
+                        <div class="h-[calc(100%-32px)] flex">
+                            <div class="w-44 bg-ink-50/40 dark:bg-ink-800/40 border-r border-ink-100 dark:border-ink-800 flex flex-col transition-colors">
+                                <div class="px-4 py-2.5 border-b border-ink-100 dark:border-ink-800 transition-colors"><div class="text-[11px] font-semibold text-ink-400 uppercase tracking-wider">Agent 列表</div></div>
+                                <div class="flex-1 overflow-y-auto p-2">
+                                    <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white dark:bg-ink-800 border border-ink-100 dark:border-ink-700 mb-1 transition-colors">
+                                        <div class="w-6 h-6 bg-lime-300 rounded-md flex items-center justify-center"><svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></div>
+                                        <div><div class="text-xs font-semibold text-ink-900">未来</div><div class="text-[10px] text-ink-400">qwen-qlm-2.1</div></div>
+                                    </div>
+                                </div>
+                                <div class="p-3 border-t border-ink-100 dark:border-ink-800 transition-colors">
+                                    <button class="w-full bg-leaf-300 text-white rounded-lg py-1.5 text-xs font-medium flex items-center justify-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>创建新 Agent</button>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col bg-white dark:bg-ink-900 overflow-y-auto transition-colors">
+                                <div class="px-6 py-4 flex items-center justify-between border-b border-ink-100 dark:border-ink-800 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-lime-300 rounded-xl flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></div>
+                                        <div><div class="text-lg font-semibold text-ink-900">未来</div><div class="text-xs text-ink-400">ID: future · 模型: qwen-qlm-2.1</div></div>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button class="px-3 py-1.5 bg-white dark:bg-ink-800 border border-ink-200 dark:border-ink-700 rounded-lg text-xs font-medium text-ink-600 dark:text-ink-300 hover:bg-ink-50 dark:hover:bg-ink-700 transition-colors">删除</button>
+                                        <button class="px-3 py-1.5 bg-leaf-300 rounded-lg text-xs font-medium text-white">保存</button>
+                                    </div>
+                                </div>
+                                <div class="p-6">
+                                    <div class="text-[11px] font-semibold text-ink-400 uppercase tracking-wider mb-3">模型配置</div>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="bg-white dark:bg-ink-800 border-2 border-leaf-300 rounded-xl p-4 transition-colors">
+                                            <div class="flex items-center gap-2 mb-1"><div class="w-2 h-2 bg-leaf-300 rounded-full"></div><div class="text-xs font-semibold text-ink-900">火山引擎</div></div>
+                                            <div class="text-[11px] text-ink-400">qwen-qlm-2.1</div>
+                                            <div class="text-[10px] text-leaf-300 mt-1">当前使用</div>
+                                        </div>
+                                        <div class="bg-ink-50 dark:bg-ink-800 border border-ink-200 dark:border-ink-700 rounded-xl p-4 hover:border-ink-300 dark:hover:border-ink-600 cursor-pointer transition-colors">
+                                            <div class="flex items-center gap-2 mb-1"><div class="w-2 h-2 bg-ink-400 dark:bg-ink-500 rounded-full"></div><div class="text-xs font-semibold text-ink-700 dark:text-ink-300">DeepSeek</div></div>
+                                            <div class="text-[11px] text-ink-400">deepseek-chat</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== STATS PAGE ========== -->
+            <div id="page-v4-stats" class="page-v4">
+                <div class="flex justify-center items-start gap-12 flex-wrap">
+                    <!-- iOS Stats -->
+                    <div id="stats-v4-ios" class="device-ios w-[375px] h-[812px] bg-black overflow-hidden relative anim-scale">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[35px] bg-black rounded-full z-50"></div>
+                        <div class="absolute top-2 left-6 right-6 flex justify-between text-white text-xs font-medium z-40">
+                            <span>9:41</span>
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5z"/></svg>
+                        </div>
+                        <div class="h-full bg-white dark:bg-ink-900 pt-12 flex flex-col transition-colors">
+                            <div class="glass-header px-5 py-3 flex items-center justify-between border-b border-ink-100 dark:border-ink-800 transition-colors">
+                                <button class="text-leaf-300 text-sm font-medium">返回</button>
+                                <div class="text-sm font-semibold text-ink-900">运行统计</div>
+                                <div class="w-10"></div>
+                            </div>
+                            <div class="flex-1 overflow-y-auto">
+                                <div class="px-6 pt-8 pb-6 text-center">
+                                    <div class="hero-metric anim-slide-up">128.5K</div>
+                                    <div class="text-sm text-ink-400 mt-2">本月 Tokens</div>
+                                    <div class="inline-flex items-center gap-1 mt-2 px-3 py-1 bg-leaf-50 dark:bg-leaf-900/30 rounded-full transition-colors">
+                                        <svg class="w-3 h-3 text-leaf-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                                        <span class="text-xs font-medium text-leaf-300">↓ 12% 较上月</span>
+                                    </div>
+                                </div>
+
+                                <div class="px-6 pb-6">
+                                    <div class="h-28 flex items-end gap-3">
+                                        <div class="flex-1 flex flex-col items-center gap-1.5">
+                                            <div class="w-full bg-ink-200 dark:bg-ink-700 rounded-t chart-bar transition-colors" style="height: 40%"></div>
+                                            <span class="text-[10px] text-ink-400">周一</span>
+                                        </div>
+                                        <div class="flex-1 flex flex-col items-center gap-1.5">
+                                            <div class="w-full bg-ink-200 dark:bg-ink-700 rounded-t chart-bar transition-colors" style="height: 55%"></div>
+                                            <span class="text-[10px] text-ink-400">周二</span>
+                                        </div>
+                                        <div class="flex-1 flex flex-col items-center gap-1.5">
+                                            <div class="w-full bg-ink-200 dark:bg-ink-700 rounded-t chart-bar transition-colors" style="height: 45%"></div>
+                                            <span class="text-[10px] text-ink-400">周三</span>
+                                        </div>
+                                        <div class="flex-1 flex flex-col items-center gap-1.5">
+                                            <div class="w-full bg-ink-200 dark:bg-ink-700 rounded-t chart-bar transition-colors" style="height: 70%"></div>
+                                            <span class="text-[10px] text-ink-400">周四</span>
+                                        </div>
+                                        <div class="flex-1 flex flex-col items-center gap-1.5">
+                                            <div class="w-full bg-ink-200 dark:bg-ink-700 rounded-t chart-bar transition-colors" style="height: 60%"></div>
+                                            <span class="text-[10px] text-ink-400">周五</span>
+                                        </div>
+                                        <div class="flex-1 flex flex-col items-center gap-1.5">
+                                            <div class="w-full bg-lime-300 rounded-t chart-bar" style="height: 85%"></div>
+                                            <span class="text-[10px] text-ink-400">周六</span>
+                                        </div>
+                                        <div class="flex-1 flex flex-col items-center gap-1.5">
+                                            <div class="w-full bg-leaf-300 rounded-t chart-bar" style="height: 100%"></div>
+                                            <span class="text-[10px] font-medium text-leaf-300">今天</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="px-6 py-1 text-[11px] font-semibold text-ink-400 uppercase tracking-wider">系统健康</div>
+                                <div class="px-6">
+                                    <div class="section-divider flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-ink-100 dark:bg-ink-800 rounded-lg flex items-center justify-center transition-colors"><svg class="w-4 h-4 text-ink-600 dark:text-ink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg></div>
+                                            <div><div class="text-sm font-medium text-ink-900">CPU</div><div class="text-xs text-ink-400">4 核心</div></div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-16 minimal-progress"><div class="minimal-progress-fill bg-leaf-300" style="width: 32%"></div></div>
+                                            <span class="text-xs font-mono text-ink-500">32%</span>
+                                        </div>
+                                    </div>
+                                    <div class="section-divider flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-ink-100 dark:bg-ink-800 rounded-lg flex items-center justify-center transition-colors"><svg class="w-4 h-4 text-ink-600 dark:text-ink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg></div>
+                                            <div><div class="text-sm font-medium text-ink-900">内存</div><div class="text-xs text-ink-400">8 GB 总计</div></div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-16 minimal-progress"><div class="minimal-progress-fill bg-amber-300" style="width: 68%"></div></div>
+                                            <span class="text-xs font-mono text-ink-500">68%</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="px-6 py-1 text-[11px] font-semibold text-ink-400 uppercase tracking-wider mt-4">模型分布</div>
+                                <div class="px-6 pb-6">
+                                    <div class="section-divider">
+                                        <div class="flex justify-between mb-2"><span class="text-sm font-medium text-ink-700 dark:text-ink-300">qwen-qlm-2.1</span><span class="text-sm text-ink-400">45%</span></div>
+                                        <div class="minimal-progress"><div class="minimal-progress-fill bg-leaf-300" style="width: 45%"></div></div>
+                                    </div>
+                                    <div class="section-divider">
+                                        <div class="flex justify-between mb-2"><span class="text-sm font-medium text-ink-700 dark:text-ink-300">deepseek-chat</span><span class="text-sm text-ink-400">30%</span></div>
+                                        <div class="minimal-progress"><div class="minimal-progress-fill bg-lime-300" style="width: 30%"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-ink-200 dark:bg-ink-700 rounded-full transition-colors"></div>
+                        </div>
+                    </div>
+
+                    <!-- iPad Stats -->
+                    <div id="stats-v4-ipad" class="device-ipad w-[820px] h-[600px] bg-black overflow-hidden relative hidden anim-scale delay-1">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-2 h-2 bg-ink-800 rounded-full z-50"></div>
+                        <div class="h-full bg-white dark:bg-ink-900 pt-8 flex transition-colors">
+                            <div class="w-56 bg-ink-50/60 dark:bg-ink-800/60 border-r border-ink-100 dark:border-ink-800 flex flex-col transition-colors">
+                                <div class="p-4 border-b border-ink-100 dark:border-ink-800 transition-colors"><div class="text-lg font-semibold text-ink-900">统计</div></div>
+                                <div class="flex-1 overflow-y-auto px-3 py-2">
+                                    <div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-white dark:bg-ink-800 border border-ink-100 dark:border-ink-700 mb-1 transition-colors">
+                                        <div class="w-8 h-8 bg-leaf-50 dark:bg-leaf-900/30 rounded-lg flex items-center justify-center transition-colors"><svg class="w-4 h-4 text-leaf-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+                                        <div class="text-sm font-medium text-ink-900">用量概览</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col bg-white dark:bg-ink-900 overflow-y-auto transition-colors">
+                                <div class="px-6 py-5"><div class="text-2xl font-semibold text-ink-900">用量概览</div></div>
+                                <div class="px-6 pb-6 grid grid-cols-3 gap-6">
+                                    <div><div class="text-3xl font-semibold text-ink-900 tracking-tight">128.5K</div><div class="text-sm text-ink-400 mt-1">本月 Tokens</div><div class="text-xs text-leaf-300 mt-1 font-medium">↓ 12% 较上月</div></div>
+                                    <div><div class="text-3xl font-semibold text-ink-900 tracking-tight">342</div><div class="text-sm text-ink-400 mt-1">会话数量</div><div class="text-xs text-lime-300 mt-1 font-medium">↑ 8% 较上月</div></div>
+                                    <div><div class="text-3xl font-semibold text-ink-900 tracking-tight">2.3s</div><div class="text-sm text-ink-400 mt-1">平均响应</div><div class="text-xs text-leaf-300 mt-1 font-medium">↓ 0.5s 优化</div></div>
+                                </div>
+                                <div class="px-6 py-1 text-[11px] font-semibold text-ink-400 uppercase tracking-wider">系统健康</div>
+                                <div class="px-6">
+                                    <div class="section-divider flex items-center justify-between">
+                                        <div class="flex items-center gap-3"><div class="w-8 h-8 bg-ink-100 dark:bg-ink-800 rounded-lg flex items-center justify-center transition-colors"><svg class="w-4 h-4 text-ink-600 dark:text-ink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg></div><div><div class="text-sm font-medium text-ink-900">CPU 使用率</div><div class="text-xs text-ink-400">4 核心 · 2.8 GHz</div></div></div>
+                                        <div class="flex items-center gap-2"><div class="w-20 minimal-progress"><div class="minimal-progress-fill bg-leaf-300" style="width: 32%"></div></div><span class="text-xs font-mono text-ink-500">32%</span></div>
+                                    </div>
+                                    <div class="section-divider flex items-center justify-between">
+                                        <div class="flex items-center gap-3"><div class="w-8 h-8 bg-ink-100 dark:bg-ink-800 rounded-lg flex items-center justify-center transition-colors"><svg class="w-4 h-4 text-ink-600 dark:text-ink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg></div><div><div class="text-sm font-medium text-ink-900">内存使用</div><div class="text-xs text-ink-400">8 GB 总计 · DDR4</div></div></div>
+                                        <div class="flex items-center gap-2"><div class="w-20 minimal-progress"><div class="minimal-progress-fill bg-amber-300" style="width: 68%"></div></div><span class="text-xs font-mono text-ink-500">5.4 GB</span></div>
+                                    </div>
+                                </div>
+                                <div class="px-6 py-1 text-[11px] font-semibold text-ink-400 uppercase tracking-wider mt-4">模型使用分布</div>
+                                <div class="px-6 pb-6">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="bg-ink-50 dark:bg-ink-800 rounded-lg p-4 transition-colors">
+                                            <div class="flex items-center gap-2 mb-3"><div class="w-3 h-3 rounded-full bg-leaf-300"></div><span class="text-sm font-medium text-ink-700 dark:text-ink-300">qwen-qlm-2.1</span></div>
+                                            <div class="text-2xl font-semibold text-ink-900">45%</div>
+                                            <div class="minimal-progress mt-2"><div class="minimal-progress-fill bg-leaf-300" style="width:45%"></div></div>
+                                        </div>
+                                        <div class="bg-ink-50 dark:bg-ink-800 rounded-lg p-4 transition-colors">
+                                            <div class="flex items-center gap-2 mb-3"><div class="w-3 h-3 rounded-full bg-lime-300"></div><span class="text-sm font-medium text-ink-700 dark:text-ink-300">deepseek-chat</span></div>
+                                            <div class="text-2xl font-semibold text-ink-900">30%</div>
+                                            <div class="minimal-progress mt-2"><div class="minimal-progress-fill bg-lime-300" style="width:30%"></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mac Stats -->
+                    <div id="stats-v4-mac" class="device-mac w-[820px] bg-white dark:bg-ink-900 overflow-hidden relative hidden anim-scale delay-2 transition-colors" style="min-height:520px">
+                        <div class="h-8 bg-ink-100/70 dark:bg-ink-800/70 flex items-center px-4 gap-2 border-b border-ink-200 dark:border-ink-800 transition-colors">
+                            <div class="flex gap-1.5">
+                                <div class="w-3 h-3 rounded-full bg-[#FF5F57]"></div>
+                                <div class="w-3 h-3 rounded-full bg-[#FFBD2E]"></div>
+                                <div class="w-3 h-3 rounded-full bg-[#28CA41]"></div>
+                            </div>
+                            <div class="flex-1 text-center text-[11px] text-ink-500">运行统计 — MyPilot</div>
+                        </div>
+                        <div class="flex h-full" style="min-height:480px">
+                            <div class="w-48 bg-ink-50/60 dark:bg-ink-800/60 border-r border-ink-100 dark:border-ink-800 px-3 py-4 transition-colors">
+                                <div class="text-[10px] font-semibold text-ink-400 uppercase tracking-wider px-2 mb-2">概览</div>
+                                <div class="px-2 py-1.5 rounded-md bg-white dark:bg-ink-800 border border-ink-100 dark:border-ink-700 text-sm font-medium text-ink-900 mb-0.5 transition-colors">用量统计</div>
+                                <div class="px-2 py-1.5 rounded-md text-sm text-ink-500 hover:bg-ink-100/50 dark:hover:bg-ink-700/50 cursor-pointer transition-colors">性能趋势</div>
+                                <div class="px-2 py-1.5 rounded-md text-sm text-ink-500 hover:bg-ink-100/50 dark:hover:bg-ink-700/50 cursor-pointer transition-colors">会话历史</div>
+                            </div>
+                            <div class="flex-1 overflow-y-auto">
+                                <div class="px-6 py-5 border-b border-ink-100 dark:border-ink-800 transition-colors"><div class="text-lg font-semibold text-ink-900">用量统计</div><div class="text-xs text-ink-400 mt-0.5">近 30 天数据</div></div>
+                                <div class="px-6 py-5 grid grid-cols-4 gap-4">
+                                    <div><div class="hero-metric">128.5K</div><div class="text-xs text-ink-400 mt-1">本月 Tokens</div><div class="text-[11px] text-leaf-300 mt-0.5 font-medium">↓ 12%</div></div>
+                                    <div><div class="hero-metric">342</div><div class="text-xs text-ink-400 mt-1">会话数量</div><div class="text-[11px] text-lime-300 mt-0.5 font-medium">↑ 8%</div></div>
+                                    <div><div class="hero-metric">2.3s</div><div class="text-xs text-ink-400 mt-1">平均响应</div><div class="text-[11px] text-leaf-300 mt-0.5 font-medium">↓ 0.5s</div></div>
+                                    <div><div class="hero-metric">98.5%</div><div class="text-xs text-ink-400 mt-1">可用率</div><div class="text-[11px] text-leaf-300 mt-0.5 font-medium">↑ 0.3%</div></div>
+                                </div>
+                                <div class="px-6 py-1 text-[11px] font-semibold text-ink-400 uppercase tracking-wider">系统资源</div>
+                                <div class="px-6">
+                                    <div class="section-divider flex items-center justify-between">
+                                        <div class="flex items-center gap-3"><div class="w-8 h-8 bg-ink-100 dark:bg-ink-800 rounded-lg flex items-center justify-center transition-colors"><svg class="w-4 h-4 text-ink-600 dark:text-ink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg></div><div><div class="text-sm font-medium text-ink-900">CPU 使用率</div><div class="text-xs text-ink-400">4 核心 · 2.8 GHz Apple M1</div></div></div>
+                                        <div class="flex items-center gap-3"><div class="w-24 minimal-progress"><div class="minimal-progress-fill bg-leaf-300" style="width:32%"></div></div><span class="text-xs font-mono text-ink-500 w-10 text-right">32%</span></div>
+                                    </div>
+                                    <div class="section-divider flex items-center justify-between">
+                                        <div class="flex items-center gap-3"><div class="w-8 h-8 bg-ink-100 dark:bg-ink-800 rounded-lg flex items-center justify-center transition-colors"><svg class="w-4 h-4 text-ink-600 dark:text-ink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg></div><div><div class="text-sm font-medium text-ink-900">内存使用</div><div class="text-xs text-ink-400">16 GB 总计 · 统一内存</div></div></div>
+                                        <div class="flex items-center gap-3"><div class="w-24 minimal-progress"><div class="minimal-progress-fill bg-amber-300" style="width:68%"></div></div><span class="text-xs font-mono text-ink-500 w-12 text-right">10.9 GB</span></div>
+                                    </div>
+                                </div>
+                                <div class="px-6 py-1 text-[11px] font-semibold text-ink-400 uppercase tracking-wider mt-4">模型使用分布</div>
+                                <div class="px-6 pb-6 grid grid-cols-4 gap-4">
+                                    <div><div class="flex items-center gap-1.5 mb-1"><div class="w-2.5 h-2.5 rounded-full bg-leaf-300"></div><span class="text-xs text-ink-500">qwen-qlm</span></div><div class="text-lg font-semibold text-ink-900">45%</div></div>
+                                    <div><div class="flex items-center gap-1.5 mb-1"><div class="w-2.5 h-2.5 rounded-full bg-lime-300"></div><span class="text-xs text-ink-500">deepseek</span></div><div class="text-lg font-semibold text-ink-900">30%</div></div>
+                                    <div><div class="flex items-center gap-1.5 mb-1"><div class="w-2.5 h-2.5 rounded-full bg-amber-300"></div><span class="text-xs text-ink-500">gpt-4o</span></div><div class="text-lg font-semibold text-ink-900">15%</div></div>
+                                    <div><div class="flex items-center gap-1.5 mb-1"><div class="w-2.5 h-2.5 rounded-full bg-ink-300 dark:bg-ink-600 rounded-full transition-colors"></div><span class="text-xs text-ink-500">claude</span></div><div class="text-lg font-semibold text-ink-900">10%</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        let currentPageV4 = 'chat';
+        let currentDeviceV4 = 'ios';
+        let obSlideIdxV4 = 0;
+        const obSlidesV4 = ['ob-v4-slide-1', 'ob-v4-slide-2', 'ob-v4-slide-3'];
+
+        function showPageV4(page) {
+            currentPageV4 = page;
+            document.querySelectorAll('.page-v4').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById('page-v4-' + page);
+            if (target) target.classList.add('active');
+
+            document.querySelectorAll('[id^="btn-v4-"]').forEach(b => {
+                b.classList.remove('bg-ink-900', 'text-white');
+                b.classList.add('text-ink-500');
+            });
+            const btn = document.getElementById('btn-v4-' + page);
+            if (btn) {
+                btn.classList.add('bg-ink-900', 'text-white');
+                btn.classList.remove('text-ink-500');
+            }
+
+            showDeviceV4(currentDeviceV4);
+        }
+
+        function showDeviceV4(device) {
+            currentDeviceV4 = device;
+            const page = currentPageV4;
+
+            document.querySelectorAll('[id^="btn-v4-dev-"]').forEach(b => {
+                b.classList.remove('bg-ink-900', 'text-white');
+                b.classList.add('text-ink-500');
+            });
+            const btn = document.getElementById('btn-v4-dev-' + device);
+            if (btn) {
+                btn.classList.add('bg-ink-900', 'text-white');
+                btn.classList.remove('text-ink-500');
+            }
+
+            document.querySelectorAll('[id$="-v4-ios"], [id$="-v4-ipad"], [id$="-v4-mac"]').forEach(el => {
+                if (el.id && el.id.includes(page)) el.classList.add('hidden');
+            });
+
+            if (device === 'ios') {
+                document.querySelectorAll('[id$="-v4-ios"]').forEach(el => {
+                    if (el.id && el.id.includes(page)) el.classList.remove('hidden');
+                });
+            } else if (device === 'ipad') {
+                document.querySelectorAll('[id$="-v4-ipad"]').forEach(el => {
+                    if (el.id && el.id.includes(page)) el.classList.remove('hidden');
+                });
+            } else if (device === 'mac') {
+                document.querySelectorAll('[id$="-v4-mac"]').forEach(el => {
+                    if (el.id && el.id.includes(page)) el.classList.remove('hidden');
+                });
+            }
+
+            setTimeout(() => {
+                document.querySelectorAll('.anim-slide-up, .anim-slide-right, .anim-scale, .anim-fade').forEach(el => {
+                    el.style.animation = 'none';
+                    el.offsetHeight;
+                    el.style.animation = '';
+                });
+            }, 50);
+        }
+
+        function nextObV4() {
+            const oldSlides = document.querySelectorAll('.onboarding-slide');
+            oldSlides.forEach(s => {
+                s.classList.remove('current', 'prev');
+                s.classList.add('next');
+            });
+
+            obSlideIdxV4 = (obSlideIdxV4 + 1) % obSlidesV4.length;
+            const newSlide = document.getElementById(obSlidesV4[obSlideIdxV4]);
+            if (newSlide) {
+                newSlide.classList.remove('next', 'prev');
+                newSlide.classList.add('current');
+            }
+        }
+
+        // Dark mode toggle
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const isDark = html.classList.toggle('dark');
+            localStorage.setItem('mypilot-dark-mode', isDark ? 'true' : 'false');
+            updateDarkModeIcon(isDark);
+        }
+
+        function updateDarkModeIcon(isDark) {
+            const moonIcon = document.getElementById('moon-icon');
+            const sunIcon = document.getElementById('sun-icon');
+            if (isDark) {
+                moonIcon.classList.add('hidden');
+                sunIcon.classList.remove('hidden');
+            } else {
+                moonIcon.classList.remove('hidden');
+                sunIcon.classList.add('hidden');
+            }
+        }
+
+        // Initialize dark mode from localStorage
+        (function initDarkMode() {
+            const saved = localStorage.getItem('mypilot-dark-mode');
+            if (saved === 'true') {
+                document.documentElement.classList.add('dark');
+                updateDarkModeIcon(true);
+            }
+        })();
+
+        showPageV4('chat');
+        showDeviceV4('ios');
+    </script>
+</body>
+</html>

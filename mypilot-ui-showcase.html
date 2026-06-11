@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyPilot UI Visual Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        wheat: {
+                            50: '#fdfbf7',
+                            100: '#faf5ed',
+                            200: '#f5ead6',
+                            300: '#edd9b8',
+                            400: '#e3c28e',
+                            500: '#d9a866',
+                            600: '#c9924a',
+                            700: '#a8763d',
+                            800: '#8a6137',
+                            900: '#705030',
+                        },
+                        ios: {
+                            bg: '#F2F2F7',
+                            card: '#FFFFFF',
+                            separator: '#E5E5EA',
+                            gray: '#8E8E93',
+                            blue: '#007AFF',
+                            green: '#34C759',
+                            red: '#FF3B30',
+                            orange: '#FF9500',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'ios': '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)',
+                        'ios-lg': '0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)',
+                        'glow': '0 0 20px rgba(217, 168, 102, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans SC', system-ui, sans-serif;
+            background: #F5F5F7;
+        }
+        .device-frame {
+            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .ios-device {
+            border-radius: 48px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 12px #1a1a1a, 0 0 0 14px #333;
+        }
+        .ipad-device {
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 10px #1a1a1a, 0 0 0 12px #333;
+        }
+        .mac-device {
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.1);
+        }
+        .message-bubble-user {
+            background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%);
+        }
+        .message-bubble-ai {
+            background: #F2F2F7;
+            border: 1px solid #E5E5EA;
+        }
+        .sidebar-item:hover {
+            background: rgba(0,122,255,0.08);
+        }
+        .sidebar-item.active {
+            background: rgba(0,122,255,0.12);
+        }
+        .glass-panel {
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .token-bar {
+            background: linear-gradient(90deg, #34C759 0%, #34C759 30%, #FF9500 70%, #FF3B30 100%);
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s ease-in-out infinite;
+        }
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .scroll-hide::-webkit-scrollbar { display: none; }
+        .scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .wheat-accent {
+            background: linear-gradient(135deg, #d9a866 0%, #c9924a 100%);
+        }
+        .wheat-glow {
+            box-shadow: 0 0 30px rgba(217, 168, 102, 0.4);
+        }
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: reveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes reveal {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 28px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #E5E5EA;
+            transition: .3s;
+            border-radius: 28px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        .toggle-switch input:checked + .toggle-slider {
+            background: linear-gradient(135deg, #d9a866 0%, #c9924a 100%);
+        }
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Page transitions */
+        .page-container {
+            display: none;
+        }
+        .page-container.active {
+            display: block;
+        }
+
+        /* Chart bars */
+        .chart-bar {
+            transition: height 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Code block */
+        .code-block {
+            font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-50 via-wheat-50 to-gray-100">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/20">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 wheat-accent rounded-xl flex items-center justify-center shadow-glow">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900 tracking-tight">MyPilot</h1>
+                    <p class="text-xs text-gray-500 font-medium">UI Visual Design System</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 bg-white/60 rounded-full p-1 shadow-ios">
+                <button onclick="showPage('chat')" id="btn-chat" class="px-4 py-2 rounded-full text-sm font-medium transition-all bg-wheat-500 text-white shadow-ios">聊天</button>
+                <button onclick="showPage('settings')" id="btn-settings" class="px-4 py-2 rounded-full text-sm font-medium transition-all text-gray-600 hover:bg-white/80">设置</button>
+                <button onclick="showPage('agents')" id="btn-agents" class="px-4 py-2 rounded-full text-sm font-medium transition-all text-gray-600 hover:bg-white/80">Agents</button>
+                <button onclick="showPage('stats')" id="btn-stats" class="px-4 py-2 rounded-full text-sm font-medium transition-all text-gray-600 hover:bg-white/80">统计</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-24 pb-20 px-6">
+        <div class="max-w-7xl mx-auto">
+
+            <!-- Hero -->
+            <div class="text-center mb-12 section-reveal">
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-wheat-100 rounded-full text-wheat-800 text-sm font-medium mb-6">
+                    <span class="w-2 h-2 wheat-accent rounded-full animate-pulse-slow"></span>
+                    Apple Ecosystem Design
+                </div>
+                <h2 class="text-5xl font-bold text-gray-900 mb-4 tracking-tight">MyPilot 视觉设计系统</h2>
+                <p class="text-xl text-gray-500 max-w-2xl mx-auto">以白色为基底，麦穗金为点缀，打造原生苹果生态体验</p>
+            </div>
+
+            <!-- Platform Toggle -->
+            <div class="flex justify-center mb-8">
+                <div class="flex items-center gap-2 bg-white/60 rounded-full p-1 shadow-ios">
+                    <button onclick="showDevice('ios')" id="btn-dev-ios" class="px-4 py-2 rounded-full text-sm font-medium transition-all bg-wheat-500 text-white shadow-ios">iPhone</button>
+                    <button onclick="showDevice('ipad')" id="btn-dev-ipad" class="px-4 py-2 rounded-full text-sm font-medium transition-all text-gray-600 hover:bg-white/80">iPad</button>
+                    <button onclick="showDevice('mac')" id="btn-dev-mac" class="px-4 py-2 rounded-full text-sm font-medium transition-all text-gray-600 hover:bg-white/80">Mac</button>
+                </div>
+            </div>
+
+            <!-- ========== CHAT PAGE ========== -->
+            <div id="page-chat" class="page-container active">
+                <div class="flex justify-center items-start gap-12 flex-wrap">
+                    <!-- iOS Chat -->
+                    <div id="chat-ios" class="device-frame ios-device w-[375px] h-[812px] bg-black overflow-hidden relative section-reveal delay-1">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[35px] bg-black rounded-full z-50"></div>
+                        <div class="absolute top-2 left-6 right-6 flex justify-between text-white text-xs font-medium z-40">
+                            <span>9:41</span>
+                            <div class="flex gap-1">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zm6-4a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>
+                            </div>
+                        </div>
+                        <div class="h-full bg-ios-bg pt-12 flex flex-col">
+                            <div class="glass-panel px-4 py-3 flex items-center gap-3 border-b border-ios-separator">
+                                <div class="w-8 h-8 bg-gradient-to-br from-wheat-400 to-wheat-600 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-semibold text-gray-900">未来</div>
+                                    <div class="text-xs text-gray-500 flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 bg-ios-green rounded-full"></span>
+                                        qwen-qlm-2.1
+                                    </div>
+                                </div>
+                                <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100">
+                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg>
+                                </button>
+                            </div>
+                            <div class="px-4 py-2 bg-white/50">
+                                <div class="h-1 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="h-full token-bar rounded-full" style="width: 45%"></div>
+                                </div>
+                                <div class="flex justify-between mt-1">
+                                    <span class="text-[10px] text-gray-400">~12.5k tokens</span>
+                                    <span class="text-[10px] text-gray-400">45% / 32k</span>
+                                </div>
+                            </div>
+                            <div class="flex-1 overflow-y-auto scroll-hide px-4 py-4 space-y-4">
+                                <div class="flex gap-2">
+                                    <div class="w-7 h-7 bg-gradient-to-br from-wheat-400 to-wheat-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                        <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    </div>
+                                    <div class="message-bubble-ai rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%]">
+                                        <p class="text-sm text-gray-800 leading-relaxed">你好！我是你的 AI 助手。我可以帮你解答问题、分析文档、编写代码，或者进行联网搜索。有什么可以帮你的吗？</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2 justify-end">
+                                    <div class="message-bubble-user rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%]">
+                                        <p class="text-sm text-white leading-relaxed">帮我分析一下这个项目的架构设计</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <div class="w-7 h-7 bg-gradient-to-br from-wheat-400 to-wheat-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                        <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    </div>
+                                    <div class="message-bubble-ai rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
+                                        <p class="text-sm text-gray-800 leading-relaxed mb-2">这是一个典型的客户端-服务端架构：</p>
+                                        <div class="bg-gray-900 rounded-lg p-3 overflow-x-auto">
+                                            <code class="text-xs text-green-400 font-mono">├── MyPilot App (SwiftUI)<br/>├── Gateway (Node.js)<br/>└── OpenClaw Core</code>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <div class="w-7 h-7 bg-gradient-to-br from-wheat-400 to-wheat-600 rounded-full flex items-center justify-center flex-shrink-0"></div>
+                                    <div class="message-bubble-ai rounded-2xl rounded-tl-sm px-4 py-3">
+                                        <div class="flex gap-1">
+                                            <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+                                            <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
+                                            <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white border-t border-ios-separator px-4 py-3">
+                                <div class="flex items-center gap-2 mb-2 overflow-x-auto scroll-hide">
+                                    <button class="w-8 h-8 rounded-full bg-ios-bg flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg></button>
+                                    <button class="w-8 h-8 rounded-full bg-ios-bg flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg></button>
+                                    <button class="w-8 h-8 rounded-full bg-ios-bg flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></button>
+                                    <button class="w-8 h-8 rounded-full bg-ios-bg flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg></button>
+                                    <button class="w-8 h-8 rounded-full bg-ios-bg flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></button>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-1 bg-ios-bg rounded-full px-4 py-2.5 flex items-center gap-2">
+                                        <input type="text" placeholder="开始聊天吧..." class="bg-transparent text-sm outline-none flex-1 text-gray-800 placeholder-gray-400">
+                                    </div>
+                                    <button class="w-9 h-9 wheat-accent rounded-full flex items-center justify-center shadow-glow">
+                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/30 rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- iPad Chat -->
+                    <div id="chat-ipad" class="device-frame ipad-device w-[820px] h-[600px] bg-black overflow-hidden relative hidden section-reveal delay-2">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rounded-full z-50"></div>
+                        <div class="h-full bg-ios-bg pt-8 flex">
+                            <div class="w-72 bg-white border-r border-ios-separator flex flex-col">
+                                <div class="p-4">
+                                    <div class="bg-ios-bg rounded-lg px-3 py-2 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                        <input type="text" placeholder="搜索历史消息..." class="bg-transparent text-sm outline-none flex-1 text-gray-800 placeholder-gray-400">
+                                    </div>
+                                </div>
+                                <div class="flex-1 overflow-y-auto scroll-hide px-3">
+                                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mb-2">OpenClaw 实例</div>
+                                    <div class="sidebar-item active rounded-lg px-3 py-2.5 mb-1 flex items-center gap-3 cursor-pointer">
+                                        <div class="w-9 h-9 bg-gradient-to-br from-ios-blue to-blue-600 rounded-full flex items-center justify-center"><span class="text-white text-sm font-bold">M</span></div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="text-sm font-semibold text-gray-900 truncate">MyPilot Main</div>
+                                            <div class="text-xs text-gray-500 truncate">https://relay.clawpilot.com</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mb-2 mt-4">Agents</div>
+                                    <div class="sidebar-item rounded-lg px-3 py-2 mb-1 flex items-center gap-3 cursor-pointer">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-wheat-400 to-wheat-600 rounded-full flex items-center justify-center"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                        <div class="flex-1 min-w-0"><div class="text-sm font-medium text-gray-900">未来</div><div class="text-xs text-gray-500">qwen-qlm-2.1</div></div>
+                                        <svg class="w-4 h-4 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    </div>
+                                    <div class="sidebar-item rounded-lg px-3 py-2 mb-1 flex items-center gap-3 cursor-pointer">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div>
+                                        <div class="flex-1 min-w-0"><div class="text-sm font-medium text-gray-900">护理脑子</div><div class="text-xs text-gray-500">deepseek-chat</div></div>
+                                    </div>
+                                    <div class="ml-4 mt-2 space-y-1">
+                                        <div class="sidebar-item active rounded-lg px-3 py-2 flex items-center gap-2 cursor-pointer">
+                                            <svg class="w-3.5 h-3.5 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                            <div class="flex-1 min-w-0"><div class="text-xs font-medium text-ios-blue">项目架构分析</div><div class="text-[11px] text-gray-400 truncate">帮我分析一下这个项目的架构设计</div></div>
+                                        </div>
+                                        <div class="sidebar-item rounded-lg px-3 py-2 flex items-center gap-2 cursor-pointer">
+                                            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                            <div class="flex-1 min-w-0"><div class="text-xs font-medium text-gray-700">代码审查</div><div class="text-[11px] text-gray-400 truncate">请帮我检查这段代码的性能问题</div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-3 border-t border-ios-separator">
+                                    <div class="flex gap-2">
+                                        <button class="flex-1 bg-ios-blue text-white rounded-lg py-2.5 text-sm font-medium flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>添加实例</button>
+                                        <button class="w-10 h-10 bg-ios-bg rounded-lg flex items-center justify-center hover:bg-gray-200 transition-colors"><svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col bg-white">
+                                <div class="glass-panel px-6 py-3 flex items-center justify-between border-b border-ios-separator">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-wheat-400 to-wheat-600 rounded-full flex items-center justify-center"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                        <div><div class="text-sm font-semibold text-gray-900">未来</div><div class="text-xs text-gray-500 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-ios-green rounded-full"></span>已连接 · qwen-qlm-2.1</div></div>
+                                    </div>
+                                    <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100"><svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg></button>
+                                </div>
+                                <div class="px-6 py-2 bg-ios-bg/50 border-b border-ios-separator">
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden"><div class="h-full token-bar rounded-full" style="width: 45%"></div></div>
+                                        <span class="text-[11px] text-gray-400 font-mono">~12.5k / 32k</span>
+                                    </div>
+                                </div>
+                                <div class="flex-1 overflow-y-auto scroll-hide px-6 py-4 space-y-4">
+                                    <div class="flex gap-3">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-wheat-400 to-wheat-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                        <div class="message-bubble-ai rounded-2xl rounded-tl-sm px-4 py-3 max-w-[70%]"><p class="text-sm text-gray-800 leading-relaxed">你好！我是你的 AI 助手。我可以帮你解答问题、分析文档、编写代码，或者进行联网搜索。有什么可以帮你的吗？</p></div>
+                                    </div>
+                                    <div class="flex gap-3 justify-end">
+                                        <div class="message-bubble-user rounded-2xl rounded-tr-sm px-4 py-3 max-w-[70%]"><p class="text-sm text-white leading-relaxed">帮我分析一下这个项目的架构设计，我需要了解各个模块之间的关系</p></div>
+                                    </div>
+                                    <div class="flex gap-3">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-wheat-400 to-wheat-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                        <div class="message-bubble-ai rounded-2xl rounded-tl-sm px-4 py-3 max-w-[75%]">
+                                            <p class="text-sm text-gray-800 leading-relaxed mb-3">这是一个典型的客户端-服务端架构，主要包含以下模块：</p>
+                                            <div class="space-y-2">
+                                                <div class="flex items-center gap-2 bg-white rounded-lg p-2 border border-ios-separator"><div class="w-8 h-8 bg-ios-blue/10 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg></div><div><div class="text-xs font-semibold text-gray-900">MyPilot App</div><div class="text-[11px] text-gray-500">SwiftUI 客户端</div></div></div>
+                                                <div class="flex items-center gap-2 bg-white rounded-lg p-2 border border-ios-separator"><div class="w-8 h-8 bg-wheat-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-wheat-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg></div><div><div class="text-xs font-semibold text-gray-900">Gateway</div><div class="text-[11px] text-gray-500">Node.js 中继服务</div></div></div>
+                                                <div class="flex items-center gap-2 bg-white rounded-lg p-2 border border-ios-separator"><div class="w-8 h-8 bg-ios-green/10 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-ios-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg></div><div><div class="text-xs font-semibold text-gray-900">OpenClaw Core</div><div class="text-[11px] text-gray-500">AI 推理引擎</div></div></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-white border-t border-ios-separator px-6 py-3">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <button class="w-8 h-8 rounded-lg bg-ios-bg flex items-center justify-center hover:bg-gray-200 transition-colors"><svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg></button>
+                                        <button class="w-8 h-8 rounded-lg bg-ios-bg flex items-center justify-center hover:bg-gray-200 transition-colors"><svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg></button>
+                                        <button class="w-8 h-8 rounded-lg bg-ios-bg flex items-center justify-center hover:bg-gray-200 transition-colors"><svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></button>
+                                        <div class="flex-1"></div>
+                                        <button class="px-3 py-1.5 bg-wheat-100 rounded-lg text-xs font-medium text-wheat-700 hover:bg-wheat-200 transition-colors">/help</button>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex-1 bg-ios-bg rounded-xl px-4 py-2.5 flex items-center gap-2"><input type="text" placeholder="开始聊天吧... 发送一条状态，或者用关键词激活功能" class="bg-transparent text-sm outline-none flex-1 text-gray-800 placeholder-gray-400"></div>
+                                        <button class="w-10 h-10 wheat-accent rounded-xl flex items-center justify-center shadow-glow hover:shadow-lg transition-shadow"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mac Chat -->
+                    <div id="chat-mac" class="device-frame mac-device w-[900px] h-[600px] bg-white overflow-hidden relative hidden section-reveal delay-3">
+                        <div class="h-9 bg-gray-100 border-b border-gray-200 flex items-center px-4 gap-2">
+                            <div class="flex gap-2"><div class="w-3 h-3 rounded-full bg-[#FF5F57]"></div><div class="w-3 h-3 rounded-full bg-[#FEBC2E]"></div><div class="w-3 h-3 rounded-full bg-[#28C840]"></div></div>
+                            <div class="flex-1 text-center text-xs text-gray-500 font-medium">MyPilot</div>
+                            <div class="w-14"></div>
+                        </div>
+                        <div class="h-[calc(100%-36px)] flex bg-white">
+                            <div class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col">
+                                <div class="p-3">
+                                    <div class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 flex items-center gap-2 shadow-sm">
+                                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                        <input type="text" placeholder="搜索历史消息..." class="bg-transparent text-xs outline-none flex-1 text-gray-800 placeholder-gray-400">
+                                    </div>
+                                </div>
+                                <div class="px-3 mb-2">
+                                    <div class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider px-1 mb-1">OpenClaw 实例</div>
+                                    <div class="bg-white rounded-lg p-2.5 shadow-sm border border-gray-100 flex items-center gap-2.5">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-ios-blue to-blue-600 rounded-lg flex items-center justify-center"><span class="text-white text-xs font-bold">M</span></div>
+                                        <div class="flex-1 min-w-0"><div class="text-xs font-semibold text-gray-900 truncate">MyPilot Main</div><div class="text-[10px] text-gray-500 truncate">relay.clawpilot.com</div></div>
+                                        <span class="w-2 h-2 bg-ios-green rounded-full"></span>
+                                    </div>
+                                </div>
+                                <div class="flex-1 overflow-y-auto scroll-hide px-3">
+                                    <div class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider px-1 mb-1">Agents</div>
+                                    <div class="space-y-0.5">
+                                        <div class="sidebar-item active rounded-md px-2 py-1.5 flex items-center gap-2 cursor-pointer">
+                                            <div class="w-6 h-6 bg-gradient-to-br from-wheat-400 to-wheat-600 rounded-md flex items-center justify-center"><svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                            <div class="flex-1 min-w-0"><div class="text-xs font-medium text-gray-900">未来</div></div>
+                                            <svg class="w-3 h-3 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                        </div>
+                                        <div class="sidebar-item rounded-md px-2 py-1.5 flex items-center gap-2 cursor-pointer">
+                                            <div class="w-6 h-6 bg-gradient-to-br from-purple-400 to-purple-600 rounded-md flex items-center justify-center"><svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div>
+                                            <div class="flex-1 min-w-0"><div class="text-xs font-medium text-gray-700">护理脑子</div></div>
+                                        </div>
+                                    </div>
+                                    <div class="ml-5 mt-1 space-y-0.5">
+                                        <div class="sidebar-item active rounded-md px-2 py-1 flex items-center gap-1.5 cursor-pointer"><svg class="w-3 h-3 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg><div class="flex-1 min-w-0"><div class="text-[11px] font-medium text-ios-blue">项目架构分析</div></div></div>
+                                        <div class="sidebar-item rounded-md px-2 py-1 flex items-center gap-1.5 cursor-pointer"><svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg><div class="flex-1 min-w-0"><div class="text-[11px] font-medium text-gray-600">代码审查</div></div></div>
+                                        <div class="sidebar-item rounded-md px-2 py-1 flex items-center gap-1.5 cursor-pointer"><svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg><div class="flex-1 min-w-0"><div class="text-[11px] font-medium text-gray-600">API 设计讨论</div></div></div>
+                                    </div>
+                                </div>
+                                <div class="p-3 border-t border-gray-200">
+                                    <div class="flex gap-2">
+                                        <button class="flex-1 bg-ios-blue text-white rounded-lg py-1.5 text-xs font-medium flex items-center justify-center gap-1.5 hover:bg-blue-600 transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>添加实例</button>
+                                        <button class="w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors"><svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col">
+                                <div class="h-12 bg-white border-b border-gray-200 flex items-center px-4 justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-7 h-7 bg-gradient-to-br from-wheat-400 to-wheat-600 rounded-lg flex items-center justify-center"><svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                        <div><div class="text-sm font-semibold text-gray-900">未来</div><div class="text-[10px] text-gray-500 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-ios-green rounded-full"></span>qwen-qlm-2.1</div></div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex items-center gap-2 px-3 py-1 bg-gray-50 rounded-md"><div class="w-16 h-1 bg-gray-200 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-ios-green via-ios-orange to-ios-red rounded-full" style="width: 45%"></div></div><span class="text-[10px] text-gray-500 font-mono">45%</span></div>
+                                        <button class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-100"><svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg></button>
+                                    </div>
+                                </div>
+                                <div class="flex-1 overflow-y-auto scroll-hide bg-white px-6 py-4 space-y-4">
+                                    <div class="flex gap-3">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-wheat-400 to-wheat-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-1"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                        <div class="message-bubble-ai rounded-2xl rounded-tl-sm px-4 py-3 max-w-[65%]"><p class="text-sm text-gray-800 leading-relaxed">你好！我是你的 AI 助手。我可以帮你解答问题、分析文档、编写代码，或者进行联网搜索。有什么可以帮你的吗？</p></div>
+                                    </div>
+                                    <div class="flex gap-3 justify-end">
+                                        <div class="message-bubble-user rounded-2xl rounded-tr-sm px-4 py-3 max-w-[65%]"><p class="text-sm text-white leading-relaxed">帮我分析一下这个项目的架构设计，我需要了解各个模块之间的关系和数据流向</p></div>
+                                    </div>
+                                    <div class="flex gap-3">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-wheat-400 to-wheat-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-1"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                        <div class="message-bubble-ai rounded-2xl rounded-tl-sm px-4 py-3 max-w-[70%]">
+                                            <p class="text-sm text-gray-800 leading-relaxed mb-3">这是一个典型的客户端-服务端架构，主要包含以下模块：</p>
+                                            <div class="bg-gray-900 rounded-lg p-3 mb-3"><code class="text-xs text-green-400 font-mono leading-relaxed">MyPilot/<br/>├── App/          # SwiftUI 客户端<br/>├── Gateway/      # Node.js 中继<br/>└── Core/         # AI 推理引擎</code></div>
+                                            <div class="space-y-2">
+                                                <div class="flex items-start gap-2 bg-white rounded-lg p-2 border border-gray-200"><div class="w-7 h-7 bg-ios-blue/10 rounded-md flex items-center justify-center flex-shrink-0"><svg class="w-3.5 h-3.5 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg></div><div><div class="text-xs font-semibold text-gray-900">MyPilot App</div><div class="text-[11px] text-gray-500">SwiftUI 跨平台客户端，支持 iOS/iPadOS/macOS</div></div></div>
+                                                <div class="flex items-start gap-2 bg-white rounded-lg p-2 border border-gray-200"><div class="w-7 h-7 bg-wheat-100 rounded-md flex items-center justify-center flex-shrink-0"><svg class="w-3.5 h-3.5 text-wheat-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg></div><div><div class="text-xs font-semibold text-gray-900">Gateway</div><div class="text-[11px] text-gray-500">Node.js WebSocket 中继，处理多实例连接</div></div></div>
+                                                <div class="flex items-start gap-2 bg-white rounded-lg p-2 border border-gray-200"><div class="w-7 h-7 bg-ios-green/10 rounded-md flex items-center justify-center flex-shrink-0"><svg class="w-3.5 h-3.5 text-ios-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg></div><div><div class="text-xs font-semibold text-gray-900">OpenClaw Core</div><div class="text-[11px] text-gray-500">AI 推理引擎，支持多模型切换和插件系统</div></div></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-50 border-t border-gray-200 px-6 py-3">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <button class="w-7 h-7 rounded-md bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"><svg class="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg></button>
+                                        <button class="w-7 h-7 rounded-md bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"><svg class="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg></button>
+                                        <button class="w-7 h-7 rounded-md bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"><svg class="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></button>
+                                        <div class="flex-1"></div>
+                                        <button class="px-2 py-1 bg-wheat-100 rounded-md text-[11px] font-medium text-wheat-700 hover:bg-wheat-200 transition-colors">/models</button>
+                                        <button class="px-2 py-1 bg-wheat-100 rounded-md text-[11px] font-medium text-wheat-700 hover:bg-wheat-200 transition-colors">/status</button>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-2 flex items-center gap-2 shadow-sm"><input type="text" placeholder="开始聊天吧... 发送一条状态，或者用关键词激活 ClawPilot 的内置功能" class="bg-transparent text-sm outline-none flex-1 text-gray-800 placeholder-gray-400"></div>
+                                        <button class="w-9 h-9 wheat-accent rounded-xl flex items-center justify-center shadow-glow hover:shadow-lg transition-all"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== SETTINGS PAGE ========== -->
+            <div id="page-settings" class="page-container">
+                <div class="flex justify-center items-start gap-12 flex-wrap">
+                    <!-- iOS Settings -->
+                    <div id="settings-ios" class="device-frame ios-device w-[375px] h-[812px] bg-black overflow-hidden relative section-reveal delay-1">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[35px] bg-black rounded-full z-50"></div>
+                        <div class="absolute top-2 left-6 right-6 flex justify-between text-white text-xs font-medium z-40">
+                            <span>9:41</span>
+                            <div class="flex gap-1">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zm6-4a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>
+                            </div>
+                        </div>
+                        <div class="h-full bg-ios-bg pt-12 flex flex-col">
+                            <!-- Settings Header -->
+                            <div class="glass-panel px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                <button class="text-ios-blue text-sm font-medium">关闭</button>
+                                <div class="text-sm font-semibold text-gray-900">设置</div>
+                                <div class="w-10"></div>
+                            </div>
+                            <div class="flex-1 overflow-y-auto scroll-hide">
+                                <!-- Gateway Status -->
+                                <div class="mx-4 mt-4 bg-white rounded-xl overflow-hidden shadow-ios">
+                                    <div class="px-4 py-3 flex items-center gap-3">
+                                        <span class="w-2.5 h-2.5 bg-ios-green rounded-full"></span>
+                                        <div class="flex-1">
+                                            <div class="text-sm font-semibold text-gray-900">MyPilot Main</div>
+                                            <div class="text-xs text-gray-500">已连接 · relay.clawpilot.com</div>
+                                        </div>
+                                        <button class="px-3 py-1.5 bg-ios-bg rounded-lg text-xs font-medium text-gray-700">测试连接</button>
+                                    </div>
+                                </div>
+                                <!-- Config Section -->
+                                <div class="mx-4 mt-4 bg-white rounded-xl overflow-hidden shadow-ios">
+                                    <div class="px-4 py-3 flex items-center gap-3 border-b border-ios-separator">
+                                        <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+                                        <div class="flex-1"><div class="text-sm font-medium text-gray-900">Agent 文件</div></div>
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </div>
+                                    <div class="px-4 py-3 flex items-center gap-3 border-b border-ios-separator">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg></div>
+                                        <div class="flex-1"><div class="text-sm font-medium text-gray-900">网络设置</div></div>
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </div>
+                                    <div class="px-4 py-3 flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg></div>
+                                        <div class="flex-1"><div class="text-sm font-medium text-gray-900">IM 通信渠道</div></div>
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </div>
+                                </div>
+                                <!-- Management Section -->
+                                <div class="mx-4 mt-4 bg-white rounded-xl overflow-hidden shadow-ios">
+                                    <div class="px-4 py-3 flex items-center gap-3 border-b border-ios-separator">
+                                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+                                        <div class="flex-1"><div class="text-sm font-medium text-gray-900">高级设置</div></div>
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </div>
+                                    <div class="px-4 py-3 flex items-center gap-3 border-b border-ios-separator">
+                                        <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg></div>
+                                        <div class="flex-1"><div class="text-sm font-medium text-gray-900">文件浏览器</div></div>
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </div>
+                                    <div class="px-4 py-3 flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-ios-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg></div>
+                                        <div class="flex-1"><div class="text-sm font-medium text-gray-900">Agents 管理</div></div>
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </div>
+                                </div>
+                                <!-- Subscription -->
+                                <div class="mx-4 mt-4 bg-white rounded-xl overflow-hidden shadow-ios mb-4">
+                                    <div class="px-4 py-3 flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg></div>
+                                        <div class="flex-1"><div class="text-sm font-medium text-gray-900">订阅管理</div></div>
+                                        <span class="text-xs text-gray-500">FREE</span>
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/30 rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- iPad Settings - Network Settings Detail -->
+                    <div id="settings-ipad" class="device-frame ipad-device w-[820px] h-[600px] bg-black overflow-hidden relative hidden section-reveal delay-2">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rounded-full z-50"></div>
+                        <div class="h-full bg-ios-bg pt-8 flex">
+                            <!-- Settings Sidebar -->
+                            <div class="w-64 bg-white border-r border-ios-separator flex flex-col">
+                                <div class="p-4 border-b border-ios-separator"><div class="text-lg font-bold text-gray-900">设置</div></div>
+                                <div class="flex-1 overflow-y-auto scroll-hide px-3 py-2">
+                                    <div class="sidebar-item active rounded-lg px-3 py-2 flex items-center gap-3 cursor-pointer">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg></div>
+                                        <div class="text-sm font-medium text-gray-900">网络设置</div>
+                                    </div>
+                                    <div class="sidebar-item rounded-lg px-3 py-2 flex items-center gap-3 cursor-pointer">
+                                        <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+                                        <div class="text-sm font-medium text-gray-700">Agent 文件</div>
+                                    </div>
+                                    <div class="sidebar-item rounded-lg px-3 py-2 flex items-center gap-3 cursor-pointer">
+                                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+                                        <div class="text-sm font-medium text-gray-700">高级设置</div>
+                                    </div>
+                                    <div class="sidebar-item rounded-lg px-3 py-2 flex items-center gap-3 cursor-pointer">
+                                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-ios-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg></div>
+                                        <div class="text-sm font-medium text-gray-700">Agents 管理</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Network Settings Detail -->
+                            <div class="flex-1 flex flex-col bg-ios-bg overflow-y-auto scroll-hide">
+                                <div class="px-6 py-4"><div class="text-2xl font-bold text-gray-900">网络设置</div></div>
+                                <!-- Gateway -->
+                                <div class="mx-6 mb-4 bg-white rounded-xl overflow-hidden shadow-ios">
+                                    <div class="px-4 py-3 flex items-center gap-3">
+                                        <span class="w-2.5 h-2.5 bg-ios-green rounded-full"></span>
+                                        <div class="flex-1"><div class="text-sm font-semibold text-gray-900">MyPilot Main</div><div class="text-xs text-gray-500">已连接 · relay.clawpilot.com</div></div>
+                                        <button class="px-3 py-1.5 bg-ios-bg rounded-lg text-xs font-medium text-gray-700 border border-ios-separator">测试连接</button>
+                                    </div>
+                                </div>
+                                <!-- Privacy -->
+                                <div class="mx-6 mb-4">
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">隐私</div>
+                                    <div class="bg-white rounded-xl overflow-hidden shadow-ios">
+                                        <div class="px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                            <div><div class="text-sm font-medium text-gray-900">隐私模式</div><div class="text-xs text-gray-500">AI 不会将你的对话上传任何第三方</div></div>
+                                            <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center justify-between">
+                                            <div><div class="text-sm font-medium text-gray-900">智能记忆</div><div class="text-xs text-gray-500">AI 已自动开启隐私脱敏和记忆</div></div>
+                                            <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Permissions -->
+                                <div class="mx-6 mb-4">
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">执行权限</div>
+                                    <div class="bg-white rounded-xl overflow-hidden shadow-ios">
+                                        <div class="px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg></div>
+                                                <div><div class="text-sm font-medium text-gray-900">文件系统访问</div><div class="text-xs text-gray-500">允许 Agent 读取和写入文件</div></div>
+                                            </div>
+                                            <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-ios-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
+                                                <div><div class="text-sm font-medium text-gray-900">命令执行</div><div class="text-xs text-gray-500">允许 Agent 执行系统命令</div></div>
+                                            </div>
+                                            <label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center justify-between">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg></div>
+                                                <div><div class="text-sm font-medium text-gray-900">网络访问</div><div class="text-xs text-gray-500">允许 Agent 主动发起网络请求</div></div>
+                                            </div>
+                                            <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                                        </div>
+                                    </div>
+                                    <div class="px-2 mt-1"><div class="text-[11px] text-gray-500">控制当前 Agent 的执行权限。修改后立即生效，影响所有使用此 Agent 的会话。</div></div>
+                                </div>
+                                <!-- Search -->
+                                <div class="mx-6 mb-4">
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">联网搜索</div>
+                                    <div class="bg-white rounded-xl overflow-hidden shadow-ios">
+                                        <div class="px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                            <div class="text-sm font-medium text-gray-900">OpenClaw 网页解析</div>
+                                            <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                            <div class="text-sm font-medium text-gray-900">自动导入</div>
+                                            <label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center justify-between">
+                                            <div class="text-sm font-medium text-gray-900">默认服务</div>
+                                            <div class="text-sm text-gray-500">Brave Search</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Search Services -->
+                                <div class="mx-6 mb-4">
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">搜索服务</div>
+                                    <div class="bg-white rounded-xl overflow-hidden shadow-ios">
+                                        <div class="px-4 py-3 flex items-center gap-3 border-b border-ios-separator">
+                                            <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div>
+                                            <div class="flex-1"><div class="text-sm font-medium text-gray-900">Brave Search</div></div>
+                                            <span class="text-xs text-ios-green font-medium">已配置</span>
+                                            <svg class="w-4 h-4 text-ios-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center gap-3 border-b border-ios-separator">
+                                            <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg></div>
+                                            <div class="flex-1"><div class="text-sm font-medium text-gray-900">LLM Context</div></div>
+                                            <span class="text-xs text-gray-400">未配置</span>
+                                            <div class="w-4 h-4 rounded-full border-2 border-gray-300"></div>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center gap-3 border-b border-ios-separator">
+                                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg></div>
+                                            <div class="flex-1"><div class="text-sm font-medium text-gray-900">Gemini</div></div>
+                                            <span class="text-xs text-gray-400">未配置</span>
+                                            <div class="w-4 h-4 rounded-full border-2 border-gray-300"></div>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-ios-blue/10 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg></div>
+                                            <div class="flex-1"><div class="text-sm font-medium text-ios-blue">添加自定义搜索服务</div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Danger Zone -->
+                                <div class="mx-6 mb-8">
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">危险区</div>
+                                    <div class="bg-white rounded-xl overflow-hidden shadow-ios">
+                                        <button class="w-full px-4 py-3 flex items-center gap-3 text-left">
+                                            <svg class="w-5 h-5 text-ios-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                            <span class="text-sm font-medium text-ios-red">重置所有设置</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mac Settings - Agent Files Editor -->
+                    <div id="settings-mac" class="device-frame mac-device w-[900px] h-[600px] bg-white overflow-hidden relative hidden section-reveal delay-3">
+                        <div class="h-9 bg-gray-100 border-b border-gray-200 flex items-center px-4 gap-2">
+                            <div class="flex gap-2"><div class="w-3 h-3 rounded-full bg-[#FF5F57]"></div><div class="w-3 h-3 rounded-full bg-[#FEBC2E]"></div><div class="w-3 h-3 rounded-full bg-[#28C840]"></div></div>
+                            <div class="flex-1 text-center text-xs text-gray-500 font-medium">Agent 文件</div>
+                            <div class="w-14"></div>
+                        </div>
+                        <div class="h-[calc(100%-36px)] flex bg-white">
+                            <!-- File List -->
+                            <div class="w-56 bg-gray-50 border-r border-gray-200 flex flex-col">
+                                <div class="px-4 py-2 border-b border-gray-200"><div class="text-xs font-semibold text-gray-500">文件列表</div></div>
+                                <div class="flex-1 overflow-y-auto scroll-hide p-2">
+                                    <div class="sidebar-item active rounded-md px-3 py-2 flex items-center gap-2 cursor-pointer">
+                                        <div class="w-6 h-6 bg-orange-100 rounded flex items-center justify-center"><svg class="w-3 h-3 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                        <div><div class="text-xs font-medium text-gray-900">SOUL.md</div><div class="text-[10px] text-gray-500">2.4 KB</div></div>
+                                    </div>
+                                    <div class="sidebar-item rounded-md px-3 py-2 flex items-center gap-2 cursor-pointer">
+                                        <div class="w-6 h-6 bg-blue-100 rounded flex items-center justify-center"><svg class="w-3 h-3 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg></div>
+                                        <div><div class="text-xs font-medium text-gray-700">AGENTS.md</div><div class="text-[10px] text-gray-500">1.1 KB</div></div>
+                                    </div>
+                                    <div class="sidebar-item rounded-md px-3 py-2 flex items-center gap-2 cursor-pointer">
+                                        <div class="w-6 h-6 bg-purple-100 rounded flex items-center justify-center"><svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg></div>
+                                        <div><div class="text-xs font-medium text-gray-700">IDENTITY.md</div><div class="text-[10px] text-gray-500">未创建</div></div>
+                                    </div>
+                                    <div class="sidebar-item rounded-md px-3 py-2 flex items-center gap-2 cursor-pointer">
+                                        <div class="w-6 h-6 bg-teal-100 rounded flex items-center justify-center"><svg class="w-3 h-3 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
+                                        <div><div class="text-xs font-medium text-gray-700">USER.md</div><div class="text-[10px] text-gray-500">856 B</div></div>
+                                    </div>
+                                    <div class="sidebar-item rounded-md px-3 py-2 flex items-center gap-2 cursor-pointer">
+                                        <div class="w-6 h-6 bg-gray-100 rounded flex items-center justify-center"><svg class="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+                                        <div><div class="text-xs font-medium text-gray-700">TOOLS.md</div><div class="text-[10px] text-gray-500">3.2 KB</div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Editor -->
+                            <div class="flex-1 flex flex-col">
+                                <div class="px-4 py-2 border-b border-gray-200 flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-semibold text-gray-900">SOUL.md</div>
+                                        <div class="text-[10px] text-gray-500">2.4 KB · 2026-06-06 14:32</div>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button class="px-3 py-1.5 bg-white border border-gray-200 rounded-md text-xs font-medium text-gray-700 hover:bg-gray-50">重置</button>
+                                        <button class="px-3 py-1.5 wheat-accent rounded-md text-xs font-medium text-white shadow-glow">保存</button>
+                                    </div>
+                                </div>
+                                <div class="flex-1 bg-gray-50 p-4">
+                                    <div class="bg-white rounded-lg border border-gray-200 h-full p-4 font-mono text-xs text-gray-800 leading-relaxed overflow-auto">
+                                        <span class="text-gray-400"># SOUL — 人格与行为定义</span><br/><br/>
+                                        <span class="text-gray-400">## 核心人格</span><br/>
+                                        你是一个专业、友善且高效的 AI 助手。<br/>
+                                        你的回答应当简洁明了，同时确保准确性。<br/><br/>
+                                        <span class="text-gray-400">## 行为准则</span><br/>
+                                        - 始终尊重用户的隐私<br/>
+                                        - 在不确定时主动询问<br/>
+                                        - 使用中文进行回复<br/>
+                                        - 代码块使用合适的语法高亮<br/><br/>
+                                        <span class="text-gray-400">## 能力范围</span><br/>
+                                        - 编程与代码审查<br/>
+                                        - 文档分析与总结<br/>
+                                        - 联网搜索与信息检索<br/>
+                                        - 多语言翻译
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== AGENTS PAGE ========== -->
+            <div id="page-agents" class="page-container">
+                <div class="flex justify-center items-start gap-12 flex-wrap">
+                    <!-- iOS Agents -->
+                    <div id="agents-ios" class="device-frame ios-device w-[375px] h-[812px] bg-black overflow-hidden relative section-reveal delay-1">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[35px] bg-black rounded-full z-50"></div>
+                        <div class="absolute top-2 left-6 right-6 flex justify-between text-white text-xs font-medium z-40">
+                            <span>9:41</span>
+                            <div class="flex gap-1">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zm6-4a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>
+                            </div>
+                        </div>
+                        <div class="h-full bg-ios-bg pt-12 flex flex-col">
+                            <div class="glass-panel px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                <button class="text-ios-blue text-sm font-medium">返回</button>
+                                <div class="text-sm font-semibold text-gray-900">Agents 管理</div>
+                                <div class="w-10"></div>
+                            </div>
+                            <div class="flex-1 overflow-y-auto scroll-hide">
+                                <div class="mx-4 mt-4 bg-white rounded-xl overflow-hidden shadow-ios">
+                                    <div class="px-4 py-3 flex items-center gap-3 border-b border-ios-separator">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-ios-blue to-blue-600 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></div>
+                                        <div class="flex-1"><div class="text-sm font-semibold text-gray-900">未来</div><div class="text-xs text-gray-500">qwen-qlm-2.1</div></div>
+                                        <span class="px-2 py-0.5 bg-green-100 text-ios-green text-[10px] font-medium rounded-full">活跃</span>
+                                    </div>
+                                    <div class="px-4 py-3 flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div>
+                                        <div class="flex-1"><div class="text-sm font-semibold text-gray-900">护理脑子</div><div class="text-xs text-gray-500">deepseek-chat</div></div>
+                                    </div>
+                                </div>
+                                <div class="mx-4 mt-4 mb-4">
+                                    <button class="w-full bg-ios-blue text-white rounded-xl py-3 text-sm font-medium flex items-center justify-center gap-2 shadow-ios">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                        创建新 Agent
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/30 rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- iPad Agents - Create/Edit Agent -->
+                    <div id="agents-ipad" class="device-frame ipad-device w-[820px] h-[600px] bg-black overflow-hidden relative hidden section-reveal delay-2">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rounded-full z-50"></div>
+                        <div class="h-full bg-ios-bg pt-8 flex">
+                            <div class="w-64 bg-white border-r border-ios-separator flex flex-col">
+                                <div class="p-4 border-b border-ios-separator"><div class="text-lg font-bold text-gray-900">Agents</div></div>
+                                <div class="flex-1 overflow-y-auto scroll-hide px-3 py-2">
+                                    <div class="sidebar-item active rounded-lg px-3 py-2 flex items-center gap-3 cursor-pointer">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-ios-blue to-blue-600 rounded-full flex items-center justify-center"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></div>
+                                        <div class="text-sm font-medium text-gray-900">未来</div>
+                                    </div>
+                                    <div class="sidebar-item rounded-lg px-3 py-2 flex items-center gap-3 cursor-pointer">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div>
+                                        <div class="text-sm font-medium text-gray-700">护理脑子</div>
+                                    </div>
+                                </div>
+                                <div class="p-3 border-t border-ios-separator">
+                                    <button class="w-full bg-ios-blue text-white rounded-lg py-2.5 text-sm font-medium flex items-center justify-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>创建新 Agent</button>
+                                </div>
+                            </div>
+                            <!-- Agent Detail -->
+                            <div class="flex-1 flex flex-col bg-ios-bg overflow-y-auto scroll-hide">
+                                <div class="px-6 py-4 flex items-center justify-between">
+                                    <div class="text-2xl font-bold text-gray-900">未来</div>
+                                    <div class="flex gap-2">
+                                        <button class="px-4 py-2 bg-white rounded-lg text-sm font-medium text-gray-700 border border-ios-separator shadow-ios">删除 Agent</button>
+                                        <button class="px-4 py-2 wheat-accent rounded-lg text-sm font-medium text-white shadow-glow">保存修改</button>
+                                    </div>
+                                </div>
+                                <!-- Basic Info -->
+                                <div class="mx-6 mb-4 bg-white rounded-xl overflow-hidden shadow-ios">
+                                    <div class="px-4 py-3 border-b border-ios-separator"><div class="text-xs font-semibold text-gray-500 uppercase tracking-wider">基本信息</div></div>
+                                    <div class="px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                        <div class="text-sm text-gray-500">ID</div>
+                                        <div class="text-sm font-mono text-gray-900">future</div>
+                                    </div>
+                                    <div class="px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                        <div class="text-sm text-gray-500">名称</div>
+                                        <input type="text" value="未来" class="text-sm text-right bg-transparent outline-none text-gray-900">
+                                    </div>
+                                    <div class="px-4 py-3 flex items-center justify-between">
+                                        <div class="text-sm text-gray-500">模型</div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm font-mono text-gray-900">火山引擎 / qwen-qlm-2.1</span>
+                                            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Agent Files -->
+                                <div class="mx-6 mb-8">
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">Agent 文件</div>
+                                    <div class="bg-white rounded-xl overflow-hidden shadow-ios">
+                                        <div class="px-4 py-3 flex items-center gap-3 border-b border-ios-separator">
+                                            <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                            <div class="flex-1"><div class="text-sm font-medium text-gray-900">SOUL — 人格与行为</div><div class="text-xs text-gray-500">定义 Agent 的人格、行为准则和核心能力</div></div>
+                                            <span class="text-xs text-gray-500">2.4 KB</span>
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center gap-3 border-b border-ios-separator">
+                                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg></div>
+                                            <div class="flex-1"><div class="text-sm font-medium text-gray-900">AGENTS — 协作关系</div><div class="text-xs text-gray-500">定义与其他 Agent 的协作关系和通信方式</div></div>
+                                            <span class="text-xs text-gray-500">1.1 KB</span>
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center gap-3 border-b border-ios-separator">
+                                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg></div>
+                                            <div class="flex-1"><div class="text-sm font-medium text-gray-900">IDENTITY — 身份信息</div><div class="text-xs text-gray-500">定义 Agent 的身份标识和认证信息</div></div>
+                                            <span class="text-xs text-gray-400">未创建</span>
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></div>
+                                            <div class="flex-1"><div class="text-sm font-medium text-gray-900">TOOLS — 工具配置</div><div class="text-xs text-gray-500">定义 Agent 可调用的工具和 API</div></div>
+                                            <span class="text-xs text-gray-500">3.2 KB</span>
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mac Agents - Model Selector & Advanced -->
+                    <div id="agents-mac" class="device-frame mac-device w-[900px] h-[600px] bg-white overflow-hidden relative hidden section-reveal delay-3">
+                        <div class="h-9 bg-gray-100 border-b border-gray-200 flex items-center px-4 gap-2">
+                            <div class="flex gap-2"><div class="w-3 h-3 rounded-full bg-[#FF5F57]"></div><div class="w-3 h-3 rounded-full bg-[#FEBC2E]"></div><div class="w-3 h-3 rounded-full bg-[#28C840]"></div></div>
+                            <div class="flex-1 text-center text-xs text-gray-500 font-medium">Agents 管理</div>
+                            <div class="w-14"></div>
+                        </div>
+                        <div class="h-[calc(100%-36px)] flex bg-white">
+                            <div class="w-52 bg-gray-50 border-r border-gray-200 flex flex-col">
+                                <div class="px-4 py-2 border-b border-gray-200"><div class="text-xs font-semibold text-gray-500">Agent 列表</div></div>
+                                <div class="flex-1 overflow-y-auto scroll-hide p-2">
+                                    <div class="sidebar-item active rounded-md px-3 py-2 flex items-center gap-2 cursor-pointer">
+                                        <div class="w-6 h-6 bg-gradient-to-br from-ios-blue to-blue-600 rounded-md flex items-center justify-center"><svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></div>
+                                        <div><div class="text-xs font-medium text-gray-900">未来</div><div class="text-[10px] text-gray-500">qwen-qlm-2.1</div></div>
+                                    </div>
+                                    <div class="sidebar-item rounded-md px-3 py-2 flex items-center gap-2 cursor-pointer">
+                                        <div class="w-6 h-6 bg-gradient-to-br from-purple-400 to-purple-600 rounded-md flex items-center justify-center"><svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div>
+                                        <div><div class="text-xs font-medium text-gray-700">护理脑子</div><div class="text-[10px] text-gray-500">deepseek-chat</div></div>
+                                    </div>
+                                </div>
+                                <div class="p-3 border-t border-gray-200">
+                                    <button class="w-full bg-ios-blue text-white rounded-lg py-1.5 text-xs font-medium flex items-center justify-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>创建新 Agent</button>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col bg-white overflow-y-auto scroll-hide">
+                                <div class="px-6 py-4 flex items-center justify-between border-b border-gray-200">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-ios-blue to-blue-600 rounded-lg flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></div>
+                                        <div><div class="text-lg font-semibold text-gray-900">未来</div><div class="text-xs text-gray-500">ID: future · 模型: qwen-qlm-2.1</div></div>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button class="px-3 py-1.5 bg-white border border-gray-200 rounded-md text-xs font-medium text-gray-700 hover:bg-gray-50">删除</button>
+                                        <button class="px-3 py-1.5 wheat-accent rounded-md text-xs font-medium text-white shadow-glow">保存</button>
+                                    </div>
+                                </div>
+                                <div class="p-6 space-y-6">
+                                    <!-- Model Selector -->
+                                    <div>
+                                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">模型配置</div>
+                                        <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                                            <div class="grid grid-cols-2 gap-3">
+                                                <div class="bg-white rounded-lg border border-ios-blue p-3 shadow-sm">
+                                                    <div class="flex items-center gap-2 mb-1"><div class="w-2 h-2 bg-ios-blue rounded-full"></div><div class="text-xs font-semibold text-gray-900">火山引擎</div></div>
+                                                    <div class="text-[11px] text-gray-500">qwen-qlm-2.1</div>
+                                                    <div class="text-[10px] text-ios-green mt-1">当前使用</div>
+                                                </div>
+                                                <div class="bg-white rounded-lg border border-gray-200 p-3 hover:border-gray-300 cursor-pointer transition-colors">
+                                                    <div class="flex items-center gap-2 mb-1"><div class="w-2 h-2 bg-purple-500 rounded-full"></div><div class="text-xs font-semibold text-gray-700">DeepSeek</div></div>
+                                                    <div class="text-[11px] text-gray-500">deepseek-chat</div>
+                                                </div>
+                                                <div class="bg-white rounded-lg border border-gray-200 p-3 hover:border-gray-300 cursor-pointer transition-colors">
+                                                    <div class="flex items-center gap-2 mb-1"><div class="w-2 h-2 bg-green-500 rounded-full"></div><div class="text-xs font-semibold text-gray-700">OpenAI</div></div>
+                                                    <div class="text-[11px] text-gray-500">gpt-4o</div>
+                                                </div>
+                                                <div class="bg-white rounded-lg border border-gray-200 p-3 hover:border-gray-300 cursor-pointer transition-colors">
+                                                    <div class="flex items-center gap-2 mb-1"><div class="w-2 h-2 bg-orange-500 rounded-full"></div><div class="text-xs font-semibold text-gray-700">Anthropic</div></div>
+                                                    <div class="text-[11px] text-gray-500">claude-3-5-sonnet</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Capabilities -->
+                                    <div>
+                                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">能力配置</div>
+                                        <div class="space-y-2">
+                                            <div class="flex items-center justify-between bg-gray-50 rounded-lg border border-gray-200 px-4 py-2.5">
+                                                <div class="flex items-center gap-2"><svg class="w-4 h-4 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg><span class="text-xs font-medium text-gray-700">联网搜索</span></div>
+                                                <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                                            </div>
+                                            <div class="flex items-center justify-between bg-gray-50 rounded-lg border border-gray-200 px-4 py-2.5">
+                                                <div class="flex items-center gap-2"><svg class="w-4 h-4 text-ios-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><span class="text-xs font-medium text-gray-700">文件读写</span></div>
+                                                <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                                            </div>
+                                            <div class="flex items-center justify-between bg-gray-50 rounded-lg border border-gray-200 px-4 py-2.5">
+                                                <div class="flex items-center gap-2"><svg class="w-4 h-4 text-ios-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><span class="text-xs font-medium text-gray-700">命令执行</span></div>
+                                                <label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== STATS PAGE ========== -->
+            <div id="page-stats" class="page-container">
+                <div class="flex justify-center items-start gap-12 flex-wrap">
+                    <!-- iOS Stats -->
+                    <div id="stats-ios" class="device-frame ios-device w-[375px] h-[812px] bg-black overflow-hidden relative section-reveal delay-1">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[35px] bg-black rounded-full z-50"></div>
+                        <div class="absolute top-2 left-6 right-6 flex justify-between text-white text-xs font-medium z-40">
+                            <span>9:41</span>
+                            <div class="flex gap-1">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zm6-4a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>
+                            </div>
+                        </div>
+                        <div class="h-full bg-ios-bg pt-12 flex flex-col">
+                            <div class="glass-panel px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                <button class="text-ios-blue text-sm font-medium">返回</button>
+                                <div class="text-sm font-semibold text-gray-900">运行统计</div>
+                                <div class="w-10"></div>
+                            </div>
+                            <div class="flex-1 overflow-y-auto scroll-hide">
+                                <!-- System Health -->
+                                <div class="mx-4 mt-4">
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">系统健康</div>
+                                    <div class="bg-white rounded-xl overflow-hidden shadow-ios">
+                                        <div class="px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg></div>
+                                                <div><div class="text-sm font-medium text-gray-900">CPU</div><div class="text-xs text-gray-500">4 核心</div></div>
+                                            </div>
+                                            <div class="flex items-center gap-2"><div class="w-20 h-2 bg-gray-200 rounded-full overflow-hidden"><div class="h-full bg-ios-green rounded-full" style="width: 32%"></div></div><span class="text-xs font-mono text-gray-700">32%</span></div>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg></div>
+                                                <div><div class="text-sm font-medium text-gray-900">内存</div><div class="text-xs text-gray-500">8 GB 总计</div></div>
+                                            </div>
+                                            <div class="flex items-center gap-2"><div class="w-20 h-2 bg-gray-200 rounded-full overflow-hidden"><div class="h-full bg-ios-orange rounded-full" style="width: 68%"></div></div><span class="text-xs font-mono text-gray-700">68%</span></div>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center justify-between">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg></div>
+                                                <div><div class="text-sm font-medium text-gray-900">磁盘</div><div class="text-xs text-gray-500">256 GB SSD</div></div>
+                                            </div>
+                                            <div class="flex items-center gap-2"><div class="w-20 h-2 bg-gray-200 rounded-full overflow-hidden"><div class="h-full bg-ios-green rounded-full" style="width: 45%"></div></div><span class="text-xs font-mono text-gray-700">45%</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Token Usage -->
+                                <div class="mx-4 mt-4">
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">Token 使用</div>
+                                    <div class="bg-white rounded-xl overflow-hidden shadow-ios p-4">
+                                        <div class="flex items-end justify-between mb-3">
+                                            <div>
+                                                <div class="text-2xl font-bold text-gray-900">128.5K</div>
+                                                <div class="text-xs text-gray-500">本月总计</div>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="text-sm font-semibold text-ios-green">↓ 12%</div>
+                                                <div class="text-xs text-gray-500">较上月</div>
+                                            </div>
+                                        </div>
+                                        <div class="h-24 flex items-end gap-2">
+                                            <div class="flex-1 bg-wheat-200 rounded-t-sm chart-bar" style="height: 40%"></div>
+                                            <div class="flex-1 bg-wheat-200 rounded-t-sm chart-bar" style="height: 55%"></div>
+                                            <div class="flex-1 bg-wheat-200 rounded-t-sm chart-bar" style="height: 45%"></div>
+                                            <div class="flex-1 bg-wheat-200 rounded-t-sm chart-bar" style="height: 70%"></div>
+                                            <div class="flex-1 bg-wheat-200 rounded-t-sm chart-bar" style="height: 60%"></div>
+                                            <div class="flex-1 bg-wheat-300 rounded-t-sm chart-bar" style="height: 85%"></div>
+                                            <div class="flex-1 wheat-accent rounded-t-sm chart-bar" style="height: 100%"></div>
+                                        </div>
+                                        <div class="flex justify-between mt-2">
+                                            <span class="text-[10px] text-gray-400">周一</span>
+                                            <span class="text-[10px] text-gray-400">周二</span>
+                                            <span class="text-[10px] text-gray-400">周三</span>
+                                            <span class="text-[10px] text-gray-400">周四</span>
+                                            <span class="text-[10px] text-gray-400">周五</span>
+                                            <span class="text-[10px] text-gray-400">周六</span>
+                                            <span class="text-[10px] text-gray-400 font-medium text-wheat-700">今天</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Model Distribution -->
+                                <div class="mx-4 mt-4 mb-4">
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">模型分布</div>
+                                    <div class="bg-white rounded-xl overflow-hidden shadow-ios p-4">
+                                        <div class="space-y-3">
+                                            <div>
+                                                <div class="flex justify-between mb-1"><span class="text-xs font-medium text-gray-700">qwen-qlm-2.1</span><span class="text-xs text-gray-500">45%</span></div>
+                                                <div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-ios-blue rounded-full" style="width: 45%"></div></div>
+                                            </div>
+                                            <div>
+                                                <div class="flex justify-between mb-1"><span class="text-xs font-medium text-gray-700">deepseek-chat</span><span class="text-xs text-gray-500">30%</span></div>
+                                                <div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-purple-500 rounded-full" style="width: 30%"></div></div>
+                                            </div>
+                                            <div>
+                                                <div class="flex justify-between mb-1"><span class="text-xs font-medium text-gray-700">gpt-4o</span><span class="text-xs text-gray-500">15%</span></div>
+                                                <div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-green-500 rounded-full" style="width: 15%"></div></div>
+                                            </div>
+                                            <div>
+                                                <div class="flex justify-between mb-1"><span class="text-xs font-medium text-gray-700">claude-3-5</span><span class="text-xs text-gray-500">10%</span></div>
+                                                <div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-orange-500 rounded-full" style="width: 10%"></div></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/30 rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- iPad Stats -->
+                    <div id="stats-ipad" class="device-frame ipad-device w-[820px] h-[600px] bg-black overflow-hidden relative hidden section-reveal delay-2">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rounded-full z-50"></div>
+                        <div class="h-full bg-ios-bg pt-8 flex">
+                            <div class="w-64 bg-white border-r border-ios-separator flex flex-col">
+                                <div class="p-4 border-b border-ios-separator"><div class="text-lg font-bold text-gray-900">统计</div></div>
+                                <div class="flex-1 overflow-y-auto scroll-hide px-3 py-2">
+                                    <div class="sidebar-item active rounded-lg px-3 py-2 flex items-center gap-3 cursor-pointer">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+                                        <div class="text-sm font-medium text-gray-900">用量概览</div>
+                                    </div>
+                                    <div class="sidebar-item rounded-lg px-3 py-2 flex items-center gap-3 cursor-pointer">
+                                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-ios-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+                                        <div class="text-sm font-medium text-gray-700">会话历史</div>
+                                    </div>
+                                    <div class="sidebar-item rounded-lg px-3 py-2 flex items-center gap-3 cursor-pointer">
+                                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg></div>
+                                        <div class="text-sm font-medium text-gray-700">性能趋势</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col bg-ios-bg overflow-y-auto scroll-hide">
+                                <div class="px-6 py-4"><div class="text-2xl font-bold text-gray-900">用量概览</div></div>
+                                <!-- Stats Cards -->
+                                <div class="mx-6 mb-4 grid grid-cols-3 gap-4">
+                                    <div class="bg-white rounded-xl p-4 shadow-ios">
+                                        <div class="text-xs text-gray-500 mb-1">本月 Tokens</div>
+                                        <div class="text-xl font-bold text-gray-900">128.5K</div>
+                                        <div class="text-xs text-ios-green mt-1">↓ 12% 较上月</div>
+                                    </div>
+                                    <div class="bg-white rounded-xl p-4 shadow-ios">
+                                        <div class="text-xs text-gray-500 mb-1">会话数量</div>
+                                        <div class="text-xl font-bold text-gray-900">342</div>
+                                        <div class="text-xs text-ios-green mt-1">↑ 8% 较上月</div>
+                                    </div>
+                                    <div class="bg-white rounded-xl p-4 shadow-ios">
+                                        <div class="text-xs text-gray-500 mb-1">平均响应</div>
+                                        <div class="text-xl font-bold text-gray-900">2.3s</div>
+                                        <div class="text-xs text-ios-green mt-1">↓ 0.5s 优化</div>
+                                    </div>
+                                </div>
+                                <!-- System Health -->
+                                <div class="mx-6 mb-4">
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">系统健康</div>
+                                    <div class="bg-white rounded-xl overflow-hidden shadow-ios">
+                                        <div class="px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                            <div class="flex items-center gap-3"><div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg></div><div><div class="text-sm font-medium text-gray-900">CPU 使用率</div><div class="text-xs text-gray-500">4 核心 · 2.8 GHz</div></div></div>
+                                            <div class="flex items-center gap-2"><div class="w-24 h-2 bg-gray-200 rounded-full overflow-hidden"><div class="h-full bg-ios-green rounded-full" style="width: 32%"></div></div><span class="text-xs font-mono text-gray-700">32%</span></div>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                            <div class="flex items-center gap-3"><div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg></div><div><div class="text-sm font-medium text-gray-900">内存使用</div><div class="text-xs text-gray-500">8 GB 总计 · DDR4</div></div></div>
+                                            <div class="flex items-center gap-2"><div class="w-24 h-2 bg-gray-200 rounded-full overflow-hidden"><div class="h-full bg-ios-orange rounded-full" style="width: 68%"></div></div><span class="text-xs font-mono text-gray-700">5.4 GB</span></div>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center justify-between">
+                                            <div class="flex items-center gap-3"><div class="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg></div><div><div class="text-sm font-medium text-gray-900">磁盘使用</div><div class="text-xs text-gray-500">256 GB SSD · NVMe</div></div></div>
+                                            <div class="flex items-center gap-2"><div class="w-24 h-2 bg-gray-200 rounded-full overflow-hidden"><div class="h-full bg-ios-green rounded-full" style="width: 45%"></div></div><span class="text-xs font-mono text-gray-700">115 GB</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Model Distribution -->
+                                <div class="mx-6 mb-8">
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">模型使用分布</div>
+                                    <div class="bg-white rounded-xl overflow-hidden shadow-ios p-4">
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div class="space-y-3">
+                                                <div><div class="flex justify-between mb-1"><span class="text-xs font-medium text-gray-700">qwen-qlm-2.1</span><span class="text-xs text-gray-500">45%</span></div><div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-ios-blue rounded-full" style="width: 45%"></div></div></div>
+                                                <div><div class="flex justify-between mb-1"><span class="text-xs font-medium text-gray-700">deepseek-chat</span><span class="text-xs text-gray-500">30%</span></div><div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-purple-500 rounded-full" style="width: 30%"></div></div></div>
+                                                <div><div class="flex justify-between mb-1"><span class="text-xs font-medium text-gray-700">gpt-4o</span><span class="text-xs text-gray-500">15%</span></div><div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-green-500 rounded-full" style="width: 15%"></div></div></div>
+                                                <div><div class="flex justify-between mb-1"><span class="text-xs font-medium text-gray-700">claude-3-5</span><span class="text-xs text-gray-500">10%</span></div><div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-orange-500 rounded-full" style="width: 10%"></div></div></div>
+                                            </div>
+                                            <div class="flex items-center justify-center">
+                                                <div class="relative w-32 h-32">
+                                                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                                        <path class="text-gray-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"/>
+                                                        <path class="text-ios-blue" stroke-dasharray="45, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"/>
+                                                        <path class="text-purple-500" stroke-dasharray="30, 100" stroke-dashoffset="-45" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"/>
+                                                        <path class="text-green-500" stroke-dasharray="15, 100" stroke-dashoffset="-75" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"/>
+                                                        <path class="text-orange-500" stroke-dasharray="10, 100" stroke-dashoffset="-90" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"/>
+                                                    </svg>
+                                                    <div class="absolute inset-0 flex items-center justify-center"><div class="text-center"><div class="text-lg font-bold text-gray-900">128K</div><div class="text-[10px] text-gray-500">Tokens</div></div></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mac Stats -->
+                    <div id="stats-mac" class="device-frame mac-device w-[900px] h-[600px] bg-white overflow-hidden relative hidden section-reveal delay-3">
+                        <div class="h-9 bg-gray-100 border-b border-gray-200 flex items-center px-4 gap-2">
+                            <div class="flex gap-2"><div class="w-3 h-3 rounded-full bg-[#FF5F57]"></div><div class="w-3 h-3 rounded-full bg-[#FEBC2E]"></div><div class="w-3 h-3 rounded-full bg-[#28C840]"></div></div>
+                            <div class="flex-1 text-center text-xs text-gray-500 font-medium">运行统计</div>
+                            <div class="w-14"></div>
+                        </div>
+                        <div class="h-[calc(100%-36px)] flex bg-white">
+                            <div class="w-48 bg-gray-50 border-r border-gray-200 flex flex-col">
+                                <div class="px-4 py-2 border-b border-gray-200"><div class="text-xs font-semibold text-gray-500">统计</div></div>
+                                <div class="flex-1 overflow-y-auto scroll-hide p-2">
+                                    <div class="sidebar-item active rounded-md px-3 py-2 flex items-center gap-2 cursor-pointer"><svg class="w-3.5 h-3.5 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg><div class="text-xs font-medium text-gray-900">用量概览</div></div>
+                                    <div class="sidebar-item rounded-md px-3 py-2 flex items-center gap-2 cursor-pointer"><svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><div class="text-xs font-medium text-gray-700">会话历史</div></div>
+                                    <div class="sidebar-item rounded-md px-3 py-2 flex items-center gap-2 cursor-pointer"><svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg><div class="text-xs font-medium text-gray-700">性能趋势</div></div>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col bg-white overflow-y-auto scroll-hide p-6">
+                                <div class="mb-6"><div class="text-xl font-bold text-gray-900">用量概览</div><div class="text-xs text-gray-500">2026年6月 · 最后更新: 2分钟前</div></div>
+                                <div class="grid grid-cols-4 gap-4 mb-6">
+                                    <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                                        <div class="text-[11px] text-gray-500 mb-1">本月 Tokens</div>
+                                        <div class="text-lg font-bold text-gray-900">128.5K</div>
+                                        <div class="text-[11px] text-ios-green mt-1">↓ 12% 较上月</div>
+                                    </div>
+                                    <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                                        <div class="text-[11px] text-gray-500 mb-1">会话数量</div>
+                                        <div class="text-lg font-bold text-gray-900">342</div>
+                                        <div class="text-[11px] text-ios-green mt-1">↑ 8% 较上月</div>
+                                    </div>
+                                    <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                                        <div class="text-[11px] text-gray-500 mb-1">平均响应</div>
+                                        <div class="text-lg font-bold text-gray-900">2.3s</div>
+                                        <div class="text-[11px] text-ios-green mt-1">↓ 0.5s 优化</div>
+                                    </div>
+                                    <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                                        <div class="text-[11px] text-gray-500 mb-1">活跃 Agents</div>
+                                        <div class="text-lg font-bold text-gray-900">2</div>
+                                        <div class="text-[11px] text-gray-500 mt-1">共 4 个配置</div>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">系统资源</div>
+                                        <div class="space-y-2">
+                                            <div class="bg-gray-50 rounded-lg border border-gray-200 px-4 py-3 flex items-center justify-between">
+                                                <div class="flex items-center gap-2"><svg class="w-4 h-4 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg><span class="text-xs font-medium text-gray-700">CPU</span></div>
+                                                <div class="flex items-center gap-2"><div class="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden"><div class="h-full bg-ios-green rounded-full" style="width: 32%"></div></div><span class="text-[11px] font-mono text-gray-700">32%</span></div>
+                                            </div>
+                                            <div class="bg-gray-50 rounded-lg border border-gray-200 px-4 py-3 flex items-center justify-between">
+                                                <div class="flex items-center gap-2"><svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg><span class="text-xs font-medium text-gray-700">内存</span></div>
+                                                <div class="flex items-center gap-2"><div class="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden"><div class="h-full bg-ios-orange rounded-full" style="width: 68%"></div></div><span class="text-[11px] font-mono text-gray-700">5.4 GB</span></div>
+                                            </div>
+                                            <div class="bg-gray-50 rounded-lg border border-gray-200 px-4 py-3 flex items-center justify-between">
+                                                <div class="flex items-center gap-2"><svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg><span class="text-xs font-medium text-gray-700">磁盘</span></div>
+                                                <div class="flex items-center gap-2"><div class="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden"><div class="h-full bg-ios-green rounded-full" style="width: 45%"></div></div><span class="text-[11px] font-mono text-gray-700">115 GB</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">模型分布</div>
+                                        <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                                            <div class="space-y-2">
+                                                <div class="flex items-center justify-between"><div class="flex items-center gap-2"><div class="w-2 h-2 bg-ios-blue rounded-full"></div><span class="text-xs text-gray-700">qwen-qlm-2.1</span></div><span class="text-xs font-mono text-gray-900">57.8K (45%)</span></div>
+                                                <div class="flex items-center justify-between"><div class="flex items-center gap-2"><div class="w-2 h-2 bg-purple-500 rounded-full"></div><span class="text-xs text-gray-700">deepseek-chat</span></div><span class="text-xs font-mono text-gray-900">38.6K (30%)</span></div>
+                                                <div class="flex items-center justify-between"><div class="flex items-center gap-2"><div class="w-2 h-2 bg-green-500 rounded-full"></div><span class="text-xs text-gray-700">gpt-4o</span></div><span class="text-xs font-mono text-gray-900">19.3K (15%)</span></div>
+                                                <div class="flex items-center justify-between"><div class="flex items-center gap-2"><div class="w-2 h-2 bg-orange-500 rounded-full"></div><span class="text-xs text-gray-700">claude-3-5</span></div><span class="text-xs font-mono text-gray-900">12.8K (10%)</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== SECONDARY PAGES (Hidden by default, shown via JS if needed) ========== -->
+            <!-- Memory Reading Page -->
+            <div id="page-memory" class="page-container">
+                <div class="flex justify-center items-start gap-12 flex-wrap">
+                    <div id="memory-ipad" class="device-frame ipad-device w-[820px] h-[600px] bg-black overflow-hidden relative section-reveal delay-1">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rounded-full z-50"></div>
+                        <div class="h-full bg-ios-bg pt-8 flex">
+                            <div class="w-64 bg-white border-r border-ios-separator flex flex-col">
+                                <div class="p-4 border-b border-ios-separator"><div class="text-lg font-bold text-gray-900">记忆读取</div></div>
+                                <div class="flex-1 overflow-y-auto scroll-hide px-3 py-2">
+                                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mb-2">记忆文件</div>
+                                    <div class="sidebar-item active rounded-lg px-3 py-2 flex items-center gap-2 cursor-pointer">
+                                        <svg class="w-4 h-4 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        <div class="text-sm font-medium text-gray-900">MEMORY.md</div>
+                                    </div>
+                                    <div class="sidebar-item rounded-lg px-3 py-2 flex items-center gap-2 cursor-pointer">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                                        <div class="text-sm font-medium text-gray-700">SKILLS.md</div>
+                                    </div>
+                                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mb-2 mt-4">技能列表</div>
+                                    <div class="sidebar-item rounded-lg px-3 py-2 flex items-center gap-2 cursor-pointer">
+                                        <div class="w-6 h-6 bg-wheat-100 rounded flex items-center justify-center"><svg class="w-3 h-3 text-wheat-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                                        <div class="text-sm font-medium text-gray-700">代码分析</div>
+                                    </div>
+                                    <div class="sidebar-item rounded-lg px-3 py-2 flex items-center gap-2 cursor-pointer">
+                                        <div class="w-6 h-6 bg-blue-100 rounded flex items-center justify-center"><svg class="w-3 h-3 text-ios-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg></div>
+                                        <div class="text-sm font-medium text-gray-700">联网搜索</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col bg-ios-bg overflow-y-auto scroll-hide">
+                                <div class="px-6 py-4 flex items-center justify-between">
+                                    <div><div class="text-2xl font-bold text-gray-900">MEMORY.md</div><div class="text-xs text-gray-500">2.1 KB · 最后更新: 10分钟前</div></div>
+                                    <button class="px-4 py-2 wheat-accent rounded-lg text-sm font-medium text-white shadow-glow">刷新</button>
+                                </div>
+                                <div class="mx-6 mb-8 bg-white rounded-xl overflow-hidden shadow-ios">
+                                    <div class="p-4 font-mono text-xs text-gray-800 leading-relaxed">
+                                        <span class="text-gray-400"># 用户记忆档案</span><br/><br/>
+                                        <span class="text-gray-400">## 偏好设置</span><br/>
+                                        - 语言: 中文 (简体)<br/>
+                                        - 代码风格: Swift/SwiftUI<br/>
+                                        - 回复长度: 简洁<br/><br/>
+                                        <span class="text-gray-400">## 常用项目</span><br/>
+                                        - MyPilot App (iOS/iPadOS/macOS)<br/>
+                                        - OpenClaw Core (Node.js)<br/>
+                                        - Gateway Relay Service<br/><br/>
+                                        <span class="text-gray-400">## 最近话题</span><br/>
+                                        - UI 视觉设计系统<br/>
+                                        - Agent 架构优化<br/>
+                                        - 联网搜索服务配置
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IM Channels Page -->
+            <div id="page-im" class="page-container">
+                <div class="flex justify-center items-start gap-12 flex-wrap">
+                    <div id="im-ios" class="device-frame ios-device w-[375px] h-[812px] bg-black overflow-hidden relative section-reveal delay-1">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[35px] bg-black rounded-full z-50"></div>
+                        <div class="absolute top-2 left-6 right-6 flex justify-between text-white text-xs font-medium z-40">
+                            <span>9:41</span>
+                            <div class="flex gap-1">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zm6-4a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>
+                            </div>
+                        </div>
+                        <div class="h-full bg-ios-bg pt-12 flex flex-col">
+                            <div class="glass-panel px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                <button class="text-ios-blue text-sm font-medium">返回</button>
+                                <div class="text-sm font-semibold text-gray-900">IM 通信渠道</div>
+                                <div class="w-10"></div>
+                            </div>
+                            <div class="flex-1 overflow-y-auto scroll-hide">
+                                <div class="mx-4 mt-4 bg-white rounded-xl overflow-hidden shadow-ios">
+                                    <div class="px-4 py-3 flex items-center gap-3 border-b border-ios-separator">
+                                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></div>
+                                        <div class="flex-1"><div class="text-sm font-semibold text-gray-900">飞书</div><div class="text-xs text-gray-500">Webhook 已配置</div></div>
+                                        <span class="px-2 py-0.5 bg-green-100 text-ios-green text-[10px] font-medium rounded-full">已启用</span>
+                                    </div>
+                                    <div class="px-4 py-3 flex items-center gap-3 border-b border-ios-separator">
+                                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg></div>
+                                        <div class="flex-1"><div class="text-sm font-semibold text-gray-900">企业微信</div><div class="text-xs text-gray-500">未配置</div></div>
+                                        <span class="px-2 py-0.5 bg-gray-100 text-gray-500 text-[10px] font-medium rounded-full">未启用</span>
+                                    </div>
+                                    <div class="px-4 py-3 flex items-center gap-3 border-b border-ios-separator">
+                                        <div class="w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg></div>
+                                        <div class="flex-1"><div class="text-sm font-semibold text-gray-900">钉钉</div><div class="text-xs text-gray-500">未配置</div></div>
+                                        <span class="px-2 py-0.5 bg-gray-100 text-gray-500 text-[10px] font-medium rounded-full">未启用</span>
+                                    </div>
+                                    <div class="px-4 py-3 flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg></div>
+                                        <div class="flex-1"><div class="text-sm font-semibold text-gray-900">Telegram</div><div class="text-xs text-gray-500">Bot Token 已配置</div></div>
+                                        <span class="px-2 py-0.5 bg-green-100 text-ios-green text-[10px] font-medium rounded-full">已启用</span>
+                                    </div>
+                                </div>
+                                <div class="mx-4 mt-4 mb-4">
+                                    <button class="w-full bg-ios-blue text-white rounded-xl py-3 text-sm font-medium flex items-center justify-center gap-2 shadow-ios">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                        添加通信渠道
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/30 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call Settings Page -->
+            <div id="page-call" class="page-container">
+                <div class="flex justify-center items-start gap-12 flex-wrap">
+                    <div id="call-ios" class="device-frame ios-device w-[375px] h-[812px] bg-black overflow-hidden relative section-reveal delay-1">
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[35px] bg-black rounded-full z-50"></div>
+                        <div class="absolute top-2 left-6 right-6 flex justify-between text-white text-xs font-medium z-40">
+                            <span>9:41</span>
+                            <div class="flex gap-1">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zm6-4a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>
+                            </div>
+                        </div>
+                        <div class="h-full bg-ios-bg pt-12 flex flex-col">
+                            <div class="glass-panel px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                <button class="text-ios-blue text-sm font-medium">返回</button>
+                                <div class="text-sm font-semibold text-gray-900">通话设置</div>
+                                <div class="w-10"></div>
+                            </div>
+                            <div class="flex-1 overflow-y-auto scroll-hide">
+                                <div class="mx-4 mt-4">
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">语音通话</div>
+                                    <div class="bg-white rounded-xl overflow-hidden shadow-ios">
+                                        <div class="px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                            <div><div class="text-sm font-medium text-gray-900">启用语音通话</div><div class="text-xs text-gray-500">允许 Agent 通过语音与你交流</div></div>
+                                            <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                            <div><div class="text-sm font-medium text-gray-900">自动接听</div><div class="text-xs text-gray-500">收到通话请求时自动接听</div></div>
+                                            <label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center justify-between">
+                                            <div><div class="text-sm font-medium text-gray-900">语音合成引擎</div></div>
+                                            <div class="flex items-center gap-2"><span class="text-sm text-gray-500">系统默认</span><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mx-4 mt-4">
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">语音识别</div>
+                                    <div class="bg-white rounded-xl overflow-hidden shadow-ios">
+                                        <div class="px-4 py-3 flex items-center justify-between border-b border-ios-separator">
+                                            <div><div class="text-sm font-medium text-gray-900">实时语音识别</div><div class="text-xs text-gray-500">通话过程中实时转录语音</div></div>
+                                            <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                                        </div>
+                                        <div class="px-4 py-3 flex items-center justify-between">
+                                            <div><div class="text-sm font-medium text-gray-900">识别语言</div></div>
+                                            <div class="flex items-center gap-2"><span class="text-sm text-gray-500">中文 (简体)</span><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mx-4 mt-4 mb-4">
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">高级</div>
+                                    <div class="bg-white rounded-xl overflow-hidden shadow-ios">
+                                        <div class="px-4 py-3 flex items-center justify-between">
+                                            <div><div class="text-sm font-medium text-gray-900">通话录音</div><div class="text-xs text-gray-500">保存通话记录到本地</div></div>
+                                            <label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/30 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        function showPage(page) {
+            document.querySelectorAll('.page-container').forEach(el => el.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            document.querySelectorAll('header button[id^="btn-"]').forEach(btn => {
+                btn.classList.remove('bg-wheat-500', 'text-white', 'shadow-ios');
+                btn.classList.add('text-gray-600', 'hover:bg-white/80');
+            });
+            const activeBtn = document.getElementById('btn-' + page);
+            activeBtn.classList.remove('text-gray-600', 'hover:bg-white/80');
+            activeBtn.classList.add('bg-wheat-500', 'text-white', 'shadow-ios');
+        }
+
+        function showDevice(device) {
+            const pages = ['chat', 'settings', 'agents', 'stats', 'memory', 'im', 'call'];
+            pages.forEach(page => {
+                ['ios', 'ipad', 'mac'].forEach(d => {
+                    const el = document.getElementById(page + '-' + d);
+                    if (el) {
+                        if (d === device) {
+                            el.classList.remove('hidden');
+                        } else {
+                            el.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+            document.querySelectorAll('button[id^="btn-dev-"]').forEach(btn => {
+                btn.classList.remove('bg-wheat-500', 'text-white', 'shadow-ios');
+                btn.classList.add('text-gray-600', 'hover:bg-white/80');
+            });
+            const activeBtn = document.getElementById('btn-dev-' + device);
+            activeBtn.classList.remove('text-gray-600', 'hover:bg-white/80');
+            activeBtn.classList.add('bg-wheat-500', 'text-white', 'shadow-ios');
+        }
+    </script>
+</body>
+</html>

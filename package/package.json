@@ -1,0 +1,49 @@
+{
+  "name": "@clawpilot-app/link",
+  "version": "1.3.7",
+  "private": false,
+  "description": "ClawPilot Link daemon and CLI for connecting local OpenClaw through ClawPilot Relay",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "clawlink": "./src/cli.js"
+  },
+  "files": [
+    "src",
+    "!src/*.test.js",
+    "scripts/check-node-version.mjs",
+    "scripts/postinstall.mjs",
+    "README.md"
+  ],
+  "keywords": [
+    "clawpilot",
+    "openclaw",
+    "relay",
+    "link",
+    "cli"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "scripts": {
+    "check": "find src scripts -type f \\( -name '*.js' -o -name '*.mjs' \\) -print0 | xargs -0 -n1 node --check",
+    "test": "node --test src/*.test.js",
+    "verify": "npm run check && npm test && npm run pack:dry-run",
+    "preinstall": "node ./scripts/check-node-version.mjs",
+    "postinstall": "node ./scripts/postinstall.mjs",
+    "start": "node ./src/cli.js",
+    "daemon": "node ./src/cli.js daemon",
+    "pack:dry-run": "npm pack --dry-run",
+    "release": "npm run verify && npm pack",
+    "publish:npm": "npm publish --access public"
+  },
+  "dependencies": {
+    "json5": "^2.2.3",
+    "qrcode-terminal": "^0.12.0",
+    "tweetnacl": "^1.0.3",
+    "ws": "^8.18.3"
+  }
+}
