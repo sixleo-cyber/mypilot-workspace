@@ -41,12 +41,12 @@ body{font-family:var(--f);background:var(--bg2);color:var(--tx);display:flex;jus
 .sb-r{display:flex;align-items:center;gap:10px;padding:7px 12px;margin:0 8px;border-radius:10px;cursor:pointer;transition:background .1s}
 .sb-r:hover{background:var(--bg2)}
 .sb-r.sel{background:var(--ub);color:var(--ut)}.sb-r.sel .sb-tt{color:var(--ut)}.sb-r.sel .sb-st{color:rgba(255,255,255,.7)}
-.sb-av{width:32px;height:32px;border-radius:50%;background:#34C759;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:white;flex-shrink:0}
+.sb-av{width:32px;height:32px;border-radius:50%;background:var(--ub);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:white;flex-shrink:0}
 .sb-tt{font-size:15px;font-weight:600}.sb-st{font-size:13px;color:var(--tx2);margin-top:1px}
 .sb-dot{width:6px;height:6px;border-radius:50%;background:var(--ub);margin-left:auto}
 .sb-ag{display:flex;align-items:center;gap:8px;padding:6px 12px;margin:0 8px;border-radius:10px;cursor:pointer;transition:background .1s}
 .sb-ag:hover{background:var(--bg2)}
-.sb-aav{width:28px;height:28px;border-radius:50%;background:#FF9500;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-aav{width:28px;height:28px;border-radius:50%;background:var(--ub);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .sb-aav svg{width:14px;height:14px;color:white}
 .sb-c{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 26px;margin:0 8px;border-radius:10px;cursor:pointer;transition:background .1s}
 .sb-c:hover{background:var(--bg2)}
@@ -64,7 +64,7 @@ body{font-family:var(--f);background:var(--bg2);color:var(--tx);display:flex;jus
 
 /* Chat Header — 无底线，靠间距 */
 .ch{padding:10px 20px;display:flex;align-items:center;gap:10px;flex-shrink:0;background:var(--bg)}
-.ch-av{width:30px;height:30px;border-radius:50%;background:#FF9500;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ch-av{width:30px;height:30px;border-radius:50%;background:var(--ub);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .ch-av svg{width:15px;height:15px;color:white}
 .ch-n{font-size:17px;font-weight:700}.ch-m{font-size:13px;color:var(--tx2);margin-top:1px}
 .ch-rt{margin-left:auto;display:flex;align-items:center;gap:6px}
@@ -78,9 +78,9 @@ body{font-family:var(--f);background:var(--bg2);color:var(--tx);display:flex;jus
 @keyframes mIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .mr .bd{max-width:70%;display:flex;flex-direction:column}
 .mr.u .bd{align-items:flex-end}
-.mr.u .bb{padding:10px 16px;font-size:16px;line-height:1.5;background:var(--ubg);color:var(--ut);border-radius:18px 18px 4px 18px;overflow-wrap:break-word;word-break:normal}
-.mr.a .bb{padding:10px 16px;font-size:16px;line-height:1.5;background:var(--ab);color:var(--at);border-radius:18px 18px 18px 4px;overflow-wrap:break-word;word-break:normal}
-.mr-av{width:26px;height:26px;border-radius:50%;background:#FF9500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.mr.u .bb{padding:8px 14px;font-size:13px;line-height:1.4;background:var(--ubg);color:var(--ut);border-radius:18px 18px 4px 18px;overflow-wrap:break-word;word-break:normal}
+.mr.a .bb{padding:8px 14px;font-size:13px;line-height:1.4;background:var(--ab);color:var(--at);border-radius:18px 18px 18px 4px;overflow-wrap:break-word;word-break:normal}
+.mr-av{width:26px;height:26px;border-radius:50%;background:var(--ub);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
 .mr-av svg{width:13px;height:13px;color:white}
 .dl{display:flex;justify-content:flex-end;align-items:center;gap:3px;margin-top:2px;font-size:11px;color:var(--tx3)}
 .dl.d2{color:var(--tx2)}
@@ -135,7 +135,7 @@ body{font-family:var(--f);background:var(--bg2);color:var(--tx);display:flex;jus
 .wl{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:60px 40px;background:var(--bg)}
 .wl-ic{width:64px;height:64px;border-radius:50%;background:var(--ubg);display:flex;align-items:center;justify-content:center}
 .wl-ic svg{color:white}
-.wl-tt{font-size:26px;font-weight:800;letter-spacing:-.02em}.wl-st{font-size:13px;color:var(--tx2);font-weight:500}
+.wl-tt{font-size:26px;font-weight:700;letter-spacing:-.02em}.wl-st{font-size:13px;color:var(--tx2);font-weight:500}
 .wl-step{display:flex;flex-direction:column;gap:12px;width:100%;max-width:320px;margin-top:4px}
 .wl-s{display:flex;align-items:center;gap:12px}
 .wl-si{width:28px;height:28px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -218,7 +218,7 @@ body{font-family:var(--f);background:var(--bg2);color:var(--tx);display:flex;jus
 <div class="sheet h" id="sh-add" onclick="if(event.target===this)cs('add')"><div class="sh-b" style="width:440px;max-height:400px"><div class="sh-h"><button style="background:none;border:none;color:var(--tx2);font-size:15px;cursor:pointer;font-family:var(--f);font-weight:600" onclick="cs('add')">取消</button><div class="sh-tt">添加实例</div><div style="width:40px"></div></div>
 <div class="sh-bd" style="padding:24px;display:flex;flex-direction:column;align-items:center;gap:16px">
 <div style="width:56px;height:56px;border-radius:50%;background:var(--ubg);display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg></div>
-<div style="font-size:18px;font-weight:800">输入服务器地址</div>
+<div style="font-size:18px;font-weight:700">输入服务器地址</div>
 <input placeholder="http://118.145.240.41:52378" style="width:100%;padding:10px 14px;border:1px solid var(--bdr);border-radius:12px;font-size:14px;font-family:monospace;outline:none;color:var(--tx);background:var(--bg)">
 <div style="font-size:12px;color:var(--tx2);text-align:left;width:100%;line-height:1.7">1. npm install -g @mypilot/link<br>2. mypilot start<br>3. 输入 daemon 地址<br>4. 输入配对码完成配对</div>
 <input placeholder="XXXX-XXXX-XXXX (配对码)" style="width:100%;padding:10px 14px;border:1px solid var(--bdr);border-radius:12px;font-size:14px;font-family:monospace;outline:none;color:var(--tx);background:var(--bg);margin-top:-6px">
