@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyPilot Icon - Geometric Redesign</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    background: #F5F5F7;
+    color: #1D1D1F;
+    padding: 60px 40px;
+    line-height: 1.5;
+  }
+  .container { max-width: 1280px; margin: 0 auto; }
+  h1 {
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    font-size: 21px;
+    color: #86868B;
+    margin-bottom: 60px;
+    font-weight: 400;
+  }
+
+  .section { margin-bottom: 80px; }
+  .section-title {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 12px;
+  }
+  .section-desc {
+    font-size: 15px;
+    color: #86868B;
+    margin-bottom: 32px;
+  }
+
+  /* Variants Grid */
+  .variants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+  }
+  .variant-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px;
+    text-align: center;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .variant-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  }
+  .variant-icon {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .variant-icon svg { width: 100%; height: 100%; }
+  .variant-name {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .variant-desc {
+    font-size: 13px;
+    color: #86868B;
+    line-height: 1.4;
+  }
+  .recommended {
+    position: relative;
+  }
+  .recommended::after {
+    content: '推荐';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #34C759;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+  }
+
+  /* Color schemes */
+  .color-section {
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+  }
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+  }
+  .color-item {
+    aspect-ratio: 1;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .color-item:hover { transform: scale(1.05); }
+  .color-item svg { width: 60%; height: 60%; }
+  .color-name {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.9);
+    text-align: center;
+    font-weight: 500;
+  }
+  .color-item.dark-label .color-name { color: rgba(0,0,0,0.7); }
+  .color-blue { background: #007AFF; }
+  .color-indigo { background: #5856D6; }
+  .color-purple { background: #AF52DE; }
+  .color-teal { background: #30B0C7; }
+  .color-green { background: #34C759; }
+  .color-orange { background: #FF9500; }
+  .color-red { background: #FF3B30; }
+  .color-pink { background: #FF2D55; }
+  .color-dark { background: #1C1C1E; }
+  .color-light { background: #F2F2F7; }
+  .color-light.dark-label { border: 1px solid #E5E5EA; }
+
+  /* App preview */
+  .preview-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .preview-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+  }
+  .preview-card.dark { background: #1C1C1E; color: #fff; }
+  .preview-label {
+    margin-top: 24px;
+    font-size: 13px;
+    color: #86868B;
+  }
+  .preview-card.dark .preview-label { color: #8E8E93; }
+  .preview-dock {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+  .dock-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .dock-icon svg { width: 100%; height: 100%; }
+  .dock-icon.app-blue { background: #007AFF; }
+  .dock-icon.app-indigo { background: linear-gradient(135deg, #5856D6, #AF52DE); }
+  .dock-icon.app-dark { background: #2C2C2E; }
+
+  /* Size grid */
+  .sizes-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+  }
+  .sizes-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .size-item { text-align: center; }
+  .size-item .icon-wrap {
+    background: #007AFF;
+    border-radius: 22%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    overflow: hidden;
+  }
+  .size-item .icon-wrap svg { width: 100%; height: 100%; }
+  .size-128 { width: 128px; height: 128px; }
+  .size-64 { width: 64px; height: 64px; border-radius: 18%; }
+  .size-44 { width: 44px; height: 44px; border-radius: 14%; }
+  .size-32 { width: 32px; height: 32px; border-radius: 12%; }
+  .size-22 { width: 22px; height: 22px; border-radius: 10%; }
+  .size-16 { width: 16px; height: 16px; border-radius: 8%; }
+  .size-label {
+    font-size: 12px;
+    color: #86868B;
+  }
+
+  .footer {
+    text-align: center;
+    padding-top: 40px;
+    border-top: 1px solid #E5E5EA;
+    color: #86868B;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>MyPilot Icon — Geometric Redesign</h1>
+  <p class="subtitle">5 套现代几何方案 · 摆脱具象 M 字母 · 重塑品牌识别</p>
+
+  <!-- 5 Variants -->
+  <div class="section">
+    <h2 class="section-title">5 套候选方案</h2>
+    <p class="section-desc">从抽象到具象依次排列，找到最适合 MyPilot 的几何语言</p>
+
+    <div class="variants-grid">
+
+      <!-- A: Stacked Bars (推荐) -->
+      <div class="variant-card recommended">
+        <div class="variant-icon">
+          <svg viewBox="0 0 100 100" fill="none">
+            <!-- 3 stacked horizontal bars of varying widths -->
+            <rect x="14" y="20" width="72" height="14" rx="7" fill="currentColor"/>
+            <rect x="14" y="43" width="50" height="14" rx="7" fill="currentColor"/>
+            <rect x="14" y="66" width="32" height="14" rx="7" fill="currentColor"/>
+            <!-- accent dot -->
+            <circle cx="86" cy="73" r="7" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="variant-name">A. 渐缩条 + 圆点</div>
+        <div class="variant-desc">三条递减的胶囊条呼应"层次"，右下方圆点暗示"起点/激活"</div>
+      </div>
+
+      <!-- B: Abstract M as triangles -->
+      <div class="variant-card">
+        <div class="variant-icon">
+          <svg viewBox="0 0 100 100" fill="none">
+            <!-- Two abstract triangles forming M -->
+            <path d="M 16 80 L 16 20 L 50 60 L 84 20 L 84 80 L 70 80 L 70 52 L 50 76 L 30 52 L 30 80 Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="variant-name">B. 几何 M</div>
+        <div class="variant-desc">极简化的几何 M，方正硬朗，回归字母但去曲线化</div>
+      </div>
+
+      <!-- C: Diagonal split -->
+      <div class="variant-card">
+        <div class="variant-icon">
+          <svg viewBox="0 0 100 100" fill="none">
+            <!-- Circular badge with diagonal M cut -->
+            <circle cx="50" cy="50" r="42" fill="currentColor"/>
+            <path d="M 28 75 L 28 30 L 50 56 L 72 30 L 72 75 L 62 75 L 62 48 L 50 62 L 38 48 L 38 75 Z" fill="#F5F5F7"/>
+          </svg>
+        </div>
+        <div class="variant-name">C. 圆形徽章 + 反白 M</div>
+        <div class="variant-desc">圆形容器内嵌几何 M，最 App 图标化的方案</div>
+      </div>
+
+      <!-- D: Compass dots -->
+      <div class="variant-card">
+        <div class="variant-icon">
+          <svg viewBox="0 0 100 100" fill="none">
+            <!-- Compass-like 4 dots + center -->
+            <circle cx="50" cy="22" r="9" fill="currentColor"/>
+            <circle cx="78" cy="50" r="9" fill="currentColor"/>
+            <circle cx="50" cy="78" r="9" fill="currentColor"/>
+            <circle cx="22" cy="50" r="9" fill="currentColor"/>
+            <circle cx="50" cy="50" r="6" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="variant-name">D. 罗盘点阵</div>
+        <div class="variant-desc">5 个圆点构成东南西北 + 中心，呼应 Pilot "领航" 含义</div>
+      </div>
+
+      <!-- E: Asymmetric M with dot -->
+      <div class="variant-card">
+        <div class="variant-icon">
+          <svg viewBox="0 0 100 100" fill="none">
+            <!-- Bold asymmetric M -->
+            <path d="M 14 82 L 14 18 L 30 18 L 50 50 L 70 18 L 86 18 L 86 82 L 72 82 L 72 42 L 56 68 L 44 68 L 28 42 L 28 82 Z" fill="currentColor"/>
+            <!-- Dot replacing right leg end -->
+            <circle cx="50" cy="82" r="9" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="variant-name">E. 粗体 M + 底部圆点</div>
+        <div class="variant-desc">保留 M 但用方角硬朗化，底部圆点替代传统 M 末端</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Color applications on Variant A -->
+  <div class="section">
+    <h2 class="section-title">配色应用 — 方案 A</h2>
+    <p class="section-desc">在 12 种主色下的效果预览</p>
+    <div class="color-section">
+      <div class="color-grid">
+        <div class="color-item color-blue">
+          <svg viewBox="0 0 100 100" fill="none">
+            <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+            <circle cx="86" cy="73" r="7" fill="#fff"/>
+          </svg>
+          <div class="color-name">系统蓝</div>
+        </div>
+        <div class="color-item color-indigo">
+          <svg viewBox="0 0 100 100" fill="none">
+            <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+            <circle cx="86" cy="73" r="7" fill="#fff"/>
+          </svg>
+          <div class="color-name">靛紫</div>
+        </div>
+        <div class="color-item color-purple">
+          <svg viewBox="0 0 100 100" fill="none">
+            <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+            <circle cx="86" cy="73" r="7" fill="#fff"/>
+          </svg>
+          <div class="color-name">紫罗兰</div>
+        </div>
+        <div class="color-item color-teal">
+          <svg viewBox="0 0 100 100" fill="none">
+            <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+            <circle cx="86" cy="73" r="7" fill="#fff"/>
+          </svg>
+          <div class="color-name">青蓝</div>
+        </div>
+        <div class="color-item color-green">
+          <svg viewBox="0 0 100 100" fill="none">
+            <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+            <circle cx="86" cy="73" r="7" fill="#fff"/>
+          </svg>
+          <div class="color-name">青草绿</div>
+        </div>
+        <div class="color-item color-orange">
+          <svg viewBox="0 0 100 100" fill="none">
+            <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+            <circle cx="86" cy="73" r="7" fill="#fff"/>
+          </svg>
+          <div class="color-name">暖橙</div>
+        </div>
+        <div class="color-item color-red">
+          <svg viewBox="0 0 100 100" fill="none">
+            <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+            <circle cx="86" cy="73" r="7" fill="#fff"/>
+          </svg>
+          <div class="color-name">警示红</div>
+        </div>
+        <div class="color-item color-pink">
+          <svg viewBox="0 0 100 100" fill="none">
+            <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+            <circle cx="86" cy="73" r="7" fill="#fff"/>
+          </svg>
+          <div class="color-name">樱花粉</div>
+        </div>
+        <div class="color-item color-dark">
+          <svg viewBox="0 0 100 100" fill="none">
+            <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+            <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+            <circle cx="86" cy="73" r="7" fill="#fff"/>
+          </svg>
+          <div class="color-name">深空黑</div>
+        </div>
+        <div class="color-item color-light dark-label">
+          <svg viewBox="0 0 100 100" fill="none">
+            <rect x="14" y="20" width="72" height="14" rx="7" fill="#1D1D1F"/>
+            <rect x="14" y="43" width="50" height="14" rx="7" fill="#1D1D1F"/>
+            <rect x="14" y="66" width="32" height="14" rx="7" fill="#1D1D1F"/>
+            <circle cx="86" cy="73" r="7" fill="#1D1D1F"/>
+          </svg>
+          <div class="color-name">纯黑</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- App preview -->
+  <div class="section">
+    <h2 class="section-title">应用场景预览</h2>
+    <div class="preview-section">
+      <div class="preview-card">
+        <div class="preview-dock">
+          <div class="dock-icon app-blue">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+              <circle cx="86" cy="73" r="7" fill="#fff"/>
+            </svg>
+          </div>
+        </div>
+        <div class="preview-label">macOS Dock</div>
+      </div>
+      <div class="preview-card dark">
+        <div class="preview-dock">
+          <div class="dock-icon app-dark">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+              <circle cx="86" cy="73" r="7" fill="#fff"/>
+            </svg>
+          </div>
+        </div>
+        <div class="preview-label">深色模式</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sizes -->
+  <div class="section">
+    <h2 class="section-title">尺寸缩放</h2>
+    <div class="sizes-card">
+      <div class="sizes-row">
+        <div class="size-item">
+          <div class="icon-wrap size-128">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+              <circle cx="86" cy="73" r="7" fill="#fff"/>
+            </svg>
+          </div>
+          <div class="size-label">128pt</div>
+        </div>
+        <div class="size-item">
+          <div class="icon-wrap size-64">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+              <circle cx="86" cy="73" r="7" fill="#fff"/>
+            </svg>
+          </div>
+          <div class="size-label">64pt</div>
+        </div>
+        <div class="size-item">
+          <div class="icon-wrap size-44">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+              <circle cx="86" cy="73" r="7" fill="#fff"/>
+            </svg>
+          </div>
+          <div class="size-label">44pt</div>
+        </div>
+        <div class="size-item">
+          <div class="icon-wrap size-32">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+              <circle cx="86" cy="73" r="7" fill="#fff"/>
+            </svg>
+          </div>
+          <div class="size-label">32pt</div>
+        </div>
+        <div class="size-item">
+          <div class="icon-wrap size-22">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+              <circle cx="86" cy="73" r="7" fill="#fff"/>
+            </svg>
+          </div>
+          <div class="size-label">22pt</div>
+        </div>
+        <div class="size-item">
+          <div class="icon-wrap size-16">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect x="14" y="20" width="72" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="43" width="50" height="14" rx="7" fill="#fff"/>
+              <rect x="14" y="66" width="32" height="14" rx="7" fill="#fff"/>
+              <circle cx="86" cy="73" r="7" fill="#fff"/>
+            </svg>
+          </div>
+          <div class="size-label">16pt</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    MyPilot Icon · Geometric Redesign · 选择你喜欢的方案继续深化
+  </div>
+
+</div>
+</body>
+</html>

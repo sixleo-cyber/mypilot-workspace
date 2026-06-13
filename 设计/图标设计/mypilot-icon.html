@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyPilot Icon Design</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    background: #F5F5F7;
+    padding: 60px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 60px;
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1C1C1E;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    color: #8E8E93;
+    margin-top: 4px;
+  }
+
+  .icon-showcase {
+    display: flex;
+    gap: 80px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .icon-label {
+    font-size: 13px;
+    color: #8E8E93;
+    font-weight: 500;
+  }
+
+  /* Big Sur Icon Style */
+  .icon-container {
+    position: relative;
+    border-radius: 22.5%;
+    overflow: hidden;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.08),
+      0 16px 48px rgba(0,122,255,0.15),
+      inset 0 1px 0 rgba(255,255,255,0.2);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  }
+
+  .icon-container:hover {
+    transform: scale(1.05) translateY(-4px);
+    box-shadow:
+      0 8px 24px rgba(0,0,0,0.12),
+      0 24px 64px rgba(0,122,255,0.2),
+      inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+
+  /* Compass Design */
+  .compass-bg {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .compass-inner {
+    width: 70%;
+    height: 70%;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.15);
+    position: relative;
+  }
+
+  .compass-cross {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+  }
+
+  .compass-cross::before,
+  .compass-cross::after {
+    content: '';
+    position: absolute;
+    background: rgba(255,255,255,0.2);
+  }
+
+  .compass-cross::before {
+    width: 1px;
+    height: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .compass-cross::after {
+    width: 100%;
+    height: 1px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .compass-needle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 45%;
+    background: linear-gradient(to top, rgba(255,255,255,0.3) 0%, #FFFFFF 50%);
+    transform-origin: bottom center;
+    transform: translate(-50%, -100%) rotate(45deg);
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  .compass-needle::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 10px solid #FFFFFF;
+  }
+
+  .compass-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10%;
+    height: 10%;
+    background: rgba(255,255,255,0.9);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  /* Tick marks */
+  .tick-marks {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 85%;
+    height: 85%;
+  }
+
+  .tick {
+    position: absolute;
+    width: 2px;
+    height: 6px;
+    background: rgba(255,255,255,0.3);
+    left: 50%;
+    transform-origin: center 140px;
+  }
+
+  /* Alternative: Leaf Gradient */
+  .compass-bg.leaf {
+    background: linear-gradient(135deg, #0DA945 0%, #007AFF 100%);
+  }
+
+  /* Alternative: Dark Mode */
+  .compass-bg.dark {
+    background: linear-gradient(135deg, #0A84FF 0%, #5E5CE6 100%);
+  }
+
+  /* Size variants */
+  .size-1024 { width: 320px; height: 320px; }
+  .size-512 { width: 200px; height: 200px; }
+  .size-128 { width: 80px; height: 80px; }
+  .size-64 { width: 48px; height: 48px; }
+  .size-32 { width: 32px; height: 32px; }
+
+  /* Dock preview */
+  .dock-preview {
+    background: rgba(255,255,255,0.4);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 20px 32px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+
+  .dock-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+  }
+
+  .dock-icon:hover {
+    transform: scale(1.1) translateY(-4px);
+  }
+
+  .dock-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #1C1C1E;
+    margin-top: 4px;
+  }
+
+  .dock-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  /* Grid of all variants */
+  .variants-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    max-width: 800px;
+  }
+
+  .variant-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .variant-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #3A3A3C;
+  }
+
+  .variant-desc {
+    font-size: 12px;
+    color: #8E8E93;
+    text-align: center;
+  }
+
+  /* Section titles */
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1C1C1E;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .section-desc {
+    font-size: 14px;
+    color: #8E8E93;
+    text-align: center;
+    margin-bottom: 32px;
+  }
+</style>
+</head>
+<body>
+
+<h1>MyPilot Icon Design</h1>
+<p class="subtitle">"Pilot's Compass" — 飞行员罗盘概念</p>
+
+<!-- Main Icon Showcase -->
+<div class="icon-showcase">
+  <div class="icon-item">
+    <div class="icon-container size-1024">
+      <div class="compass-bg">
+        <div class="compass-inner">
+          <div class="compass-cross"></div>
+        </div>
+        <div class="compass-needle"></div>
+        <div class="compass-center"></div>
+      </div>
+    </div>
+    <span class="icon-label">1024×1024 (App Store)</span>
+  </div>
+
+  <div class="icon-item">
+    <div class="icon-container size-512">
+      <div class="compass-bg">
+        <div class="compass-inner">
+          <div class="compass-cross"></div>
+        </div>
+        <div class="compass-needle"></div>
+        <div class="compass-center"></div>
+      </div>
+    </div>
+    <span class="icon-label">512×512 (Dock)</span>
+  </div>
+</div>
+
+<!-- Dock Preview -->
+<div>
+  <div class="section-title">macOS Dock 预览</div>
+  <div class="section-desc">悬停查看动画效果</div>
+  <div class="dock-preview">
+    <div class="dock-item">
+      <div class="dock-icon">
+        <div class="compass-bg" style="width:100%;height:100%;">
+          <div class="compass-inner" style="border-width:1px;">
+            <div class="compass-cross"></div>
+          </div>
+          <div class="compass-needle" style="width:2px;"></div>
+          <div class="compass-center" style="width:8%;height:8%;"></div>
+        </div>
+      </div>
+      <div class="dock-dot"></div>
+    </div>
+    <div class="dock-item">
+      <div class="dock-icon" style="background:#007AFF;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;">📁</div>
+    </div>
+    <div class="dock-item">
+      <div class="dock-icon" style="background:#34C759;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;">💬</div>
+    </div>
+    <div class="dock-item">
+      <div class="dock-icon" style="background:#FF9500;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;">⚙️</div>
+    </div>
+    <div class="dock-item">
+      <div class="dock-icon" style="background:#5856D6;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;">🌐</div>
+    </div>
+  </div>
+</div>
+
+<!-- Variants -->
+<div>
+  <div class="section-title">配色方案</div>
+  <div class="section-desc">三种配色风格供选择</div>
+  <div class="variants-grid">
+    <div class="variant-card">
+      <div class="icon-container size-128">
+        <div class="compass-bg">
+          <div class="compass-inner">
+            <div class="compass-cross"></div>
+          </div>
+          <div class="compass-needle"></div>
+          <div class="compass-center"></div>
+        </div>
+      </div>
+      <span class="variant-name">系统蓝 (推荐)</span>
+      <span class="variant-desc">#007AFF → #5856D6<br>与 macOS/iOS 系统一致</span>
+    </div>
+
+    <div class="variant-card">
+      <div class="icon-container size-128">
+        <div class="compass-bg leaf">
+          <div class="compass-inner">
+            <div class="compass-cross"></div>
+          </div>
+          <div class="compass-needle"></div>
+          <div class="compass-center"></div>
+        </div>
+      </div>
+      <span class="variant-name">自然渐变</span>
+      <span class="variant-desc">#0DA945 → #007AFF<br>自然色系渐变</span>
+    </div>
+
+    <div class="variant-card">
+      <div class="icon-container size-128">
+        <div class="compass-bg dark">
+          <div class="compass-inner">
+            <div class="compass-cross"></div>
+          </div>
+          <div class="compass-needle"></div>
+          <div class="compass-center"></div>
+        </div>
+      </div>
+      <span class="variant-name">深色模式</span>
+      <span class="variant-desc">#0A84FF → #5E5CE6<br>深色模式适配</span>
+    </div>
+
+    <div class="variant-card">
+      <div class="icon-container size-128">
+        <div class="compass-bg" style="background:linear-gradient(135deg, #1C1C1E 0%, #3A3A3C 100%);">
+          <div class="compass-inner">
+            <div class="compass-cross"></div>
+          </div>
+          <div class="compass-needle" style="background:linear-gradient(to top, rgba(255,255,255,0.2) 0%, #007AFF 50%);"></div>
+          <div class="compass-center" style="background:#007AFF;"></div>
+        </div>
+      </div>
+      <span class="variant-name">暗色专业</span>
+      <span class="variant-desc">深色背景 + 蓝色指针<br>专业沉稳风格</span>
+    </div>
+  </div>
+</div>
+
+<!-- Size Comparison -->
+<div>
+  <div class="section-title">尺寸对比</div>
+  <div class="section-desc">不同场景下的图标尺寸</div>
+  <div class="icon-showcase">
+    <div class="icon-item">
+      <div class="icon-container size-64">
+        <div class="compass-bg">
+          <div class="compass-inner" style="border-width:1px;">
+            <div class="compass-cross"></div>
+          </div>
+          <div class="compass-needle" style="width:2px;"></div>
+          <div class="compass-center" style="width:8%;height:8%;"></div>
+        </div>
+      </div>
+      <span class="icon-label">64×64 (Menu)</span>
+    </div>
+    <div class="icon-item">
+      <div class="icon-container size-32">
+        <div class="compass-bg">
+          <div class="compass-inner" style="border-width:0.5px;">
+            <div class="compass-cross"></div>
+          </div>
+          <div class="compass-needle" style="width:1.5px;"></div>
+          <div class="compass-center" style="width:6%;height:6%;"></div>
+        </div>
+      </div>
+      <span class="icon-label">32×32 (Small)</span>
+    </div>
+  </div>
+</div>
+
+<!-- Context Preview -->
+<div>
+  <div class="section-title">应用场景预览</div>
+  <div class="section-desc">图标在实际界面中的效果</div>
+  <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;">
+    <!-- About Window -->
+    <div style="background:white;border-radius:16px;padding:32px;width:280px;box-shadow:0 2px 12px rgba(0,0,0,0.06);text-align:center;">
+      <div class="icon-container size-128" style="margin:0 auto 16px;">
+        <div class="compass-bg">
+          <div class="compass-inner">
+            <div class="compass-cross"></div>
+          </div>
+          <div class="compass-needle"></div>
+          <div class="compass-center"></div>
+        </div>
+      </div>
+      <div style="font-size:17px;font-weight:600;margin-bottom:4px;">MyPilot</div>
+      <div style="font-size:13px;color:#8E8E93;">版本 0.8.0</div>
+    </div>
+
+    <!-- Settings Row -->
+    <div style="background:white;border-radius:16px;padding:16px 20px;width:280px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:0.5px solid #E5E5EA;">
+        <div class="icon-container size-32">
+          <div class="compass-bg">
+            <div class="compass-inner" style="border-width:0.5px;">
+              <div class="compass-cross"></div>
+            </div>
+            <div class="compass-needle" style="width:1.5px;"></div>
+            <div class="compass-center" style="width:6%;height:6%;"></div>
+          </div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:14px;">MyPilot</div>
+          <div style="font-size:12px;color:#8E8E93;">AI 助手客户端</div>
+        </div>
+        <span style="color:#C7C7CC;">›</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;">
+        <div style="width:32px;height:32px;border-radius:8px;background:#F5F5F7;display:flex;align-items:center;justify-content:center;font-size:14px;">🔔</div>
+        <div style="flex:1;font-size:14px;">通知</div>
+        <span style="color:#C7C7CC;">›</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
