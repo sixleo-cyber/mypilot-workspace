@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyPilot Icon v2 — Design Review</title>
+<style>
+/* ============================================
+   MyPilot Icon v2 — Design Review
+   目的: 给设计师/PM 审核图标 v2 升级效果
+   ============================================ */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FAFAFA;
+  --bg-2: #FFFFFF;
+  --ink-1: #1D1D1F;
+  --ink-2: #6E6E73;
+  --ink-3: #86868B;
+  --line: #E5E5EA;
+  --line-2: #F2F2F7;
+  --accent: #007AFF;
+  --accent-dark: #0A84FF;
+  --success: #34C759;
+  --warning: #FF9500;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.04);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.04);
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--ink-1);
+  font-family: -apple-system, "SF Pro Text", "SF Pro Display", "Inter", "Noto Sans SC", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ========== Reusable Icon Renderer (inline SVG) ========== */
+.icon-v2 {
+  display: inline-block;
+  background:
+    linear-gradient(180deg, #0084FF 0%, #0066E6 100%),
+    #007AFF;
+  border-radius: 22.37%;
+  position: relative;
+  overflow: hidden;
+  background-clip: padding-box;
+  /* 顶部高光层 */
+  box-shadow: var(--shadow-md);
+}
+.icon-v2::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 40%;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.08) 0%,
+    rgba(255,255,255,0) 100%);
+  pointer-events: none;
+}
+.icon-v2::after {
+  content: '';
+  position: absolute;
+  top: 38%;
+  left: 22%;
+  right: 22%;
+  height: 8.5%;
+  background: white;
+  border-radius: 999px;
+  box-shadow:
+    0 0 0 0 white,
+    /* 第二条 */
+    0 calc(100% * 1.04) 0 calc(100% * 1.0) white;
+}
+.icon-v2 .b2 { /* 第二条 */ }
+.icon-v2 .b3 { /* 第三条 */ }
+.icon-v2 .dot { /* 圆点 */ }
+
+/* 几何比例（基于 100×100 坐标系）*/
+.icon-v2 .bars {
+  position: absolute;
+  top: 19%; left: 14%;
+  width: 72%;
+  display: flex; flex-direction: column;
+  gap: 8%;
+}
+.icon-v2 .bar {
+  background: white;
+  height: 15%;
+  border-radius: 999px;
+}
+.icon-v2 .bar:nth-child(1) { width: 100%; }
+.icon-v2 .bar:nth-child(2) { width: 69.4%; }
+.icon-v2 .bar:nth-child(3) { width: 44.4%; }
+.icon-v2 .dot {
+  position: absolute;
+  top: 65%; left: 78%;
+  width: 16%; height: 16%;
+  background: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* v1 纯色版本（用于对比） */
+.icon-v1 {
+  display: inline-block;
+  background: #007AFF;
+  border-radius: 22.37%;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.icon-v1 .bars {
+  position: absolute;
+  top: 20%; left: 14%;
+  width: 72%;
+  display: flex; flex-direction: column;
+  gap: 9%;
+}
+.icon-v1 .bar {
+  background: white;
+  height: 14%;
+  border-radius: 999px;
+}
+.icon-v1 .bar:nth-child(1) { width: 100%; }
+.icon-v1 .bar:nth-child(2) { width: 69.4%; }
+.icon-v1 .bar:nth-child(3) { width: 44.4%; }
+.icon-v1 .dot {
+  position: absolute;
+  top: 66%; left: 79%;
+  width: 14%; height: 14%;
+  background: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ========== Layout ========== */
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 40px 120px;
+}
+
+section { margin-bottom: 120px; }
+section:last-child { margin-bottom: 0; }
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 12px;
+}
+
+h1, h2, h3 { font-weight: 600; letter-spacing: -0.02em; }
+h1 { font-size: 56px; line-height: 1.05; margin-bottom: 16px; }
+h2 { font-size: 32px; line-height: 1.15; margin-bottom: 12px; }
+h3 { font-size: 18px; line-height: 1.3; margin-bottom: 8px; }
+p  { color: var(--ink-2); }
+
+.lede { font-size: 19px; line-height: 1.5; color: var(--ink-2); max-width: 640px; }
+
+/* ========== HERO ========== */
+.hero {
+  text-align: center;
+  padding: 60px 0 80px;
+  border-bottom: 1px solid var(--line-2);
+}
+.hero .icon-hero {
+  width: 240px; height: 240px;
+  margin: 0 auto 48px;
+  box-shadow: 0 30px 80px rgba(0, 122, 255, 0.25), 0 4px 16px rgba(0,0,0,0.08);
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.hero .badge {
+  display: inline-flex;
+  align-items: center; gap: 6px;
+  background: rgba(52, 199, 89, 0.10);
+  color: var(--success);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+.hero .badge::before {
+  content: ''; width: 6px; height: 6px;
+  background: var(--success);
+  border-radius: 50%;
+}
+.hero h1 { margin-bottom: 16px; }
+.hero .meta {
+  margin-top: 24px;
+  display: flex; gap: 24px; justify-content: center;
+  font-size: 13px; color: var(--ink-3);
+  font-family: "SF Mono", Menlo, monospace;
+}
+.hero .meta span { display: flex; align-items: center; gap: 6px; }
+
+/* ========== SIZES ========== */
+.size-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 60px 40px;
+  background: var(--bg-2);
+  border-radius: 24px;
+  border: 1px solid var(--line-2);
+}
+.size-item {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 16px;
+  transition: transform 0.3s ease;
+}
+.size-item:hover { transform: translateY(-4px); }
+.size-item .label-sm { font-size: 11px; color: var(--ink-3); font-family: "SF Mono", Menlo, monospace; }
+.size-item .use { font-size: 12px; color: var(--ink-2); }
+
+/* ========== COMPARISON ========== */
+.compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 40px;
+}
+.compare-card {
+  background: var(--bg-2);
+  border-radius: 24px;
+  border: 1px solid var(--line-2);
+  padding: 48px 40px;
+  text-align: center;
+}
+.compare-card .icon { margin: 0 auto 32px; box-shadow: var(--shadow-md); }
+.compare-card.v2 .icon { box-shadow: 0 20px 50px rgba(0, 122, 255, 0.25); }
+.compare-card h3 { font-size: 22px; margin-bottom: 8px; }
+.compare-card .ver { font-size: 12px; color: var(--ink-3); font-family: "SF Mono", monospace; margin-bottom: 24px; }
+.compare-card ul {
+  text-align: left;
+  list-style: none;
+  margin-top: 24px;
+  display: flex; flex-direction: column;
+  gap: 8px;
+}
+.compare-card li {
+  display: flex; gap: 10px;
+  font-size: 14px; color: var(--ink-2);
+  padding-left: 20px;
+  position: relative;
+}
+.compare-card li::before {
+  content: ''; position: absolute;
+  left: 0; top: 8px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.compare-card.v1 li::before { background: var(--ink-3); }
+.compare-card.v2 li::before { background: var(--success); }
+
+/* ========== MOCKUPS ========== */
+.mockups {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 40px;
+}
+.mockup {
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  border-radius: 20px;
+  padding: 32px;
+  min-height: 280px;
+  position: relative;
+  overflow: hidden;
+}
+.mockup .mock-label {
+  position: absolute;
+  top: 16px; left: 20px;
+  font-size: 11px; color: var(--ink-3);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+/* macOS Dock */
+.mac-dock {
+  display: flex; align-items: flex-end;
+  justify-content: center; gap: 16px;
+  padding: 24px 16px 16px;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(20px);
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  margin-top: 60px;
+}
+.mac-dock .dock-item {
+  width: 56px; height: 56px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.mac-dock .dock-item.active::after {
+  content: ''; position: absolute;
+  bottom: -8px; left: 50%;
+  transform: translateX(-50%);
+  width: 4px; height: 4px;
+  background: var(--ink-1);
+  border-radius: 50%;
+}
+.mac-dock .placeholder {
+  background: linear-gradient(135deg, #E5E5EA, #D1D1D6);
+  border-radius: 12px;
+  width: 100%; height: 100%;
+}
+
+/* iOS Home */
+.ios-screen {
+  width: 100%; max-width: 320px;
+  aspect-ratio: 1/2;
+  background: linear-gradient(180deg, #1B1F2A 0%, #2C3140 50%, #4A4F60 100%);
+  border-radius: 32px;
+  border: 6px solid #1D1D1F;
+  margin: 40px auto 0;
+  padding: 24px 16px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px 12px;
+  position: relative;
+}
+.ios-app {
+  aspect-ratio: 1/1;
+  background: linear-gradient(135deg, #4A4F60, #6E7385);
+  border-radius: 22%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: rgba(255,255,255,0.5);
+  position: relative;
+}
+.ios-app.mypilot {
+  background:
+    linear-gradient(180deg, #0084FF 0%, #0066E6 100%);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+}
+.ios-app.mypilot::after {
+  content: '';
+  position: absolute;
+  top: 38%; left: 22%;
+  width: 16%; height: 14%;
+  background: white;
+  border-radius: 999px;
+  box-shadow:
+    0 calc(100% * 0.95) 0 calc(100% * 0.5) white,
+    0 calc(100% * 1.9) 0 0 calc(100% * 0.3) white;
+}
+.ios-app.mypilot .dot-ios {
+  position: absolute;
+  top: 65%; left: 75%;
+  width: 14%; height: 14%;
+  background: white;
+  border-radius: 50%;
+}
+
+/* Browser tab */
+.browser-tab {
+  background: #E8E8ED;
+  border-radius: 12px;
+  padding: 8px;
+  margin-top: 40px;
+}
+.browser-tab .tab {
+  background: white;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex; align-items: center; gap: 8px;
+  max-width: 240px;
+  font-size: 12px;
+  color: var(--ink-2);
+  box-shadow: var(--shadow-sm);
+}
+.browser-tab .favicon { flex-shrink: 0; }
+
+/* Spotlight */
+.spotlight {
+  background: rgba(28, 28, 30, 0.72);
+  backdrop-filter: blur(40px);
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin: 40px auto 0;
+  max-width: 400px;
+  display: flex; align-items: center; gap: 12px;
+  color: white; font-size: 14px;
+}
+
+/* ========== COLOR ========== */
+.color-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 32px;
+}
+.swatch {
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.swatch .chip { height: 100px; }
+.swatch .info { padding: 16px; }
+.swatch .name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.swatch .hex { font-size: 12px; color: var(--ink-3); font-family: "SF Mono", monospace; }
+
+/* ========== GEOMETRY ========== */
+.geo-wrap {
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  border-radius: 20px;
+  padding: 48px;
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.geo-canvas {
+  position: relative;
+  width: 100%; max-width: 320px;
+  aspect-ratio: 1/1;
+  margin: 0 auto;
+  background: #FAFAFA;
+  border-radius: 16px;
+  border: 1px solid var(--line-2);
+}
+.geo-icon {
+  position: absolute;
+  top: 10%; left: 10%;
+  width: 80%; height: 80%;
+}
+.geo-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px);
+  background-size: 10% 10%;
+  pointer-events: none;
+}
+.geo-spec dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; font-size: 14px; }
+.geo-spec dt { color: var(--ink-3); font-family: "SF Mono", monospace; }
+.geo-spec dd { color: var(--ink-1); font-weight: 500; }
+
+/* ========== EXPORT ========== */
+.export-list {
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 32px;
+}
+.export-row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--line-2);
+  font-size: 14px;
+}
+.export-row:last-child { border-bottom: none; }
+.export-row .name { font-family: "SF Mono", monospace; color: var(--ink-1); }
+.export-row .use { color: var(--ink-2); }
+.export-row .size { color: var(--ink-3); font-family: "SF Mono", monospace; font-size: 12px; }
+.export-row .preview { width: 40px; height: 40px; }
+.export-row .preview.tiny { width: 16px; height: 16px; }
+.export-row .preview.small { width: 32px; height: 32px; }
+.export-row .preview.medium { width: 48px; height: 48px; }
+
+/* ========== FOOTER ========== */
+footer {
+  margin-top: 120px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line-2);
+  font-size: 12px;
+  color: var(--ink-3);
+  display: flex; justify-content: space-between;
+  font-family: "SF Mono", monospace;
+}
+
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <span class="badge">V2 已就绪 · 等待审核</span>
+    <h1>MyPilot Icon</h1>
+    <p class="lede" style="margin: 0 auto;">Apple Big Sur+ 工艺升级 · 微妙渐变 + 顶部高光，几何哲学保持不变。</p>
+
+    <div class="icon-v2 icon-hero">
+      <div class="bars">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      <div class="dot"></div>
+    </div>
+
+    <div class="meta">
+      <span>📐 22% 圆角</span>
+      <span>🎨 #0084FF → #0066E6</span>
+      <span>📏 60% 安全边距</span>
+      <span>✨ 8 pt 圆点</span>
+    </div>
+  </section>
+
+  <!-- ============ SIZE LADDER ============ -->
+  <section>
+    <p class="label">01 · Size Ladder</p>
+    <h2>从 16pt 到 1024pt</h2>
+    <p class="lede">小尺寸下圆点保持清晰可辨；大尺寸下渐变与高光增加层次。</p>
+
+    <div class="size-row" style="margin-top: 40px;">
+      <div class="size-item">
+        <div class="icon-v2" style="width: 16px; height: 16px;">
+          <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <div class="label-sm">16</div>
+        <div class="use">Favicon</div>
+      </div>
+
+      <div class="size-item">
+        <div class="icon-v2" style="width: 32px; height: 32px;">
+          <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <div class="label-sm">32</div>
+        <div class="use">菜单栏</div>
+      </div>
+
+      <div class="size-item">
+        <div class="icon-v2" style="width: 64px; height: 64px;">
+          <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <div class="label-sm">64</div>
+        <div class="use">侧边栏</div>
+      </div>
+
+      <div class="size-item">
+        <div class="icon-v2" style="width: 128px; height: 128px;">
+          <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <div class="label-sm">128</div>
+        <div class="use">macOS 小尺寸</div>
+      </div>
+
+      <div class="size-item">
+        <div class="icon-v2" style="width: 256px; height: 256px;">
+          <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <div class="label-sm">256</div>
+        <div class="use">macOS @1x</div>
+      </div>
+
+      <div class="size-item">
+        <div class="icon-v2" style="width: 512px; height: 512px;">
+          <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <div class="label-sm">512</div>
+        <div class="use">macOS @2x</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ V1 vs V2 ============ -->
+  <section>
+    <p class="label">02 · Evolution</p>
+    <h2>v1 → v2 升级</h2>
+    <p class="lede">设计哲学保持不变，只在工艺层面做 Apple 现代图标标准对齐。</p>
+
+    <div class="compare">
+      <div class="compare-card v1">
+        <div class="icon-v1" style="width: 180px; height: 180px;">
+          <div class="bars">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <h3>v1 · 纯色基底</h3>
+        <div class="ver">2026-06-13 · Original</div>
+        <ul>
+          <li>背景：纯色 #007AFF</li>
+          <li>横条高度：14pt</li>
+          <li>圆点半径：7pt</li>
+          <li>无渐变、无高光</li>
+        </ul>
+      </div>
+
+      <div class="compare-card v2">
+        <div class="icon-v2" style="width: 180px; height: 180px;">
+          <div class="bars">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <h3>v2 · Apple Big Sur+</h3>
+        <div class="ver">2026-06-14 · Polished</div>
+        <ul>
+          <li>背景：渐变 #0084FF → #0066E6</li>
+          <li>顶部：3% 白色径向高光</li>
+          <li>横条高度：15pt（+7%）</li>
+          <li>圆点半径：8pt（+14%）</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ REAL-WORLD MOCKUPS ============ -->
+  <section>
+    <p class="label">03 · Real World</p>
+    <h2>真实使用场景</h2>
+    <p class="lede">在 macOS Dock、iOS 主屏、浏览器标签页、Spotlight 中的实际表现。</p>
+
+    <div class="mockups">
+
+      <!-- macOS Dock -->
+      <div class="mockup">
+        <div class="mock-label">macOS · Dock</div>
+        <div class="mac-dock">
+          <div class="dock-item"><div class="placeholder"></div></div>
+          <div class="dock-item"><div class="placeholder"></div></div>
+          <div class="dock-item active">
+            <div class="icon-v2" style="width: 56px; height: 56px;">
+              <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+              <div class="dot"></div>
+            </div>
+          </div>
+          <div class="dock-item"><div class="placeholder"></div></div>
+          <div class="dock-item"><div class="placeholder"></div></div>
+        </div>
+      </div>
+
+      <!-- iOS Home Screen -->
+      <div class="mockup">
+        <div class="mock-label">iOS · Home Screen</div>
+        <div class="ios-screen">
+          <div class="ios-app"></div>
+          <div class="ios-app"></div>
+          <div class="ios-app"></div>
+          <div class="ios-app"></div>
+          <div class="ios-app"></div>
+          <div class="ios-app"></div>
+          <div class="ios-app"></div>
+          <div class="ios-app mypilot"></div>
+          <div class="ios-app"></div>
+          <div class="ios-app"></div>
+          <div class="ios-app"></div>
+          <div class="ios-app"></div>
+          <div class="ios-app"></div>
+          <div class="ios-app"></div>
+          <div class="ios-app"></div>
+          <div class="ios-app"></div>
+        </div>
+      </div>
+
+      <!-- Browser Tab -->
+      <div class="mockup">
+        <div class="mock-label">Browser · Favicon @ 16pt</div>
+        <div class="browser-tab">
+          <div class="tab">
+            <div class="favicon">
+              <div class="icon-v2" style="width: 16px; height: 16px;">
+                <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+                  <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                </div>
+                <div class="dot"></div>
+              </div>
+            </div>
+            <span>MyPilot — 与你的 AI 智能体对话</span>
+          </div>
+        </div>
+        <div style="margin-top: 60px; display: flex; gap: 24px; justify-content: center; align-items: center;">
+          <div class="icon-v2" style="width: 16px; height: 16px;">
+            <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+              <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+            <div class="dot"></div>
+          </div>
+          <div class="icon-v2" style="width: 32px; height: 32px;">
+            <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+              <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+            <div class="dot"></div>
+          </div>
+          <div class="icon-v2" style="width: 64px; height: 64px;">
+            <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+              <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+            <div class="dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spotlight -->
+      <div class="mockup">
+        <div class="mock-label">macOS · Spotlight</div>
+        <div class="spotlight">
+          <div class="icon-v2" style="width: 40px; height: 40px; box-shadow: var(--shadow-md);">
+            <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+              <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+            <div class="dot"></div>
+          </div>
+          <span>MyPilot</span>
+          <span style="color: rgba(255,255,255,0.5); font-size: 12px; margin-left: auto;">Application</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ COLOR ============ -->
+  <section>
+    <p class="label">04 · Color System</p>
+    <h2>色彩系统</h2>
+    <p class="lede">基于 Apple 系统蓝，三层叠加构建立体感。</p>
+
+    <div class="color-row">
+      <div class="swatch">
+        <div class="chip" style="background: #0084FF;"></div>
+        <div class="info">
+          <div class="name">顶部高光</div>
+          <div class="hex">#0084FF</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: #007AFF;"></div>
+        <div class="info">
+          <div class="name">品牌主色</div>
+          <div class="hex">#007AFF</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: #0066E6;"></div>
+        <div class="info">
+          <div class="name">底部阴影</div>
+          <div class="hex">#0066E6</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: #FFFFFF; border-bottom: 1px solid #E5E5EA;"></div>
+        <div class="info">
+          <div class="name">前景元素</div>
+          <div class="hex">#FFFFFF</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GEOMETRY ============ -->
+  <section>
+    <p class="label">05 · Geometry</p>
+    <h2>几何规范</h2>
+    <p class="lede">基于 100×100 viewBox，与 V1 严格对齐，只做视觉重心微调。</p>
+
+    <div class="geo-wrap">
+      <div class="geo-canvas">
+        <div class="geo-grid"></div>
+        <div class="icon-v2 geo-icon">
+          <div class="bars">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+      </div>
+      <div class="geo-spec">
+        <h3 style="margin-bottom: 16px;">ViewBox: 100 × 100</h3>
+        <dl>
+          <dt>第 1 条</dt>
+          <dd>x=14 · y=19 · w=72 · h=15 · rx=7.5</dd>
+          <dt>第 2 条</dt>
+          <dd>x=14 · y=42 · w=50 · h=15 · rx=7.5</dd>
+          <dt>第 3 条</dt>
+          <dd>x=14 · y=65 · w=32 · h=15 · rx=7.5</dd>
+          <dt>圆点</dt>
+          <dd>cx=86 · cy=72 · r=8</dd>
+          <dt>圆角半径</dt>
+          <dd>22%（macOS 标准）</dd>
+          <dt>安全边距</dt>
+          <dd>60%（含几何）</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EXPORT ============ -->
+  <section>
+    <p class="label">06 · Production Files</p>
+    <h2>导出清单</h2>
+    <p class="lede">完整多尺寸套件，App Store / macOS / iOS / Web 全部覆盖。</p>
+
+    <div class="export-list">
+      <div class="export-row">
+        <div class="icon-v2 preview">
+          <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <div class="name">MyPilot-AppIcon-1024.png</div>
+        <div class="use">App Store / Marketing</div>
+        <div class="size">1024×1024</div>
+      </div>
+      <div class="export-row">
+        <div class="icon-v2 preview">
+          <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <div class="name">MyPilot-AppIcon-512.png</div>
+        <div class="use">macOS @2x</div>
+        <div class="size">512×512</div>
+      </div>
+      <div class="export-row">
+        <div class="icon-v2 preview medium">
+          <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <div class="name">MyPilot-AppIcon-256.png</div>
+        <div class="use">macOS @1x</div>
+        <div class="size">256×256</div>
+      </div>
+      <div class="export-row">
+        <div class="icon-v2 preview small">
+          <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <div class="name">MyPilot-AppIcon-180.png</div>
+        <div class="use">iPhone @3x</div>
+        <div class="size">180×180</div>
+      </div>
+      <div class="export-row">
+        <div class="icon-v2 preview small">
+          <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <div class="name">MyPilot-AppIcon-128.png</div>
+        <div class="use">macOS 小尺寸</div>
+        <div class="size">128×128</div>
+      </div>
+      <div class="export-row">
+        <div class="icon-v2 preview tiny">
+          <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <div class="name">MyPilot-AppIcon-32.png</div>
+        <div class="use">菜单栏 / Finder</div>
+        <div class="size">32×32</div>
+      </div>
+      <div class="export-row">
+        <div class="icon-v2 preview tiny">
+          <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <div class="name">MyPilot-AppIcon-16.png</div>
+        <div class="use">Favicon / 系统列表</div>
+        <div class="size">16×16</div>
+      </div>
+      <div class="export-row">
+        <div class="icon-v2 preview">
+          <div class="bars" style="top: 19%; left: 14%; width: 72%; gap: 8%;">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <div class="name">MyPilot-Icon-Final-v2.svg</div>
+        <div class="use">矢量源（设计交付）</div>
+        <div class="size">SVG</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>MyPilot Icon v2 · 2026-06-14</div>
+    <div>设计依据: MyPilot-Icon-Final-Spec.md + macOS Sonoma+ 图标工艺</div>
+  </footer>
+
+</div>
+
+</body>
+</html>

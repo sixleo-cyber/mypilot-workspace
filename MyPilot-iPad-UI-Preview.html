@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyPilot iPad UI Preview — V10 iMessage Style</title>
+<style>
+/* ============================================
+   MyPilot iPad UI Preview
+   设计依据:
+   - 设计/MyPilot-V10-Design-Spec.md  (V10 iMessage 字号)
+   - 设计/MyPilot-Design-System.md  (iPad 分栏 820x600pt)
+   - 实际代码 Core/DesignSystem/{AppColors,Spacing,AppRadius,AppTypography}.swift
+   ============================================ */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FFFFFF;
+  --bg-dark: #000000;
+  --card: #F5F5F7;
+  --card-dark: #1C1C1E;
+  --elevated: #F5F5F7;
+  --separator: #E5E5EA;
+  --separator-dark: #38383A;
+
+  --tx-primary: #000000;
+  --tx-primary-dark: #FFFFFF;
+  --tx-secondary: #8E8E93;
+  --tx-tertiary: #C7C7CC;
+
+  --user-bubble: #007AFF;
+  --user-bubble-dark: #0A84FF;
+  --user-text: #FFFFFF;
+
+  --ai-bubble: #E5E5EA;
+  --ai-bubble-dark: #2C2C2E;
+  --ai-text: #000000;
+  --ai-text-dark: #FFFFFF;
+
+  --success: #34C759;
+  --danger: #FF3B30;
+  --warning: #FF9500;
+  --info: #007AFF;
+
+  --accent-soft: rgba(0, 122, 255, 0.10);
+  --success-soft: rgba(52, 199, 89, 0.10);
+  --warning-soft: rgba(255, 149, 0, 0.10);
+  --danger-soft: rgba(255, 59, 48, 0.10);
+
+  --amber300: #F6AD02;
+  --lime300: #ACCE22;
+  --leaf300: #0DA945;
+}
+
+html.dark {
+  --bg: var(--bg-dark);
+  --card: var(--card-dark);
+  --elevated: var(--card-dark);
+  --separator: var(--separator-dark);
+  --tx-primary: var(--tx-primary-dark);
+  --ai-bubble: var(--ai-bubble-dark);
+  --ai-text: var(--ai-text-dark);
+}
+
+body {
+  font-family: -apple-system, "SF Pro Text", "SF Pro Display", "Noto Sans SC", "Inter", system-ui, sans-serif;
+  background: linear-gradient(180deg, #F2F2F7 0%, #E5E5EA 100%);
+  color: var(--tx-primary);
+  min-height: 100vh;
+  padding: 24px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+html.dark body {
+  background: linear-gradient(180deg, #000000 0%, #1C1C1E 100%);
+}
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  max-width: 1400px; margin: 0 auto 24px;
+  padding: 0 8px;
+}
+.topbar h1 { font-size: 22px; font-weight: 600; }
+.topbar .meta { font-size: 12px; color: var(--tx-secondary); }
+
+.controls { display: flex; gap: 8px; align-items: center; }
+.controls button {
+  background: var(--card); border: 1px solid var(--separator);
+  padding: 6px 14px; border-radius: 16px;
+  font-size: 12px; color: var(--tx-primary);
+  cursor: pointer; transition: all 0.15s;
+}
+.controls button:hover { background: var(--accent-soft); border-color: var(--info); }
+.controls button.active { background: var(--user-bubble); color: white; border-color: var(--user-bubble); }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(820px, 1fr));
+  gap: 32px;
+  max-width: 1700px; margin: 0 auto;
+}
+
+.section-title {
+  grid-column: 1 / -1;
+  font-size: 14px; font-weight: 600; color: var(--tx-secondary);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  margin-top: 8px; padding-left: 4px;
+}
+
+.ipad {
+  background: var(--bg);
+  border-radius: 28px;
+  width: 820px; height: 600px;
+  border: 8px solid #1C1F14;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.08);
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+  font-size: 14px; color: var(--tx-primary);
+}
+.ipad.landscape { width: 1024px; height: 720px; }
+.ipad.compact { width: 540px; height: 720px; }
+
+.ipad-screen {
+  flex: 1; display: flex; flex-direction: column;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.status-bar {
+  height: 24px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+  font-size: 12px; font-weight: 600;
+  background: var(--bg);
+  color: var(--tx-primary);
+}
+.status-bar .right { display: flex; gap: 6px; align-items: center; }
+.status-bar svg { width: 14px; height: 14px; }
+
+.row { display: flex; align-items: center; }
+.col { display: flex; flex-direction: column; }
+.flex-1 { flex: 1; }
+
+.sidebar {
+  width: 320px; flex-shrink: 0;
+  background: var(--card);
+  border-right: 1px solid var(--separator);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.sidebar-search {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--separator);
+}
+.sidebar-search input {
+  width: 100%; padding: 8px 12px;
+  background: var(--bg); border: 1px solid var(--separator);
+  border-radius: 8px; font-size: 13px;
+  color: var(--tx-primary);
+}
+.sidebar-section { padding: 12px 0; }
+.sidebar-section-title {
+  padding: 4px 16px 8px;
+  font-size: 11px; font-weight: 600;
+  color: var(--tx-secondary);
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.sidebar-item:hover { background: var(--separator); }
+.sidebar-item.active { background: var(--accent-soft); }
+.sidebar-item.active .name { color: var(--user-bubble); font-weight: 600; }
+.sidebar-item .icon {
+  width: 24px; height: 24px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sidebar-item .name { font-size: 14px; font-weight: 500; }
+.sidebar-item .sub { font-size: 12px; color: var(--tx-secondary); }
+.sidebar-item .check { margin-left: auto; color: var(--user-bubble); }
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding: 12px 16px;
+  display: flex; gap: 8px;
+  border-top: 1px solid var(--separator);
+}
+.btn-primary {
+  flex: 1; padding: 10px;
+  background: var(--user-bubble); color: white;
+  border: none; border-radius: 8px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.btn-secondary {
+  width: 40px; height: 40px;
+  background: transparent; color: var(--user-bubble);
+  border: 1px solid var(--user-bubble);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.chat-header {
+  height: 56px; flex-shrink: 0;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--separator);
+  background: var(--bg);
+}
+.chat-header .avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--accent-soft);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--info);
+}
+.chat-header .title { font-size: 15px; font-weight: 600; }
+.chat-header .subtitle { font-size: 12px; color: var(--tx-secondary); }
+.chat-header .right { margin-left: auto; display: flex; gap: 8px; }
+.chat-header .right button {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: transparent; border: none;
+  color: var(--tx-secondary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.chat-header .right button:hover { background: var(--card); color: var(--tx-primary); }
+
+.token-bar {
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--separator);
+  background: var(--bg);
+}
+.token-bar .progress {
+  height: 4px; background: var(--separator);
+  border-radius: 2px; overflow: hidden;
+}
+.token-bar .fill {
+  height: 100%; background: var(--success);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+.token-bar .fill.warn { background: var(--warning); }
+.token-bar .fill.danger { background: var(--danger); }
+.token-bar .stats {
+  display: flex; justify-content: space-between;
+  margin-top: 6px;
+  font-size: 11px; color: var(--tx-secondary);
+  font-family: "SF Mono", Menlo, monospace;
+}
+
+.messages {
+  flex: 1; overflow-y: auto;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 8px;
+  background: var(--bg);
+}
+.msg { display: flex; gap: 8px; max-width: 78%; }
+.msg.user { align-self: flex-end; flex-direction: row-reverse; }
+.bubble {
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 15px; line-height: 1.4;
+  word-wrap: break-word;
+}
+.msg.user .bubble {
+  background: var(--user-bubble); color: var(--user-text);
+  border-bottom-right-radius: 4px;
+}
+.msg.ai .bubble {
+  background: var(--ai-bubble); color: var(--ai-text);
+  border-bottom-left-radius: 4px;
+}
+.msg .avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--accent-soft);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--info);
+  flex-shrink: 0;
+}
+
+.thinking {
+  background: var(--card);
+  border: 1px solid var(--separator);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 12px; color: var(--tx-secondary);
+  max-width: 70%;
+  align-self: flex-start;
+}
+.thinking summary { cursor: pointer; font-weight: 500; color: var(--tx-primary); }
+.thinking .body { margin-top: 6px; line-height: 1.5; }
+
+.input-bar {
+  border-top: 1px solid var(--separator);
+  padding: 10px 16px 14px;
+  background: var(--bg);
+}
+.input-row {
+  display: flex; align-items: flex-end; gap: 8px;
+  background: var(--card);
+  border-radius: 18px;
+  padding: 6px 6px 6px 8px;
+}
+.icon-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: transparent; border: none;
+  color: var(--tx-secondary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.icon-btn:hover { color: var(--tx-primary); }
+.input-row textarea {
+  flex: 1; border: none; background: transparent;
+  resize: none; outline: none;
+  font-family: inherit; font-size: 15px;
+  padding: 6px 4px;
+  color: var(--tx-primary);
+  min-height: 24px; max-height: 120px;
+}
+.send-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--user-bubble); color: white;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.send-btn:disabled { background: var(--tx-tertiary); }
+
+.split-view { display: flex; flex: 1; overflow: hidden; }
+.split-sidebar {
+  width: 240px; background: var(--card);
+  border-right: 1px solid var(--separator);
+  display: flex; flex-direction: column; padding: 12px 0;
+  flex-shrink: 0;
+}
+.split-sidebar .item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 16px; cursor: pointer;
+  font-size: 14px; color: var(--tx-primary);
+}
+.split-sidebar .item:hover { background: var(--separator); }
+.split-sidebar .item.active { background: var(--accent-soft); color: var(--user-bubble); font-weight: 600; }
+.split-detail {
+  flex: 1; overflow-y: auto;
+  background: var(--bg);
+}
+
+.form { padding: 24px 32px; }
+.form h2 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+.form .sub { font-size: 13px; color: var(--tx-secondary); margin-bottom: 20px; }
+.form-section {
+  background: var(--card);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.form-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--separator);
+  min-height: 44px;
+}
+.form-row:last-child { border-bottom: none; }
+.form-row .icon {
+  width: 28px; height: 28px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.form-row .label { font-size: 14px; }
+.form-row .value { margin-left: auto; color: var(--tx-secondary); font-size: 13px; }
+.form-row .right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+
+.toggle {
+  width: 44px; height: 26px; border-radius: 13px;
+  background: var(--tx-tertiary); position: relative;
+  cursor: pointer; transition: background 0.2s;
+}
+.toggle.on { background: var(--success); }
+.toggle::after {
+  content: ''; width: 22px; height: 22px; border-radius: 50%;
+  background: white; position: absolute; top: 2px; left: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+.toggle.on::after { transform: translateX(18px); }
+
+.welcome {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px; text-align: center;
+  background: var(--bg);
+}
+.welcome-icon {
+  width: 100px; height: 100px; border-radius: 22px;
+  background: var(--warning-soft);
+  color: var(--amber300);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+}
+.welcome h1 { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+.welcome .ver { font-size: 12px; color: var(--tx-secondary); margin-bottom: 32px; }
+.steps { display: flex; flex-direction: column; gap: 12px; width: 360px; max-width: 100%; }
+.step {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--card);
+  padding: 12px 16px;
+  border-radius: 12px;
+  text-align: left;
+}
+.step .num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--success-soft);
+  color: var(--success);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  flex-shrink: 0;
+}
+.step.done .num { background: var(--success); color: white; }
+.step .title { font-size: 14px; font-weight: 600; }
+.step .sub { font-size: 12px; color: var(--tx-secondary); }
+.welcome .footer { margin-top: 40px; font-size: 11px; color: var(--tx-tertiary); }
+
+.sheet {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+}
+.sheet-card {
+  background: var(--card);
+  border-radius: 16px;
+  width: 480px; max-width: 90%;
+  max-height: 90%;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.sheet-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--separator);
+  display: flex; align-items: center;
+}
+.sheet-header h3 { font-size: 17px; font-weight: 600; }
+.sheet-body { padding: 20px; flex: 1; overflow-y: auto; }
+.sheet-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--separator);
+  display: flex; gap: 8px; justify-content: flex-end;
+}
+.btn {
+  padding: 8px 16px; border-radius: 8px;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer; border: none;
+}
+.btn-cancel { background: transparent; color: var(--tx-secondary); }
+.btn-default { background: var(--user-bubble); color: white; }
+
+.input-field {
+  width: 100%; padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--separator);
+  border-radius: 8px;
+  font-size: 15px; color: var(--tx-primary);
+  font-family: inherit;
+}
+.input-field:focus { outline: 2px solid var(--user-bubble); border-color: transparent; }
+
+.qr-box {
+  width: 200px; height: 200px;
+  margin: 20px auto;
+  background: white;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--separator);
+}
+.code {
+  text-align: center;
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 22px; font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 12px 16px;
+  background: var(--bg);
+  border-radius: 8px;
+  margin: 12px auto;
+  display: inline-block;
+}
+
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.dot.success { background: var(--success); }
+.dot.warn { background: var(--warning); }
+.dot.danger { background: var(--danger); }
+.dot.pulse {
+  position: relative;
+  box-shadow: 0 0 0 0 currentColor;
+  animation: pulse 1.6s ease-out infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+  100% { box-shadow: 0 0 0 8px transparent; opacity: 0.6; }
+}
+
+.icon-block {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.icon-block.lg { width: 56px; height: 56px; border-radius: 14px; }
+.icon-block.sm { width: 28px; height: 28px; border-radius: 7px; }
+
+.page-label {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 12px; color: var(--tx-secondary);
+}
+
+.empty-state {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 40px;
+  color: var(--tx-secondary);
+}
+.empty-state h2 { font-size: 22px; font-weight: 600; color: var(--tx-primary); margin-bottom: 8px; }
+.empty-state p { font-size: 14px; max-width: 320px; line-height: 1.5; }
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>MyPilot iPad UI Preview</h1>
+    <div class="meta">V10 iMessage-style · 设计依据: MyPilot-V10-Design-Spec.md · iPad 820×600pt</div>
+  </div>
+  <div class="controls">
+    <button onclick="setMode('light')" class="active" id="btn-light">☀ 浅色</button>
+    <button onclick="setMode('dark')" id="btn-dark">🌙 深色</button>
+    <button onclick="setOrient('landscape')" class="active" id="btn-land">横屏</button>
+    <button onclick="setOrient('portrait')" id="btn-port">竖屏</button>
+  </div>
+</div>
+
+<div class="grid">
+
+<div class="section-title">1 · 引导与配对</div>
+
+<div class="device-wrap">
+  <div class="ipad landscape" id="d-welcome">
+    <div class="ipad-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="right">
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M1 4h2v6H1zm3-2h2v10H4zm3-2h2v14H7zm3 3h2v8h-2z"/></svg>
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 0C3.13 0 0 3.13 0 7h2c0-2.76 2.24-5 5-5s5 2.24 5 5h2c0-3.87-3.13-7-7-7z"/></svg>
+          <svg viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="2" width="12" height="8" rx="2"/><rect x="13" y="4" width="2" height="4" rx="1"/></svg>
+        </span>
+      </div>
+      <div class="welcome">
+        <div class="welcome-icon">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <path d="M2 12c2-2 4-3 6-3M22 12c-2-2-4-3-6-3"/>
+            <circle cx="12" cy="12" r="2"/>
+            <path d="M5 8c2-2 4-2.5 6-2.5M19 8c-2-2-4-2.5-6-2.5M5 16c2 2 4 2.5 6 2.5M19 16c-2 2-4 2.5-6 2.5"/>
+          </svg>
+        </div>
+        <h1>MyPilot</h1>
+        <div class="ver">v1.0.0 · 数据完全私有</div>
+        <div class="steps">
+          <div class="step done">
+            <div class="num">✓</div>
+            <div>
+              <div class="title">部署 OpenClaw</div>
+              <div class="sub">Gateway 已运行</div>
+            </div>
+          </div>
+          <div class="step done">
+            <div class="num">✓</div>
+            <div>
+              <div class="title">安装 MyPilot Link</div>
+              <div class="sub">Daemon 已连接 (localhost:52378)</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="num">3</div>
+            <div>
+              <div class="title">添加实例</div>
+              <div class="sub">扫码或粘贴配对码</div>
+            </div>
+          </div>
+        </div>
+        <div class="footer">连接本地 OpenClaw Gateway，开始 AI 之旅</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-label">1.1 · 欢迎页（三步引导）</div>
+</div>
+
+<div class="device-wrap">
+  <div class="ipad landscape" id="d-add1">
+    <div class="ipad-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="right">
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M1 4h2v6H1zm3-2h2v10H4zm3-2h2v14H7zm3 3h2v8h-2z"/></svg>
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 0C3.13 0 0 3.13 0 7h2c0-2.76 2.24-5 5-5s5 2.24 5 5h2c0-3.87-3.13-7-7-7z"/></svg>
+          <svg viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="2" width="12" height="8" rx="2"/><rect x="13" y="4" width="2" height="4" rx="1"/></svg>
+        </span>
+      </div>
+      <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+        <div class="sheet" style="position: relative; background: transparent;">
+          <div class="sheet-card">
+            <div class="sheet-header"><h3>添加 OpenClaw 实例</h3></div>
+            <div class="sheet-body">
+              <div style="font-size: 13px; color: var(--tx-secondary); margin-bottom: 12px;">
+                输入 MyPilot Link 服务的地址（默认 localhost:52378）
+              </div>
+              <label style="font-size: 12px; color: var(--tx-secondary); display: block; margin-bottom: 4px;">服务器地址</label>
+              <input class="input-field" value="http://localhost:52378">
+              <div style="margin-top: 16px; padding: 12px; background: var(--bg); border-radius: 8px; font-size: 12px; color: var(--tx-secondary); line-height: 1.5;">
+                💡 在服务器上运行：<br>
+                <code style="font-family: 'SF Mono', monospace;">npm install -g @mypilot/link</code><br>
+                <code style="font-family: 'SF Mono', monospace;">mypilot start</code>
+              </div>
+            </div>
+            <div class="sheet-footer">
+              <button class="btn btn-cancel">取消</button>
+              <button class="btn btn-default">下一步</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-label">1.2 · 添加实例 · Step 1（服务器地址）</div>
+</div>
+
+<div class="device-wrap">
+  <div class="ipad landscape" id="d-add2">
+    <div class="ipad-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="right">
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M1 4h2v6H1zm3-2h2v10H4zm3-2h2v14H7zm3 3h2v8h-2z"/></svg>
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 0C3.13 0 0 3.13 0 7h2c0-2.76 2.24-5 5-5s5 2.24 5 5h2c0-3.87-3.13-7-7-7z"/></svg>
+          <svg viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="2" width="12" height="8" rx="2"/><rect x="13" y="4" width="2" height="4" rx="1"/></svg>
+        </span>
+      </div>
+      <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+        <div class="sheet" style="position: relative; background: transparent;">
+          <div class="sheet-card">
+            <div class="sheet-header"><h3>扫码配对</h3></div>
+            <div class="sheet-body" style="text-align: center;">
+              <div style="font-size: 13px; color: var(--tx-secondary); margin-bottom: 8px;">
+                用 MyPilot Link 扫描此二维码完成配对
+              </div>
+              <div class="qr-box">
+                <svg width="160" height="160" viewBox="0 0 21 21" fill="#000">
+                  <rect x="0" y="0" width="7" height="7"/><rect x="1" y="1" width="5" height="5" fill="#fff"/><rect x="2" y="2" width="3" height="3"/>
+                  <rect x="14" y="0" width="7" height="7"/><rect x="15" y="1" width="5" height="5" fill="#fff"/><rect x="16" y="2" width="3" height="3"/>
+                  <rect x="0" y="14" width="7" height="7"/><rect x="1" y="15" width="5" height="5" fill="#fff"/><rect x="2" y="16" width="3" height="3"/>
+                  <rect x="3" y="3" width="1" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="5" y="5" width="1" height="1"/>
+                  <rect x="8" y="0" width="1" height="1"/><rect x="9" y="1" width="1" height="1"/><rect x="10" y="2" width="1" height="1"/><rect x="11" y="3" width="1" height="1"/><rect x="12" y="4" width="1" height="1"/>
+                  <rect x="8" y="8" width="1" height="1"/><rect x="9" y="9" width="1" height="1"/><rect x="10" y="10" width="1" height="1"/><rect x="11" y="11" width="1" height="1"/><rect x="12" y="12" width="1" height="1"/>
+                  <rect x="0" y="8" width="1" height="1"/><rect x="1" y="9" width="1" height="1"/><rect x="2" y="10" width="1" height="1"/><rect x="3" y="11" width="1" height="1"/>
+                  <rect x="8" y="14" width="1" height="1"/><rect x="9" y="15" width="1" height="1"/><rect x="10" y="16" width="1" height="1"/><rect x="11" y="17" width="1" height="1"/>
+                  <rect x="14" y="8" width="1" height="1"/><rect x="15" y="9" width="1" height="1"/><rect x="16" y="10" width="1" height="1"/><rect x="17" y="11" width="1" height="1"/>
+                  <rect x="14" y="14" width="1" height="1"/><rect x="16" y="14" width="1" height="1"/><rect x="15" y="15" width="1" height="1"/><rect x="17" y="16" width="1" height="1"/><rect x="18" y="17" width="1" height="1"/><rect x="19" y="18" width="1" height="1"/><rect x="20" y="19" width="1" height="1"/>
+                </svg>
+              </div>
+              <div style="font-size: 11px; color: var(--tx-secondary); margin-top: 4px;">配对码</div>
+              <div class="code">MQ4F-N8L2-9A7B</div>
+            </div>
+            <div class="sheet-footer">
+              <button class="btn btn-cancel">上一步</button>
+              <button class="btn btn-default">完成</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-label">1.3 · 添加实例 · Step 2（配对码 + QR）</div>
+</div>
+
+<div class="section-title">2 · 核心聊天（Sidebar + Detail）</div>
+
+<div class="device-wrap">
+  <div class="ipad landscape" id="d-chat">
+    <div class="ipad-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="right">
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M1 4h2v6H1zm3-2h2v10H4zm3-2h2v14H7zm3 3h2v8h-2z"/></svg>
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 0C3.13 0 0 3.13 0 7h2c0-2.76 2.24-5 5-5s5 2.24 5 5h2c0-3.87-3.13-7-7-7z"/></svg>
+          <svg viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="2" width="12" height="8" rx="2"/><rect x="13" y="4" width="2" height="4" rx="1"/></svg>
+        </span>
+      </div>
+      <div style="display: flex; flex: 1; overflow: hidden;">
+        <div class="sidebar">
+          <div class="sidebar-search">
+            <input placeholder="🔍 搜索会话或智能体">
+          </div>
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">OpenClaw 实例</div>
+            <div class="sidebar-item active">
+              <div class="icon" style="background: var(--success-soft); color: var(--success);">
+                <div class="dot success pulse"></div>
+              </div>
+              <div class="col" style="flex:1; min-width: 0;">
+                <div class="name">本地 Gateway</div>
+                <div class="sub">localhost:52378</div>
+              </div>
+            </div>
+          </div>
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">智能体</div>
+            <div class="sidebar-item">
+              <div class="icon" style="background: var(--accent-soft); color: var(--info);">🤖</div>
+              <div class="col" style="flex:1; min-width: 0;">
+                <div class="name">Main</div>
+                <div class="sub">claude-sonnet-4</div>
+              </div>
+              <div class="check">✓</div>
+            </div>
+            <div class="sidebar-item">
+              <div class="icon" style="background: var(--warning-soft); color: var(--warning);">⚡</div>
+              <div class="col" style="flex:1; min-width: 0;">
+                <div class="name">Coder</div>
+                <div class="sub">claude-sonnet-4</div>
+              </div>
+            </div>
+            <div class="sidebar-item">
+              <div class="icon" style="background: rgba(172, 206, 34, 0.15); color: var(--lime300);">📝</div>
+              <div class="col" style="flex:1; min-width: 0;">
+                <div class="name">Writer</div>
+                <div class="sub">gpt-4o</div>
+              </div>
+            </div>
+            <div class="sidebar-item">
+              <div class="icon" style="background: rgba(13, 169, 69, 0.15); color: var(--leaf300);">🌿</div>
+              <div class="col" style="flex:1; min-width: 0;">
+                <div class="name">Researcher</div>
+                <div class="sub">claude-sonnet-4</div>
+              </div>
+            </div>
+          </div>
+          <div class="sidebar-bottom">
+            <button class="btn-primary">+ 添加实例</button>
+            <button class="btn-secondary">⚙</button>
+          </div>
+        </div>
+
+        <div style="flex: 1; display: flex; flex-direction: column;">
+          <div class="chat-header">
+            <div class="avatar">🤖</div>
+            <div class="col">
+              <div class="title">Main · claude-sonnet-4 ▾</div>
+              <div class="subtitle"><span class="dot success"></span> 已连接 · 42ms</div>
+            </div>
+            <div class="right">
+              <button>📥</button>
+              <button>⋯</button>
+            </div>
+          </div>
+          <div class="token-bar">
+            <div class="progress"><div class="fill" style="width: 35%;"></div></div>
+            <div class="stats">
+              <span>↑ 1.2k tokens</span>
+              <span>↓ 380 tokens</span>
+              <span>$0.0042</span>
+              <span>35% / 200k</span>
+            </div>
+          </div>
+          <div class="messages">
+            <details class="thinking">
+              <summary>💭 思考过程</summary>
+              <div class="body">用户问的是 SwiftUI 在 iPad 上的多列布局。Apple 推荐 NavigationSplitView，它原生支持 iPad 的双栏/三栏展示。</div>
+            </details>
+            <div class="msg user">
+              <div class="bubble">iPad 上如何实现分栏布局？</div>
+            </div>
+            <div class="msg ai">
+              <div class="avatar">🤖</div>
+              <div class="bubble">iPad 推荐使用 <code>NavigationSplitView</code>，它在 iPhone 上自动折叠为单栏，在 iPad 上展开为双栏或三栏。</div>
+            </div>
+            <div class="msg user">
+              <div class="bubble">能给我一个最小可运行的例子吗？</div>
+            </div>
+            <div class="msg ai">
+              <div class="avatar">🤖</div>
+              <div class="bubble">当然，下面是一个最简的双栏示例：<br><br><code>NavigationSplitView {<br>&nbsp;&nbsp;SidebarView()<br>} detail: {<br>&nbsp;&nbsp;DetailView()<br>}</code></div>
+            </div>
+            <div class="msg user">
+              <div class="bubble">三栏呢？</div>
+            </div>
+          </div>
+          <div class="input-bar">
+            <div class="input-row">
+              <button class="icon-btn">📎</button>
+              <textarea placeholder="输入消息…" rows="1">三栏呢？</textarea>
+              <button class="send-btn">↑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-label">2.1 · 聊天主页（iPad 横屏 · Sidebar 320px + Chat）</div>
+</div>
+
+<div class="device-wrap">
+  <div class="ipad landscape" id="d-empty">
+    <div class="ipad-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="right">
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M1 4h2v6H1zm3-2h2v10H4zm3-2h2v14H7zm3 3h2v8h-2z"/></svg>
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 0C3.13 0 0 3.13 0 7h2c0-2.76 2.24-5 5-5s5 2.24 5 5h2c0-3.87-3.13-7-7-7z"/></svg>
+          <svg viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="2" width="12" height="8" rx="2"/><rect x="13" y="4" width="2" height="4" rx="1"/></svg>
+        </span>
+      </div>
+      <div style="display: flex; flex: 1; overflow: hidden;">
+        <div class="sidebar">
+          <div class="sidebar-search">
+            <input placeholder="🔍 搜索会话或智能体">
+          </div>
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">OpenClaw 实例</div>
+            <div class="sidebar-item active">
+              <div class="icon" style="background: var(--success-soft); color: var(--success);">
+                <div class="dot success pulse"></div>
+              </div>
+              <div class="col" style="flex:1; min-width: 0;">
+                <div class="name">本地 Gateway</div>
+                <div class="sub">localhost:52378</div>
+              </div>
+            </div>
+          </div>
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">智能体</div>
+            <div class="sidebar-item">
+              <div class="icon" style="background: var(--accent-soft); color: var(--info);">🤖</div>
+              <div class="col" style="flex:1; min-width: 0;">
+                <div class="name">Main</div>
+                <div class="sub">claude-sonnet-4</div>
+              </div>
+            </div>
+          </div>
+          <div class="sidebar-bottom">
+            <button class="btn-primary">+ 添加实例</button>
+            <button class="btn-secondary">⚙</button>
+          </div>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column;">
+          <div class="chat-header">
+            <div class="avatar">🤖</div>
+            <div class="col">
+              <div class="title">Main · claude-sonnet-4</div>
+              <div class="subtitle"><span class="dot success"></span> 已连接</div>
+            </div>
+            <div class="right">
+              <button>⋯</button>
+            </div>
+          </div>
+          <div class="empty-state">
+            <div style="width: 80px; height: 80px; border-radius: 20px; background: var(--accent-soft); color: var(--info); display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+              </svg>
+            </div>
+            <h2>开始一次新对话</h2>
+            <p>在下方输入框输入你的问题，按 ↑ 发送给 Main 智能体</p>
+          </div>
+          <div class="input-bar">
+            <div class="input-row">
+              <button class="icon-btn">📎</button>
+              <textarea placeholder="输入消息…" rows="1"></textarea>
+              <button class="send-btn" disabled>↑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-label">2.2 · 聊天空状态（无消息时）</div>
+</div>
+
+<div class="device-wrap">
+  <div class="ipad compact" id="d-portrait">
+    <div class="ipad-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="right">
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M1 4h2v6H1zm3-2h2v10H4zm3-2h2v14H7zm3 3h2v8h-2z"/></svg>
+          <svg viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="2" width="12" height="8" rx="2"/><rect x="13" y="4" width="2" height="4" rx="1"/></svg>
+        </span>
+      </div>
+      <div class="chat-header">
+        <button class="icon-btn" style="margin-right: -4px;">☰</button>
+        <div class="avatar">🤖</div>
+        <div class="col">
+          <div class="title">Main ▾</div>
+          <div class="subtitle"><span class="dot success"></span> 42ms</div>
+        </div>
+        <div class="right">
+          <button>⋯</button>
+        </div>
+      </div>
+      <div class="token-bar">
+        <div class="progress"><div class="fill" style="width: 35%;"></div></div>
+        <div class="stats">
+          <span>↑ 1.2k</span>
+          <span>↓ 380</span>
+          <span>35%</span>
+        </div>
+      </div>
+      <div class="messages">
+        <div class="msg user"><div class="bubble">iPad 上如何实现分栏布局？</div></div>
+        <div class="msg ai">
+          <div class="avatar">🤖</div>
+          <div class="bubble">iPad 推荐使用 NavigationSplitView。</div>
+        </div>
+        <div class="msg user"><div class="bubble">能给我例子吗？</div></div>
+      </div>
+      <div class="input-bar">
+        <div class="input-row">
+          <button class="icon-btn">📎</button>
+          <textarea placeholder="输入消息…" rows="1"></textarea>
+          <button class="send-btn">↑</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-label">2.3 · 聊天主页（iPad mini 竖屏 · Sidebar 折叠为抽屉）</div>
+</div>
+
+<div class="section-title">3 · 设置（Split View）</div>
+
+<div class="device-wrap">
+  <div class="ipad landscape" id="d-settings">
+    <div class="ipad-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="right">
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M1 4h2v6H1zm3-2h2v10H4zm3-2h2v14H7zm3 3h2v8h-2z"/></svg>
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 0C3.13 0 0 3.13 0 7h2c0-2.76 2.24-5 5-5s5 2.24 5 5h2c0-3.87-3.13-7-7-7z"/></svg>
+          <svg viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="2" width="12" height="8" rx="2"/><rect x="13" y="4" width="2" height="4" rx="1"/></svg>
+        </span>
+      </div>
+      <div class="split-view">
+        <div class="split-sidebar">
+          <div class="item active">⚙️  通用</div>
+          <div class="item">📡  网络</div>
+          <div class="item">🤖  智能体</div>
+          <div class="item">💬  IM 渠道</div>
+          <div class="item">📊  用量统计</div>
+          <div class="item">🩺  诊断中心</div>
+          <div class="item">📅  定时任务</div>
+          <div class="item">🧠  记忆管理</div>
+          <div class="item">🛠  高级</div>
+          <div class="item">ℹ️  关于</div>
+        </div>
+        <div class="split-detail">
+          <div class="form">
+            <h2>设置</h2>
+            <div class="sub">MyPilot v1.0.0 · OpenClaw Gateway 已连接</div>
+
+            <div class="form-section">
+              <div class="form-row">
+                <div class="icon" style="background: var(--accent-soft); color: var(--info);">🌐</div>
+                <div class="label">连接状态</div>
+                <div class="right">
+                  <span class="dot success pulse"></span>
+                  <span style="font-size: 13px; color: var(--tx-secondary);">已连接 · 42ms</span>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="icon" style="background: var(--warning-soft); color: var(--warning);">📍</div>
+                <div class="label">服务器地址</div>
+                <div class="value">localhost:52378</div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-row">
+                <div class="icon" style="background: rgba(13, 169, 69, 0.15); color: var(--leaf300);">🛡</div>
+                <div class="label">设备验证</div>
+                <div class="value">已配对</div>
+              </div>
+              <div class="form-row">
+                <div class="icon" style="background: var(--success-soft); color: var(--success);">🔄</div>
+                <div class="label">开机自启</div>
+                <div class="toggle on"></div>
+              </div>
+              <div class="form-row">
+                <div class="icon" style="background: var(--accent-soft); color: var(--info);">🔔</div>
+                <div class="label">桌面通知</div>
+                <div class="toggle on"></div>
+              </div>
+              <div class="form-row">
+                <div class="icon" style="background: var(--warning-soft); color: var(--warning);">🌙</div>
+                <div class="label">深色模式</div>
+                <div class="toggle"></div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-row">
+                <div class="icon" style="background: var(--danger-soft); color: var(--danger);">🗑</div>
+                <div class="label" style="color: var(--danger);">重置所有设置</div>
+                <div class="value">›</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-label">3.1 · 设置主页（Split View · 通用）</div>
+</div>
+
+<div class="device-wrap">
+  <div class="ipad landscape" id="d-agents">
+    <div class="ipad-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="right">
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M1 4h2v6H1zm3-2h2v10H4zm3-2h2v14H7zm3 3h2v8h-2z"/></svg>
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 0C3.13 0 0 3.13 0 7h2c0-2.76 2.24-5 5-5s5 2.24 5 5h2c0-3.87-3.13-7-7-7z"/></svg>
+          <svg viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="2" width="12" height="8" rx="2"/><rect x="13" y="4" width="2" height="4" rx="1"/></svg>
+        </span>
+      </div>
+      <div class="chat-header">
+        <div class="col" style="flex: 1;">
+          <div class="title">智能体</div>
+          <div class="subtitle">4 个智能体 · 2 个来自远端</div>
+        </div>
+        <div class="right">
+          <button class="icon-btn">＋</button>
+        </div>
+      </div>
+      <div style="flex: 1; padding: 16px; overflow-y: auto; background: var(--bg);">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+          <div style="background: var(--card); border-radius: 14px; padding: 16px; display: flex; gap: 12px; align-items: center;">
+            <div class="icon-block" style="background: var(--accent-soft); color: var(--info);">🤖</div>
+            <div class="col" style="flex: 1; min-width: 0;">
+              <div style="font-size: 15px; font-weight: 600;">Main</div>
+              <div style="font-size: 12px; color: var(--tx-secondary);">claude-sonnet-4 · default</div>
+            </div>
+            <div class="dot success"></div>
+          </div>
+          <div style="background: var(--card); border-radius: 14px; padding: 16px; display: flex; gap: 12px; align-items: center;">
+            <div class="icon-block" style="background: var(--warning-soft); color: var(--warning);">⚡</div>
+            <div class="col" style="flex: 1; min-width: 0;">
+              <div style="font-size: 15px; font-weight: 600;">Coder</div>
+              <div style="font-size: 12px; color: var(--tx-secondary);">claude-sonnet-4 · workspace</div>
+            </div>
+            <div class="dot success"></div>
+          </div>
+          <div style="background: var(--card); border-radius: 14px; padding: 16px; display: flex; gap: 12px; align-items: center;">
+            <div class="icon-block" style="background: rgba(172, 206, 34, 0.15); color: var(--lime300);">📝</div>
+            <div class="col" style="flex: 1; min-width: 0;">
+              <div style="font-size: 15px; font-weight: 600;">Writer</div>
+              <div style="font-size: 12px; color: var(--tx-secondary);">gpt-4o · marketing</div>
+            </div>
+            <div class="dot warn"></div>
+          </div>
+          <div style="background: var(--card); border-radius: 14px; padding: 16px; display: flex; gap: 12px; align-items: center;">
+            <div class="icon-block" style="background: rgba(13, 169, 69, 0.15); color: var(--leaf300);">🌿</div>
+            <div class="col" style="flex: 1; min-width: 0;">
+              <div style="font-size: 15px; font-weight: 600;">Researcher</div>
+              <div style="font-size: 12px; color: var(--tx-secondary);">claude-sonnet-4 · research</div>
+            </div>
+            <div class="dot success"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-label">3.2 · 智能体管理（2 列网格布局 · iPad 优势）</div>
+</div>
+
+<div class="device-wrap">
+  <div class="ipad landscape" id="d-network">
+    <div class="ipad-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="right">
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M1 4h2v6H1zm3-2h2v10H4zm3-2h2v14H7zm3 3h2v8h-2z"/></svg>
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 0C3.13 0 0 3.13 0 7h2c0-2.76 2.24-5 5-5s5 2.24 5 5h2c0-3.87-3.13-7-7-7z"/></svg>
+          <svg viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="2" width="12" height="8" rx="2"/><rect x="13" y="4" width="2" height="4" rx="1"/></svg>
+        </span>
+      </div>
+      <div class="split-view">
+        <div class="split-sidebar">
+          <div class="item">⚙️  通用</div>
+          <div class="item active">📡  网络</div>
+          <div class="item">🤖  智能体</div>
+          <div class="item">💬  IM 渠道</div>
+          <div class="item">📊  用量统计</div>
+          <div class="item">🩺  诊断中心</div>
+          <div class="item">📅  定时任务</div>
+          <div class="item">🧠  记忆管理</div>
+        </div>
+        <div class="split-detail">
+          <div class="form">
+            <h2>网络</h2>
+            <div class="sub">配置 OpenClaw Gateway 连接</div>
+
+            <div class="form-section">
+              <div style="padding: 12px 16px; border-bottom: 1px solid var(--separator);">
+                <div style="font-size: 11px; font-weight: 600; color: var(--tx-secondary); text-transform: uppercase; letter-spacing: 0.05em;">当前连接</div>
+              </div>
+              <div class="form-row">
+                <div class="icon" style="background: var(--success-soft); color: var(--success);">📡</div>
+                <div class="col">
+                  <div class="label">localhost:52378</div>
+                  <div style="font-size: 11px; color: var(--tx-secondary);">本地 OpenClaw</div>
+                </div>
+                <div class="right"><span class="dot success pulse"></span></div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div style="padding: 12px 16px; border-bottom: 1px solid var(--separator);">
+                <div style="font-size: 11px; font-weight: 600; color: var(--tx-secondary); text-transform: uppercase; letter-spacing: 0.05em;">添加新实例</div>
+              </div>
+              <div class="form-row">
+                <div class="icon" style="background: var(--accent-soft); color: var(--info);">＋</div>
+                <div class="label">手动添加</div>
+                <div class="value">›</div>
+              </div>
+              <div class="form-row">
+                <div class="icon" style="background: var(--warning-soft); color: var(--warning);">📷</div>
+                <div class="label">扫码添加</div>
+                <div class="value">›</div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-row">
+                <div class="icon" style="background: rgba(13, 169, 69, 0.15); color: var(--leaf300);">🛡</div>
+                <div class="col">
+                  <div class="label">TLS 验证</div>
+                  <div style="font-size: 11px; color: var(--tx-secondary);">使用受信证书</div>
+                </div>
+                <div class="toggle on"></div>
+              </div>
+              <div class="form-row">
+                <div class="icon" style="background: var(--accent-soft); color: var(--info);">🔄</div>
+                <div class="label">自动重连</div>
+                <div class="toggle on"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-label">3.3 · 网络设置（Split View · 二级详情）</div>
+</div>
+
+<div class="section-title">4 · 诊断 & 数据</div>
+
+<div class="device-wrap">
+  <div class="ipad landscape" id="d-diag">
+    <div class="ipad-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="right">
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M1 4h2v6H1zm3-2h2v10H4zm3-2h2v14H7zm3 3h2v8h-2z"/></svg>
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 0C3.13 0 0 3.13 0 7h2c0-2.76 2.24-5 5-5s5 2.24 5 5h2c0-3.87-3.13-7-7-7z"/></svg>
+          <svg viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="2" width="12" height="8" rx="2"/><rect x="13" y="4" width="2" height="4" rx="1"/></svg>
+        </span>
+      </div>
+      <div class="chat-header">
+        <div class="col" style="flex: 1;">
+          <div class="title">诊断中心</div>
+          <div class="subtitle">实时连接状态和日志</div>
+        </div>
+        <div class="right">
+          <button class="icon-btn">🔄</button>
+          <button class="icon-btn">📋</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px;">
+        <div style="background: var(--card); border-radius: 12px; padding: 14px;">
+          <div style="font-size: 11px; color: var(--tx-secondary); text-transform: uppercase;">WebSocket</div>
+          <div style="font-size: 24px; font-weight: 600; margin-top: 4px;">42ms</div>
+          <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+            <span class="dot success pulse"></span>
+            <span style="font-size: 12px; color: var(--tx-secondary);">已连接</span>
+          </div>
+        </div>
+        <div style="background: var(--card); border-radius: 12px; padding: 14px;">
+          <div style="font-size: 11px; color: var(--tx-secondary); text-transform: uppercase;">RPC 延迟</div>
+          <div style="font-size: 24px; font-weight: 600; margin-top: 4px;">128ms</div>
+          <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+            <span class="dot success"></span>
+            <span style="font-size: 12px; color: var(--tx-secondary);">健康</span>
+          </div>
+        </div>
+        <div style="background: var(--card); border-radius: 12px; padding: 14px;">
+          <div style="font-size: 11px; color: var(--tx-secondary); text-transform: uppercase;">消息吞吐</div>
+          <div style="font-size: 24px; font-weight: 600; margin-top: 4px;">12 / min</div>
+          <div style="font-size: 12px; color: var(--tx-secondary); margin-top: 4px;">↑ 4 · ↓ 8</div>
+        </div>
+        <div style="background: var(--card); border-radius: 12px; padding: 14px;">
+          <div style="font-size: 11px; color: var(--tx-secondary); text-transform: uppercase;">错误率</div>
+          <div style="font-size: 24px; font-weight: 600; margin-top: 4px; color: var(--success);">0.0%</div>
+          <div style="font-size: 12px; color: var(--tx-secondary); margin-top: 4px;">过去 1 小时</div>
+        </div>
+      </div>
+
+      <div style="flex: 1; margin: 0 16px 16px; background: #000; border-radius: 12px; padding: 12px; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: #34C759; overflow: hidden;">
+        <div style="color: #8E8E93; margin-bottom: 4px;">$ mypilot logs --tail 5</div>
+        <div>10:23:14 → chat.send { agentId: "main" }</div>
+        <div style="color: #5AC8FA;">10:23:14 ← chat.delta { tokens: 12 }</div>
+        <div style="color: #5AC8FA;">10:23:15 ← chat.delta { tokens: 38 }</div>
+        <div style="color: #FF9500;">10:23:15 ← agent.status { executing: "ls" }</div>
+        <div>10:23:16 ← chat.final { tokens: 380 }</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-label">4.1 · 诊断中心（指标卡片 + 实时日志）</div>
+</div>
+
+<div class="device-wrap">
+  <div class="ipad landscape" id="d-usage">
+    <div class="ipad-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="right">
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M1 4h2v6H1zm3-2h2v10H4zm3-2h2v14H7zm3 3h2v8h-2z"/></svg>
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 0C3.13 0 0 3.13 0 7h2c0-2.76 2.24-5 5-5s5 2.24 5 5h2c0-3.87-3.13-7-7-7z"/></svg>
+          <svg viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="2" width="12" height="8" rx="2"/><rect x="13" y="4" width="2" height="4" rx="1"/></svg>
+        </span>
+      </div>
+      <div class="chat-header">
+        <div class="col" style="flex: 1;">
+          <div class="title">用量统计</div>
+          <div class="subtitle">本月 · 2026-06</div>
+        </div>
+      </div>
+      <div style="padding: 16px; overflow-y: auto; flex: 1;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;">
+          <div style="background: var(--card); border-radius: 12px; padding: 14px;">
+            <div style="font-size: 11px; color: var(--tx-secondary);">总 Tokens</div>
+            <div style="font-size: 24px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums;">1.2M</div>
+            <div style="font-size: 12px; color: var(--success); margin-top: 4px;">↑ 12.4%</div>
+          </div>
+          <div style="background: var(--card); border-radius: 12px; padding: 14px;">
+            <div style="font-size: 11px; color: var(--tx-secondary);">总成本</div>
+            <div style="font-size: 24px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums;">$4.82</div>
+            <div style="font-size: 12px; color: var(--success); margin-top: 4px;">↓ 8.1%</div>
+          </div>
+          <div style="background: var(--card); border-radius: 12px; padding: 14px;">
+            <div style="font-size: 11px; color: var(--tx-secondary);">消息数</div>
+            <div style="font-size: 24px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums;">348</div>
+            <div style="font-size: 12px; color: var(--tx-secondary); margin-top: 4px;">日均 16</div>
+          </div>
+          <div style="background: var(--card); border-radius: 12px; padding: 14px;">
+            <div style="font-size: 11px; color: var(--tx-secondary);">活跃天数</div>
+            <div style="font-size: 24px; font-weight: 600; margin-top: 4px;">14</div>
+            <div style="font-size: 12px; color: var(--tx-secondary); margin-top: 4px;">共 21 天</div>
+          </div>
+        </div>
+
+        <div style="background: var(--card); border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+          <div style="font-size: 13px; font-weight: 600; margin-bottom: 12px;">按模型分布</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div>
+              <div class="row" style="justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                <span>claude-sonnet-4</span>
+                <span style="color: var(--tx-secondary); font-variant-numeric: tabular-nums;">68% · 816k</span>
+              </div>
+              <div style="height: 6px; background: var(--separator); border-radius: 3px; overflow: hidden;">
+                <div style="height: 100%; width: 68%; background: var(--info); border-radius: 3px;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="row" style="justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                <span>gpt-4o</span>
+                <span style="color: var(--tx-secondary); font-variant-numeric: tabular-nums;">22% · 264k</span>
+              </div>
+              <div style="height: 6px; background: var(--separator); border-radius: 3px; overflow: hidden;">
+                <div style="height: 100%; width: 22%; background: var(--success); border-radius: 3px;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="row" style="justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                <span>deepseek-coder</span>
+                <span style="color: var(--tx-secondary); font-variant-numeric: tabular-nums;">10% · 120k</span>
+              </div>
+              <div style="height: 6px; background: var(--separator); border-radius: 3px; overflow: hidden;">
+                <div style="height: 100%; width: 10%; background: var(--warning); border-radius: 3px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-label">4.2 · 用量统计（4 列 KPI + 模型分布）</div>
+</div>
+
+<div class="section-title">5 · 智能体 & 渠道</div>
+
+<div class="device-wrap">
+  <div class="ipad landscape" id="d-channels">
+    <div class="ipad-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="right">
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M1 4h2v6H1zm3-2h2v10H4zm3-2h2v14H7zm3 3h2v8h-2z"/></svg>
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 0C3.13 0 0 3.13 0 7h2c0-2.76 2.24-5 5-5s5 2.24 5 5h2c0-3.87-3.13-7-7-7z"/></svg>
+          <svg viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="2" width="12" height="8" rx="2"/><rect x="13" y="4" width="2" height="4" rx="1"/></svg>
+        </span>
+      </div>
+      <div class="chat-header">
+        <div class="col" style="flex: 1;">
+          <div class="title">IM 渠道</div>
+          <div class="subtitle">7 个渠道 · 2 个已连接</div>
+        </div>
+        <div class="right">
+          <button class="icon-btn">＋</button>
+        </div>
+      </div>
+      <div style="flex: 1; padding: 16px; overflow-y: auto;">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+          <div style="background: var(--card); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="row" style="justify-content: space-between;">
+              <div class="icon-block" style="background: rgba(51, 112, 255, 0.15); color: #3370FF;">💬</div>
+              <span class="dot success pulse"></span>
+            </div>
+            <div style="font-size: 14px; font-weight: 600;">飞书</div>
+            <div style="font-size: 11px; color: var(--tx-secondary);">已连接 · 2 个机器人</div>
+          </div>
+          <div style="background: var(--card); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="row" style="justify-content: space-between;">
+              <div class="icon-block" style="background: rgba(42, 174, 103, 0.15); color: #2AAE67;">💼</div>
+              <span class="dot success"></span>
+            </div>
+            <div style="font-size: 14px; font-weight: 600;">企业微信</div>
+            <div style="font-size: 11px; color: var(--tx-secondary);">已连接 · 1 个机器人</div>
+          </div>
+          <div style="background: var(--card); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="row" style="justify-content: space-between;">
+              <div class="icon-block" style="background: rgba(0, 137, 255, 0.15); color: #0089FF;">🔔</div>
+              <span class="dot"></span>
+            </div>
+            <div style="font-size: 14px; font-weight: 600;">钉钉</div>
+            <div style="font-size: 11px; color: var(--tx-secondary);">未配置</div>
+          </div>
+          <div style="background: var(--card); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="row" style="justify-content: space-between;">
+              <div class="icon-block" style="background: rgba(18, 183, 245, 0.15); color: #12B7F5;">🐧</div>
+              <span class="dot"></span>
+            </div>
+            <div style="font-size: 14px; font-weight: 600;">QQ</div>
+            <div style="font-size: 11px; color: var(--tx-secondary);">未配置</div>
+          </div>
+          <div style="background: var(--card); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="row" style="justify-content: space-between;">
+              <div class="icon-block" style="background: rgba(0, 136, 204, 0.15); color: #0088CC;">✈️</div>
+              <span class="dot"></span>
+            </div>
+            <div style="font-size: 14px; font-weight: 600;">Telegram</div>
+            <div style="font-size: 11px; color: var(--tx-secondary);">未配置</div>
+          </div>
+          <div style="background: var(--card); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="row" style="justify-content: space-between;">
+              <div class="icon-block" style="background: rgba(97, 31, 105, 0.15); color: #611F69;">💜</div>
+              <span class="dot"></span>
+            </div>
+            <div style="font-size: 14px; font-weight: 600;">Slack</div>
+            <div style="font-size: 11px; color: var(--tx-secondary);">未配置</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-label">5.1 · IM 渠道（3 列网格 · 渠道色）</div>
+</div>
+
+<div class="device-wrap">
+  <div class="ipad landscape" id="d-about">
+    <div class="ipad-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="right">
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M1 4h2v6H1zm3-2h2v10H4zm3-2h2v14H7zm3 3h2v8h-2z"/></svg>
+          <svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 0C3.13 0 0 3.13 0 7h2c0-2.76 2.24-5 5-5s5 2.24 5 5h2c0-3.87-3.13-7-7-7z"/></svg>
+          <svg viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="2" width="12" height="8" rx="2"/><rect x="13" y="4" width="2" height="4" rx="1"/></svg>
+        </span>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center;">
+        <div style="width: 100px; height: 100px; border-radius: 22px; background: var(--user-bubble); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="white">
+            <rect x="3" y="5" width="18" height="3.5" rx="1.75"/>
+            <rect x="3" y="10.5" width="13" height="3.5" rx="1.75"/>
+            <rect x="3" y="16" width="8" height="3.5" rx="1.75"/>
+            <circle cx="20" cy="17.5" r="1.75"/>
+          </svg>
+        </div>
+        <h1 style="font-size: 28px; font-weight: 700; margin-bottom: 4px;">MyPilot</h1>
+        <div style="font-size: 13px; color: var(--tx-secondary); margin-bottom: 32px;">版本 1.0.0 (Build 1024)</div>
+
+        <div style="width: 360px; max-width: 100%;">
+          <div style="background: var(--card); border-radius: 12px; overflow: hidden; text-align: left;">
+            <div class="form-row">
+              <div class="icon" style="background: var(--accent-soft); color: var(--info);">📦</div>
+              <div class="label">客户端版本</div>
+              <div class="value">1.0.0</div>
+            </div>
+            <div class="form-row">
+              <div class="icon" style="background: var(--warning-soft); color: var(--warning);">🔌</div>
+              <div class="label">Gateway 版本</div>
+              <div class="value">0.8.0</div>
+            </div>
+            <div class="form-row">
+              <div class="icon" style="background: rgba(13, 169, 69, 0.15); color: var(--leaf300);">📜</div>
+              <div class="label">开源协议</div>
+              <div class="value">Apache 2.0</div>
+            </div>
+            <div class="form-row">
+              <div class="icon" style="background: var(--accent-soft); color: var(--info);">🌐</div>
+              <div class="label">官方网站</div>
+              <div class="value" style="color: var(--user-bubble);">mypilot.app ›</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size: 11px; color: var(--tx-tertiary); margin-top: 40px;">
+          Made with 💙 for AI engineers<br>Data stays on your machine
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-label">5.2 · 关于（App Icon 大图 + 版本信息）</div>
+</div>
+
+</div>
+
+<script>
+function setMode(mode) {
+  document.documentElement.classList.toggle('dark', mode === 'dark');
+  document.getElementById('btn-light').classList.toggle('active', mode === 'light');
+  document.getElementById('btn-dark').classList.toggle('active', mode === 'dark');
+}
+function setOrient(o) {
+  const ipads = document.querySelectorAll('.ipad');
+  ipads.forEach(ip => {
+    if (o === 'portrait') {
+      ip.classList.remove('landscape');
+      ip.classList.add('compact');
+    } else {
+      ip.classList.add('landscape');
+      ip.classList.remove('compact');
+    }
+  });
+  document.getElementById('btn-land').classList.toggle('active', o === 'landscape');
+  document.getElementById('btn-port').classList.toggle('active', o === 'portrait');
+}
+</script>
+
+</body>
+</html>
