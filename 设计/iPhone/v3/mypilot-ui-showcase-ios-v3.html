@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MyPilot iOS V3</title>
+<style>
+  :root {
+    --bg: #EEF1FA;
+    --surface: #FFFFFF;
+    --surface-soft: #F6F7FC;
+    --ink: #15171C;
+    --text: #262A32;
+    --secondary: #6F7480;
+    --tertiary: #A1A7B3;
+    --mint: #BFDCDC;
+    --mint-strong: #43C6B8;
+    --coral: #EA6B5D;
+    --coral-soft: #F7C9C3;
+    --lavender: #C9CCF3;
+    --purple: #8E8DDB;
+    --amber: #E4A84E;
+    --border: #E2E5EF;
+    --shadow: rgba(0,0,0,0.06);
+    --f: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Noto Sans SC', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+  body { font-family: var(--f); background: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+
+  /* iPhone Frame */
+  .phone { width: 390px; height: 844px; background: var(--bg); border-radius: 54px; overflow: hidden; position: relative; box-shadow: 0 25px 80px rgba(0,0,0,0.35), inset 0 0 0 12px #1a1a1a; }
+  .phone::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 160px; height: 34px; background: #1a1a1a; border-radius: 0 0 24px 24px; z-index: 100; }
+  .phone::after { content: ''; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 140px; height: 5px; background: #333; border-radius: 3px; z-index: 100; }
+
+  .screen { width: 100%; height: 100%; overflow: hidden; position: relative; padding-top: 44px; padding-bottom: 34px; }
+
+  /* Pages */
+  .page { display: none; width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; position: relative; }
+  .page.on { display: block; }
+  .page::-webkit-scrollbar { display: none; }
+
+  /* Tab Bar */
+  .tabbar { position: absolute; bottom: 34px; left: 0; right: 0; height: 64px; background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 90; padding-bottom: 8px; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; border: none; background: none; font-family: var(--f); color: var(--tertiary); font-size: 10px; font-weight: 500; transition: color 0.2s; }
+  .tab.on { color: var(--ink); }
+  .tab svg { width: 24px; height: 24px; stroke-width: 1.8; }
+  .tab.on svg { stroke-width: 2.2; }
+
+  /* Header */
+  .header { padding: 12px 18px 8px; }
+  .header-row { display: flex; align-items: flex-start; gap: 14px; }
+  .header-btn { width: 48px; height: 48px; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 12px var(--shadow); }
+  .header-btn svg { width: 20px; height: 20px; color: var(--ink); }
+  .header-text { flex: 1; }
+  .eyebrow { font-size: 11px; font-weight: 600; color: var(--purple); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; }
+  .page-title { font-size: 32px; font-weight: 600; color: var(--ink); line-height: 1.1; letter-spacing: -0.02em; }
+  .page-subtitle { font-size: 15px; color: var(--secondary); margin-top: 6px; font-weight: 400; }
+
+  /* Cards */
+  .card { background: var(--surface); border-radius: 28px; padding: 18px; margin: 0 18px 14px; box-shadow: 0 8px 24px var(--shadow); }
+  .card-soft { background: var(--surface-soft); }
+  .card-mint { background: var(--mint); }
+  .card-lavender { background: var(--lavender); }
+  .card-coral { background: var(--coral-soft); }
+
+  /* Activity Pill Card */
+  .activity-card { padding: 0; overflow: hidden; }
+  .activity-top { padding: 18px 22px 12px; display: flex; align-items: center; justify-content: space-between; }
+  .activity-label { font-size: 15px; font-weight: 500; color: var(--text); }
+  .activity-value { font-size: 32px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; }
+  .activity-icon { width: 28px; height: 28px; color: var(--coral); margin-left: 8px; }
+  .activity-bar { height: 5px; background: var(--border); position: relative; }
+  .activity-bar-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--coral); border-radius: 0 3px 3px 0; }
+
+  /* Date Strip */
+  .date-strip { display: flex; gap: 10px; padding: 0 18px; margin-bottom: 14px; overflow-x: auto; }
+  .date-strip::-webkit-scrollbar { display: none; }
+  .date-item { min-width: 74px; height: 78px; border-radius: 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; background: var(--surface-soft); cursor: pointer; transition: transform 0.15s; }
+  .date-item:active { transform: scale(0.95); }
+  .date-item.on { background: var(--surface); border: 1.5px solid var(--coral); }
+  .date-item .day { font-size: 12px; font-weight: 500; color: var(--secondary); }
+  .date-item .num { font-size: 24px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; }
+  .date-item.on .num { color: var(--coral); }
+
+  /* Timeline */
+  .timeline-title { font-size: 22px; font-weight: 600; color: var(--ink); margin: 0 18px 14px; }
+  .timeline-item { display: flex; gap: 14px; padding: 0 18px; margin-bottom: 14px; }
+  .timeline-time { width: 48px; font-size: 15px; font-weight: 600; color: var(--ink); flex-shrink: 0; padding-top: 16px; }
+
+  /* Agent Course Card */
+  .course-card { background: var(--mint); opacity: 0.9; }
+  .course-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .course-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--surface); border-radius: 100px; font-size: 12px; font-weight: 500; color: var(--text); }
+  .course-pill-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .course-title { font-size: 20px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+  .course-desc { font-size: 15px; color: var(--text); line-height: 1.4; margin-bottom: 10px; }
+  .course-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* User Message Card */
+  .user-card { background: var(--lavender); opacity: 0.85; }
+  .user-text { font-size: 15px; color: var(--ink); line-height: 1.4; margin-bottom: 8px; }
+  .user-badge { display: inline-flex; padding: 5px 11px; background: var(--surface); border-radius: 100px; font-size: 12px; font-weight: 500; color: var(--text); }
+
+  /* Round Button */
+  .rbtn { width: 48px; height: 48px; border-radius: 50%; background: var(--surface); display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; box-shadow: 0 2px 12px var(--shadow); flex-shrink: 0; }
+  .rbtn svg { width: 20px; height: 20px; color: var(--ink); }
+  .rbtn-sm { width: 42px; height: 42px; }
+  .rbtn-sm svg { width: 18px; height: 18px; }
+  .rbtn-mint { background: var(--mint); }
+  .rbtn-ink { background: var(--ink); }
+  .rbtn-ink svg { color: white; }
+
+  /* Composer */
+  .composer { position: absolute; bottom: 98px; left: 0; right: 0; padding: 0 18px; z-index: 80; }
+  .composer-inner { background: rgba(238,241,250,0.96); backdrop-filter: blur(12px); padding-bottom: 10px; }
+  .composer-chips { display: flex; gap: 8px; margin-bottom: 10px; overflow-x: auto; }
+  .composer-chips::-webkit-scrollbar { display: none; }
+  .chip { padding: 7px 14px; background: var(--surface); border-radius: 100px; font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; cursor: pointer; border: none; font-family: var(--f); }
+  .composer-input { display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--surface); border-radius: 28px; box-shadow: 0 4px 16px var(--shadow); }
+  .composer-input input { flex: 1; border: none; outline: none; background: none; font-size: 15px; font-family: var(--f); color: var(--ink); }
+  .composer-input input::placeholder { color: var(--tertiary); }
+
+  /* Agent Portrait */
+  .portrait { position: relative; width: 56px; height: 56px; flex-shrink: 0; }
+  .portrait-bg { width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, var(--mint-strong), var(--mint)); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .portrait-face { width: 70%; height: 70%; position: relative; }
+  .portrait-hair { position: absolute; top: -5%; left: 15%; width: 70%; height: 35%; background: var(--ink); border-radius: 14px; }
+  .portrait-face-bg { position: absolute; top: 20%; left: 20%; width: 60%; height: 50%; background: #F2C8A8; border-radius: 50%; }
+  .portrait-shirt { position: absolute; bottom: 0; left: 10%; width: 80%; height: 40%; background: var(--mint-strong); border-radius: 12px 12px 0 0; }
+  .portrait-eyes { position: absolute; top: 32%; left: 25%; width: 50%; display: flex; justify-content: space-between; }
+  .portrait-eye { width: 5px; height: 5px; background: var(--ink); border-radius: 50%; }
+  .portrait-mouth { position: absolute; top: 48%; left: 40%; width: 20%; height: 3px; background: var(--coral); border-radius: 2px; opacity: 0.7; }
+  .portrait-badge { position: absolute; bottom: -2px; right: -2px; width: 22px; height: 22px; background: var(--surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; }
+  .portrait-badge svg { width: 11px; height: 11px; color: var(--ink); }
+  .portrait-status { position: absolute; top: 0; right: 0; width: 14px; height: 14px; border-radius: 50%; background: var(--mint-strong); border: 2px solid white; }
+
+  /* Agent List */
+  .search-box { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: var(--surface); border-radius: 24px; margin: 0 18px 14px; }
+  .search-box svg { width: 18px; height: 18px; color: var(--secondary); flex-shrink: 0; }
+  .search-box input { flex: 1; border: none; outline: none; background: none; font-size: 15px; font-family: var(--f); color: var(--ink); }
+  .search-box input::placeholder { color: var(--tertiary); }
+
+  .filter-chips { display: flex; gap: 8px; padding: 0 18px 14px; overflow-x: auto; }
+  .filter-chips::-webkit-scrollbar { display: none; }
+  .filter-chip { padding: 9px 16px; border-radius: 100px; font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap; cursor: pointer; border: none; font-family: var(--f); background: var(--surface); }
+  .filter-chip.on { background: var(--mint); }
+
+  .agent-card { margin: 0 18px 14px; padding: 16px; border-radius: 28px; position: relative; overflow: hidden; }
+  .agent-card-top { display: flex; gap: 14px; margin-bottom: 10px; }
+  .agent-info { flex: 1; }
+  .agent-name-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .agent-name { font-size: 20px; font-weight: 600; color: var(--ink); }
+  .agent-count { font-size: 18px; font-weight: 600; color: var(--purple); }
+  .agent-role { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .agent-desc { font-size: 13px; color: var(--secondary); line-height: 1.3; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .agent-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+  .agent-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.06); }
+  .agent-sync { font-size: 12px; color: var(--secondary); font-weight: 500; }
+
+  /* Avatar Stack */
+  .avatar-stack { display: flex; }
+  .avatar-stack .portrait { margin-left: -10px; }
+  .avatar-stack .portrait:first-child { margin-left: 0; }
+  .avatar-stack-extra { width: 32px; height: 32px; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--ink); margin-left: -10px; border: 2px solid var(--border); }
+
+  /* Model Chip */
+  .model-chip { display: inline-flex; padding: 6px 13px; background: var(--surface-soft); border-radius: 100px; font-size: 13px; font-weight: 500; color: var(--ink); font-family: monospace; }
+
+  /* Task Card */
+  .task-card { margin: 0 18px 14px; padding: 16px; border-radius: 28px; background: var(--mint); opacity: 0.85; }
+  .task-top { display: flex; gap: 12px; margin-bottom: 10px; }
+  .task-info { flex: 1; }
+  .task-name { font-size: 17px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+  .task-agent { font-size: 13px; color: var(--secondary); margin-bottom: 8px; }
+  .task-progress { height: 5px; background: rgba(255,255,255,0.5); border-radius: 3px; overflow: hidden; }
+  .task-progress-fill { height: 100%; background: var(--coral); border-radius: 3px; }
+
+  /* Monitor */
+  .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 18px; margin-bottom: 14px; }
+  .metric-card { padding: 14px; border-radius: 24px; text-align: center; }
+  .metric-icon { width: 24px; height: 24px; margin: 0 auto 8px; }
+  .metric-value { font-size: 26px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; margin-bottom: 2px; }
+  .metric-label { font-size: 12px; font-weight: 500; color: var(--secondary); }
+
+  .progress-ring { width: 72px; height: 72px; position: relative; margin: 0 auto 10px; }
+  .progress-ring svg { transform: rotate(-90deg); }
+  .progress-ring-bg { fill: none; stroke: var(--border); stroke-width: 5; }
+  .progress-ring-fill { fill: none; stroke: var(--coral); stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+  .progress-ring-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px; font-weight: 700; color: var(--ink); }
+
+  /* Settings */
+  .settings-group { margin: 0 18px 14px; }
+  .settings-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; cursor: pointer; }
+  .settings-row:not(:last-child) { border-bottom: 1px solid var(--border); }
+  .settings-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .settings-icon svg { width: 18px; height: 18px; color: var(--ink); }
+  .settings-text { flex: 1; }
+  .settings-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .settings-sub { font-size: 12px; color: var(--secondary); }
+  .settings-chevron { width: 16px; height: 16px; color: var(--tertiary); flex-shrink: 0; }
+
+  /* Status Pill */
+  .pill { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 100px; font-size: 12px; font-weight: 500; }
+  .pill-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  /* Code Block */
+  .code-block { background: var(--surface-soft); border-radius: 14px; padding: 12px; font-family: monospace; font-size: 13px; color: var(--ink); line-height: 1.5; overflow-x: auto; }
+  .code-block::-webkit-scrollbar { display: none; }
+
+  /* Chart */
+  .chart { display: flex; align-items: flex-end; gap: 10px; height: 140px; padding: 0 4px; }
+  .chart-bar { flex: 1; border-radius: 8px; min-height: 20px; transition: height 0.4s ease; }
+
+  /* Empty State */
+  .empty { text-align: center; padding: 40px 20px; }
+  .empty-icon { width: 56px; height: 56px; border-radius: 50%; background: var(--lavender); opacity: 0.5; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+  .empty-icon svg { width: 24px; height: 24px; color: var(--ink); }
+  .empty-title { font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+  .empty-sub { font-size: 13px; color: var(--secondary); margin-bottom: 14px; }
+  .empty-btn { padding: 8px 16px; background: var(--mint); opacity: 0.7; border-radius: 100px; font-size: 13px; font-weight: 500; color: var(--text); border: none; font-family: var(--f); cursor: pointer; }
+
+  /* FAB */
+  .fab { position: absolute; bottom: 110px; right: 18px; padding: 14px 20px; background: var(--ink); color: white; border-radius: 100px; font-size: 15px; font-weight: 600; border: none; font-family: var(--f); cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); z-index: 85; }
+  .fab svg { width: 16px; height: 16px; }
+
+  /* Toggle Switch */
+  .toggle { width: 50px; height: 30px; border-radius: 15px; background: var(--border); position: relative; cursor: pointer; border: none; flex-shrink: 0; transition: background 0.25s; }
+  .toggle::after { content: ''; position: absolute; width: 26px; height: 26px; background: white; border-radius: 50%; top: 2px; left: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.15); transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+  .toggle.on { background: var(--mint-strong); }
+  .toggle.on::after { transform: translateX(20px); }
+
+  /* Animations */
+  @keyframes slideUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:none } }
+  .anim { animation: slideUp 0.4s ease both; }
+  .anim-d1 { animation-delay: 0.05s; }
+  .anim-d2 { animation-delay: 0.1s; }
+  .anim-d3 { animation-delay: 0.15s; }
+  .anim-d4 { animation-delay: 0.2s; }
+
+  /* Nav Page Transition */
+  .nav-page { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 95; overflow-y: auto; }
+  .nav-page.on { display: block; animation: slideInRight 0.3s ease; }
+  @keyframes slideInRight { from { transform: translateX(100%) } to { transform: none } }
+  .nav-header { padding: 12px 18px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 10; }
+  .nav-back { background: none; border: none; font-size: 15px; color: var(--secondary); cursor: pointer; font-family: var(--f); display: flex; align-items: center; gap: 4px; font-weight: 500; }
+  .nav-title { font-size: 18px; font-weight: 700; color: var(--ink); flex: 1; text-align: center; margin-right: 40px; }
+
+  /* Chat Bubble in Agent Chat */
+  .chat-bubble { max-width: 78%; padding: 12px 16px; border-radius: 24px; font-size: 15px; line-height: 1.45; position: relative; }
+  .chat-bubble-user { background: var(--lavender); opacity: 0.85; color: var(--ink); margin-left: auto; border-bottom-right-radius: 6px; }
+  .chat-bubble-agent { background: var(--surface); color: var(--text); border-bottom-left-radius: 6px; box-shadow: 0 2px 8px var(--shadow); }
+  .chat-meta { font-size: 11px; color: var(--tertiary); margin-top: 4px; display: flex; gap: 6px; align-items: center; }
+  .chat-row { display: flex; gap: 8px; margin-bottom: 14px; padding: 0 18px; }
+  .chat-row-user { justify-content: flex-end; }
+
+  /* Segmented Control */
+  .segmented { display: flex; background: var(--surface-soft); border-radius: 10px; padding: 3px; margin-bottom: 14px; }
+  .segment { flex: 1; padding: 7px; text-align: center; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--secondary); border: none; background: none; cursor: pointer; font-family: var(--f); }
+  .segment.on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="screen">
+
+    <!-- ====== PAGE 1: WORKBENCH ====== -->
+    <div class="page on" id="p-workbench">
+      <div class="header">
+        <div class="header-row">
+          <div class="header-text">
+            <div class="eyebrow">MY PILOT</div>
+            <div class="page-title">今日工作台</div>
+            <div class="page-subtitle">网关、智能体与任务都在这里</div>
+          </div>
+          <div class="portrait" style="width:58px;height:58px;">
+            <div class="portrait-bg" style="background:linear-gradient(135deg,var(--mint-strong),var(--mint));">
+              <div class="portrait-face">
+                <div class="portrait-hair"></div>
+                <div class="portrait-face-bg"></div>
+                <div class="portrait-shirt" style="background:var(--mint-strong);"></div>
+                <div class="portrait-eyes"><div class="portrait-eye"></div><div class="portrait-eye"></div></div>
+                <div class="portrait-mouth"></div>
+              </div>
+            </div>
+            <div class="portrait-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+            <div class="portrait-status"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card activity-card anim anim-d1">
+        <div class="activity-top">
+          <span class="activity-label">网关已连接</span>
+          <div style="display:flex;align-items:center;">
+            <span class="activity-value">73%</span>
+            <svg class="activity-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+        </div>
+        <div class="activity-bar"><div class="activity-bar-fill" style="width:73%"></div></div>
+      </div>
+
+      <div class="date-strip anim anim-d2">
+        <div class="date-item"><span class="day">周一</span><span class="num">27</span></div>
+        <div class="date-item on"><span class="day">周二</span><span class="num" style="color:var(--coral)">28</span></div>
+        <div class="date-item"><span class="day">周三</span><span class="num">29</span></div>
+        <div class="date-item"><span class="day">周四</span><span class="num">30</span></div>
+        <div class="date-item"><span class="day">周五</span><span class="num">31</span></div>
+      </div>
+
+      <div class="timeline-title anim anim-d3">消息时间线</div>
+
+      <div class="timeline-item anim anim-d3">
+        <div class="timeline-time">8:30</div>
+        <div class="card course-card" style="flex:1;">
+          <div class="course-top">
+            <span class="course-pill"><span class="course-pill-dot" style="background:var(--ink)"></span>/status</span>
+            <div style="display:flex;gap:8px;">
+              <button class="rbtn rbtn-sm rbtn-mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></button>
+              <button class="rbtn rbtn-sm" style="background:var(--mint);opacity:0.7;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></button>
+            </div>
+          </div>
+          <div class="course-title">Gateway 状态正常</div>
+          <div class="course-desc">已连接，Link Relay 在线。我已经读取当前智能体的 Soul 文件，可以开始处理任务。</div>
+          <div class="course-badges">
+            <span class="pill" style="background:var(--lavender);opacity:0.5;"><span class="pill-dot" style="background:var(--purple)"></span>Token 38%</span>
+            <span class="pill" style="background:rgba(255,255,255,0.5);"><span class="pill-dot" style="background:var(--mint-strong)"></span>中继在线</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item anim anim-d4">
+        <div class="timeline-time">8:36</div>
+        <div class="card user-card" style="flex:1;">
+          <div class="user-text">帮我检查当前连接状态，并总结可用模型。</div>
+          <span class="user-badge">用户指令</span>
+        </div>
+      </div>
+
+      <div class="timeline-item anim anim-d4">
+        <div class="timeline-time">8:37</div>
+        <div class="card course-card" style="flex:1;background:var(--surface);">
+          <div class="course-title">连接状态正常</div>
+          <div class="course-desc">WebSocket 长连接已建立，心跳文件返回 HEARTBEAT_OK。当前可用模型如下：</div>
+          <div class="code-block" style="margin-top:8px;">/status<br>/models<br>/model qwen-glm-4.1</div>
+          <div class="course-badges" style="margin-top:10px;">
+            <span class="pill" style="background:var(--lavender);opacity:0.5;"><span class="pill-dot" style="background:var(--purple)"></span>Token 42%</span>
+            <span class="pill" style="background:var(--coral-soft);opacity:0.5;"><span class="pill-dot" style="background:var(--coral)"></span>正在生成</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:180px;"></div>
+
+      <div class="composer">
+        <div class="composer-inner">
+          <div class="composer-chips">
+            <button class="chip">状态</button>
+            <button class="chip">模型</button>
+            <button class="chip">任务</button>
+            <button class="chip">审批</button>
+          </div>
+          <div class="composer-input">
+            <button class="rbtn rbtn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.44 11.05-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg></button>
+            <input placeholder="输入指令或问题">
+            <button class="rbtn rbtn-sm rbtn-ink"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== PAGE 2: AGENTS ====== -->
+    <div class="page" id="p-agents">
+      <div class="header">
+        <div class="header-row">
+          <div class="header-text">
+            <div class="page-title">我的智能体</div>
+            <div class="page-subtitle">4 个在线 · 149 插件 · 7/7 同步</div>
+          </div>
+          <button class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
+        </div>
+      </div>
+
+      <div class="search-box anim anim-d1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input placeholder="搜索智能体、模型或插件">
+      </div>
+
+      <div class="filter-chips anim anim-d2">
+        <button class="filter-chip on">全部</button>
+        <button class="filter-chip">在线</button>
+        <button class="filter-chip">同步中</button>
+        <button class="filter-chip">离线</button>
+        <button class="filter-chip">高权限</button>
+      </div>
+
+      <!-- Agent: 未来 -->
+      <div class="agent-card anim anim-d2" style="background:var(--mint);opacity:0.85;">
+        <div class="agent-card-top">
+          <div class="portrait" style="width:62px;height:62px;">
+            <div class="portrait-bg" style="background:linear-gradient(135deg,var(--mint-strong),var(--mint));">
+              <div class="portrait-face" style="width:75%;">
+                <div class="portrait-hair" style="border-radius:16px;"></div>
+                <div class="portrait-face-bg" style="width:55%;height:45%;left:22%;top:22%;"></div>
+                <div class="portrait-shirt" style="background:var(--mint-strong);border-radius:14px;"></div>
+                <div class="portrait-eyes" style="top:30%;"><div class="portrait-eye" style="width:6px;height:6px;"></div><div class="portrait-eye" style="width:6px;height:6px;"></div></div>
+                <div class="portrait-mouth" style="width:18%;height:4px;top:45%;"></div>
+              </div>
+            </div>
+            <div class="portrait-badge" style="width:24px;height:24px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:12px;height:12px;"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+            <div class="portrait-status"></div>
+          </div>
+          <div class="agent-info">
+            <div class="agent-name-row"><span class="agent-name">未来</span><span class="agent-count">(149)</span></div>
+            <div class="agent-role">AI 工程师</div>
+            <div class="agent-desc">负责代码、Gateway 状态与技术决策</div>
+            <div class="agent-meta">
+              <span class="model-chip">qwen-glm-4.1</span>
+              <span class="pill" style="background:rgba(255,255,255,0.5);"><span class="pill-dot" style="background:var(--mint-strong)"></span>在线</span>
+            </div>
+          </div>
+          <button class="rbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></button>
+        </div>
+        <div class="agent-bottom">
+          <div class="avatar-stack">
+            <div class="portrait" style="width:32px;height:32px;"><div class="portrait-bg" style="background:linear-gradient(135deg,var(--lavender),var(--purple));width:32px;height:32px;"><div class="portrait-face" style="width:70%;"><div class="portrait-hair" style="height:30%;border-radius:8px;"></div><div class="portrait-face-bg" style="width:50%;height:40%;left:25%;top:25%;"></div><div class="portrait-shirt" style="background:var(--purple);height:35%;border-radius:8px;"></div><div class="portrait-eyes" style="top:32%;"><div class="portrait-eye" style="width:4px;height:4px;"></div><div class="portrait-eye" style="width:4px;height:4px;"></div></div></div></div></div>
+            <div class="portrait" style="width:32px;height:32px;"><div class="portrait-bg" style="background:linear-gradient(135deg,var(--coral-soft),var(--coral));width:32px;height:32px;"><div class="portrait-face" style="width:70%;"><div class="portrait-hair" style="height:30%;border-radius:8px;background:var(--coral);"></div><div class="portrait-face-bg" style="width:50%;height:40%;left:25%;top:25%;"></div><div class="portrait-shirt" style="background:var(--coral);height:35%;border-radius:8px;"></div><div class="portrait-eyes" style="top:32%;"><div class="portrait-eye" style="width:4px;height:4px;"></div><div class="portrait-eye" style="width:4px;height:4px;"></div></div></div></div></div>
+            <div class="portrait" style="width:32px;height:32px;"><div class="portrait-bg" style="background:linear-gradient(135deg,var(--amber),#F5D78E);width:32px;height:32px;"><div class="portrait-face" style="width:70%;"><div class="portrait-hair" style="height:30%;border-radius:8px;background:var(--amber);"></div><div class="portrait-face-bg" style="width:50%;height:40%;left:25%;top:25%;"></div><div class="portrait-shirt" style="background:var(--amber);height:35%;border-radius:8px;"></div><div class="portrait-eyes" style="top:32%;"><div class="portrait-eye" style="width:4px;height:4px;"></div><div class="portrait-eye" style="width:4px;height:4px;"></div></div></div></div></div>
+            <div class="avatar-stack-extra">+2</div>
+          </div>
+          <span class="agent-sync">Soul 7/7 已同步</span>
+        </div>
+      </div>
+
+      <!-- Agent: 研究员 -->
+      <div class="agent-card anim anim-d3" style="background:var(--lavender);opacity:0.85;">
+        <div class="agent-card-top">
+          <div class="portrait" style="width:62px;height:62px;">
+            <div class="portrait-bg" style="background:linear-gradient(135deg,var(--purple),var(--lavender));">
+              <div class="portrait-face" style="width:75%;">
+                <div class="portrait-hair" style="border-radius:50%;width:40%;height:40%;left:30%;top:5%;background:none;border:4px solid var(--ink);border-bottom:none;border-right:none;transform:rotate(20deg);"></div>
+                <div class="portrait-face-bg" style="width:55%;height:45%;left:22%;top:22%;"></div>
+                <div class="portrait-shirt" style="background:var(--purple);border-radius:14px;"></div>
+                <div class="portrait-eyes" style="top:30%;"><div class="portrait-eye" style="width:6px;height:6px;"></div><div class="portrait-eye" style="width:6px;height:6px;"></div></div>
+              </div>
+            </div>
+            <div class="portrait-badge" style="width:24px;height:24px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+            <div class="portrait-status"></div>
+          </div>
+          <div class="agent-info">
+            <div class="agent-name-row"><span class="agent-name">研究员</span><span class="agent-count">(36)</span></div>
+            <div class="agent-role">搜索分析师</div>
+            <div class="agent-desc">负责资料检索、竞品分析与长文总结</div>
+            <div class="agent-meta">
+              <span class="model-chip">kimi-pro</span>
+              <span class="pill" style="background:rgba(255,255,255,0.5);"><span class="pill-dot" style="background:var(--mint-strong)"></span>在线</span>
+            </div>
+          </div>
+          <button class="rbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></button>
+        </div>
+        <div class="agent-bottom">
+          <span class="agent-sync">Soul 7/7 已同步</span>
+        </div>
+      </div>
+
+      <!-- Agent: 执行助手 -->
+      <div class="agent-card anim anim-d4" style="background:var(--coral-soft);opacity:0.8;">
+        <div class="agent-card-top">
+          <div class="portrait" style="width:62px;height:62px;">
+            <div class="portrait-bg" style="background:linear-gradient(135deg,var(--coral),var(--coral-soft));">
+              <div class="portrait-face" style="width:75%;">
+                <div class="portrait-hair" style="border-radius:16px;background:var(--coral);"></div>
+                <div class="portrait-face-bg" style="width:55%;height:45%;left:22%;top:22%;"></div>
+                <div class="portrait-shirt" style="background:var(--coral);border-radius:14px;"></div>
+                <div class="portrait-eyes" style="top:30%;"><div class="portrait-eye" style="width:6px;height:6px;"></div><div class="portrait-eye" style="width:6px;height:6px;"></div></div>
+              </div>
+            </div>
+            <div class="portrait-badge" style="width:24px;height:24px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+            <div class="portrait-status" style="background:var(--amber);"></div>
+          </div>
+          <div class="agent-info">
+            <div class="agent-name-row"><span class="agent-name">执行助手</span><span class="agent-count">(18)</span></div>
+            <div class="agent-role">任务执行官</div>
+            <div class="agent-desc">负责命令执行、巡检和高风险审批</div>
+            <div class="agent-meta">
+              <span class="model-chip">local-agent</span>
+              <span class="pill" style="background:rgba(255,255,255,0.5);"><span class="pill-dot" style="background:var(--amber)"></span>同步中</span>
+            </div>
+          </div>
+          <button class="rbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></button>
+        </div>
+        <div class="agent-bottom">
+          <span class="agent-sync">Soul 6/7 同步中</span>
+        </div>
+      </div>
+
+      <div style="height:40px;"></div>
+    </div>
+
+    <!-- ====== PAGE 3: TASKS ====== -->
+    <div class="page" id="p-tasks">
+      <div class="header">
+        <div class="header-row">
+          <div class="header-text">
+            <div class="page-title">自动任务</div>
+            <div class="page-subtitle">一次性、循环与 Cron 任务</div>
+          </div>
+          <button class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button>
+        </div>
+      </div>
+
+      <div class="card activity-card anim anim-d1">
+        <div class="activity-top">
+          <span class="activity-label">今日任务</span>
+          <div style="display:flex;align-items:center;">
+            <span class="activity-value">73%</span>
+            <svg class="activity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+        </div>
+        <div class="activity-bar"><div class="activity-bar-fill" style="width:73%"></div></div>
+      </div>
+
+      <div class="metric-grid anim anim-d2">
+        <div class="metric-card" style="background:var(--mint);opacity:0.8;">
+          <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/></svg>
+          <div class="metric-value">8</div>
+          <div class="metric-label">运行中</div>
+        </div>
+        <div class="metric-card" style="background:var(--coral-soft);opacity:0.8;">
+          <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          <div class="metric-value">2</div>
+          <div class="metric-label">已暂停</div>
+        </div>
+        <div class="metric-card" style="background:var(--lavender);opacity:0.8;">
+          <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <div class="metric-value">34</div>
+          <div class="metric-label">已完成</div>
+        </div>
+        <div class="metric-card" style="background:var(--surface);">
+          <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          <div class="metric-value">1</div>
+          <div class="metric-label">失败</div>
+        </div>
+      </div>
+
+      <div class="timeline-title anim anim-d3">任务时间线</div>
+
+      <div class="timeline-item anim anim-d3">
+        <div class="timeline-time">8:30</div>
+        <div class="task-card" style="flex:1;">
+          <div class="task-top">
+            <div class="portrait" style="width:48px;height:48px;">
+              <div class="portrait-bg" style="background:linear-gradient(135deg,var(--mint-strong),var(--mint));width:48px;height:48px;">
+                <div class="portrait-face" style="width:70%;"><div class="portrait-hair" style="height:28%;border-radius:10px;"></div><div class="portrait-face-bg" style="width:55%;height:42%;left:22%;top:22%;"></div><div class="portrait-shirt" style="background:var(--mint-strong);height:35%;border-radius:10px;"></div><div class="portrait-eyes" style="top:30%;"><div class="portrait-eye" style="width:5px;height:5px;"></div><div class="portrait-eye" style="width:5px;height:5px;"></div></div></div>
+              </div>
+              <div class="portrait-status" style="width:12px;height:12px;"></div>
+            </div>
+            <div class="task-info">
+              <div class="task-name">每日服务状态巡检</div>
+              <div class="task-agent">未来 · 今天 18:00</div>
+              <div style="display:flex;gap:8px;margin-bottom:8px;">
+                <span class="pill" style="background:rgba(255,255,255,0.5);">Cron</span>
+                <span class="pill" style="background:rgba(255,255,255,0.5);"><span class="pill-dot" style="background:var(--mint-strong)"></span>运行中</span>
+              </div>
+              <div class="task-progress"><div class="task-progress-fill" style="width:73%"></div></div>
+            </div>
+            <button class="rbtn rbtn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item anim anim-d4">
+        <div class="timeline-time">9:30</div>
+        <div class="task-card" style="flex:1;background:var(--lavender);opacity:0.8;">
+          <div class="task-top">
+            <div class="portrait" style="width:48px;height:48px;">
+              <div class="portrait-bg" style="background:linear-gradient(135deg,var(--purple),var(--lavender));width:48px;height:48px;">
+                <div class="portrait-face" style="width:70%;"><div class="portrait-hair" style="height:28%;border-radius:10px;background:none;border:3px solid var(--ink);border-bottom:none;border-right:none;transform:rotate(20deg);"></div><div class="portrait-face-bg" style="width:55%;height:42%;left:22%;top:22%;"></div><div class="portrait-shirt" style="background:var(--purple);height:35%;border-radius:10px;"></div><div class="portrait-eyes" style="top:30%;"><div class="portrait-eye" style="width:5px;height:5px;"></div><div class="portrait-eye" style="width:5px;height:5px;"></div></div></div>
+              </div>
+              <div class="portrait-status" style="width:12px;height:12px;"></div>
+            </div>
+            <div class="task-info">
+              <div class="task-name">竞品资料自动检索</div>
+              <div class="task-agent">研究员 · 每 6 小时</div>
+              <div style="display:flex;gap:8px;margin-bottom:8px;">
+                <span class="pill" style="background:rgba(255,255,255,0.5);">循环</span>
+                <span class="pill" style="background:rgba(255,255,255,0.5);"><span class="pill-dot" style="background:var(--mint-strong)"></span>运行中</span>
+              </div>
+              <div class="task-progress"><div class="task-progress-fill" style="width:41%"></div></div>
+            </div>
+            <button class="rbtn rbtn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item anim anim-d4">
+        <div class="timeline-time">11:00</div>
+        <div class="task-card" style="flex:1;background:var(--coral-soft);opacity:0.8;">
+          <div class="task-top">
+            <div class="portrait" style="width:48px;height:48px;">
+              <div class="portrait-bg" style="background:linear-gradient(135deg,var(--coral),var(--coral-soft));width:48px;height:48px;">
+                <div class="portrait-face" style="width:70%;"><div class="portrait-hair" style="height:28%;border-radius:10px;background:var(--coral);"></div><div class="portrait-face-bg" style="width:55%;height:42%;left:22%;top:22%;"></div><div class="portrait-shirt" style="background:var(--coral);height:35%;border-radius:10px;"></div><div class="portrait-eyes" style="top:30%;"><div class="portrait-eye" style="width:5px;height:5px;"></div><div class="portrait-eye" style="width:5px;height:5px;"></div></div></div>
+              </div>
+              <div class="portrait-status" style="width:12px;height:12px;background:var(--amber);"></div>
+            </div>
+            <div class="task-info">
+              <div class="task-name">高风险命令审批测试</div>
+              <div class="task-agent">执行助手 · 12:31</div>
+              <div style="display:flex;gap:8px;margin-bottom:8px;">
+                <span class="pill" style="background:rgba(255,255,255,0.5);">一次性</span>
+                <span class="pill" style="background:rgba(255,255,255,0.5);"><span class="pill-dot" style="background:var(--amber)"></span>已暂停</span>
+              </div>
+              <div class="task-progress"><div class="task-progress-fill" style="width:18%"></div></div>
+            </div>
+            <button class="rbtn rbtn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:80px;"></div>
+      <button class="fab anim anim-d2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>新建任务</button>
+    </div>
+
+    <!-- ====== PAGE 4: MONITOR ====== -->
+    <div class="page" id="p-monitor">
+      <div class="header">
+        <div class="header-row">
+          <div class="header-text">
+            <div class="page-title">运行监控</div>
+            <div class="page-subtitle">Token、模型与智能体活跃度</div>
+          </div>
+          <div class="portrait" style="width:52px;height:52px;">
+            <div class="portrait-bg" style="background:linear-gradient(135deg,var(--mint-strong),var(--mint));">
+              <div class="portrait-face" style="width:70%;"><div class="portrait-hair" style="height:28%;border-radius:10px;"></div><div class="portrait-face-bg" style="width:55%;height:42%;left:22%;top:22%;"></div><div class="portrait-shirt" style="background:var(--mint-strong);height:35%;border-radius:10px;"></div><div class="portrait-eyes" style="top:30%;"><div class="portrait-eye" style="width:5px;height:5px;"></div><div class="portrait-eye" style="width:5px;height:5px;"></div></div></div>
+            </div>
+            <div class="portrait-status" style="width:12px;height:12px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card anim anim-d1">
+        <div style="display:flex;justify-content:space-around;padding:10px 0;">
+          <div style="text-align:center;">
+            <div class="progress-ring">
+              <svg width="72" height="72" viewBox="0 0 72 72">
+                <circle class="progress-ring-bg" cx="36" cy="36" r="30"/>
+                <circle class="progress-ring-fill" cx="36" cy="36" r="30" stroke-dasharray="188.5" stroke-dashoffset="7.5"/>
+              </svg>
+              <span class="progress-ring-text">96%</span>
+            </div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-top:4px;">Token 用量</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="progress-ring">
+              <svg width="72" height="72" viewBox="0 0 72 72">
+                <circle class="progress-ring-bg" cx="36" cy="36" r="30"/>
+                <circle class="progress-ring-fill" cx="36" cy="36" r="30" stroke-dasharray="188.5" stroke-dashoffset="52.8" style="stroke:var(--purple);"/>
+              </svg>
+              <span class="progress-ring-text">18h</span>
+            </div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-top:4px;">运行时长</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-grid anim anim-d2">
+        <div class="metric-card" style="background:var(--lavender);opacity:0.8;">
+          <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+          <div class="metric-value">4</div>
+          <div class="metric-label">模型</div>
+        </div>
+        <div class="metric-card" style="background:var(--mint);opacity:0.8;">
+          <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          <div class="metric-value">6</div>
+          <div class="metric-label">智能体</div>
+        </div>
+        <div class="metric-card" style="background:var(--coral-soft);opacity:0.8;">
+          <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <div class="metric-value">$0</div>
+          <div class="metric-label">费用</div>
+        </div>
+        <div class="metric-card" style="background:var(--lavender);opacity:0.8;">
+          <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 019-9 9 9 0 019 9z"/><path d="M12 11v8"/><path d="M8 15h8"/></svg>
+          <div class="metric-value">149</div>
+          <div class="metric-label">插件</div>
+        </div>
+      </div>
+
+      <div class="card anim anim-d3">
+        <div style="font-size:18px;font-weight:600;color:var(--ink);margin-bottom:14px;">7 天 Token 趋势</div>
+        <div class="chart">
+          <div class="chart-bar" style="height:44px;background:var(--mint);"></div>
+          <div class="chart-bar" style="height:75px;background:var(--mint);"></div>
+          <div class="chart-bar" style="height:54px;background:var(--mint);"></div>
+          <div class="chart-bar" style="height:101px;background:var(--coral);"></div>
+          <div class="chart-bar" style="height:66px;background:var(--mint);"></div>
+          <div class="chart-bar" style="height:85px;background:var(--mint);"></div>
+          <div class="chart-bar" style="height:57px;background:var(--mint);"></div>
+        </div>
+      </div>
+
+      <div class="card anim anim-d4">
+        <div style="font-size:18px;font-weight:600;color:var(--ink);margin-bottom:14px;">按智能体分组</div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+              <div class="portrait" style="width:36px;height:36px;"><div class="portrait-bg" style="width:36px;height:36px;background:linear-gradient(135deg,var(--mint-strong),var(--mint));"><div class="portrait-face" style="width:65%;"><div class="portrait-hair" style="height:25%;border-radius:6px;"></div><div class="portrait-face-bg" style="width:50%;height:40%;left:25%;top:25%;"></div><div class="portrait-shirt" style="height:30%;border-radius:6px;background:var(--mint-strong);"></div><div class="portrait-eyes" style="top:30%;"><div class="portrait-eye" style="width:4px;height:4px;"></div><div class="portrait-eye" style="width:4px;height:4px;"></div></div></div></div></div>
+              <span style="font-size:15px;font-weight:600;color:var(--text);flex:1;">未来</span>
+              <span style="font-size:13px;font-family:monospace;color:var(--secondary);">48%</span>
+            </div>
+            <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="width:48%;height:100%;background:var(--mint-strong);border-radius:3px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+              <div class="portrait" style="width:36px;height:36px;"><div class="portrait-bg" style="width:36px;height:36px;background:linear-gradient(135deg,var(--purple),var(--lavender));"><div class="portrait-face" style="width:65%;"><div class="portrait-hair" style="height:25%;border-radius:6px;background:none;border:2px solid var(--ink);border-bottom:none;border-right:none;transform:rotate(20deg);"></div><div class="portrait-face-bg" style="width:50%;height:40%;left:25%;top:25%;"></div><div class="portrait-shirt" style="height:30%;border-radius:6px;background:var(--purple);"></div><div class="portrait-eyes" style="top:30%;"><div class="portrait-eye" style="width:4px;height:4px;"></div><div class="portrait-eye" style="width:4px;height:4px;"></div></div></div></div></div>
+              <span style="font-size:15px;font-weight:600;color:var(--text);flex:1;">研究员</span>
+              <span style="font-size:13px;font-family:monospace;color:var(--secondary);">25%</span>
+            </div>
+            <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="width:25%;height:100%;background:var(--lavender);border-radius:3px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+              <div class="portrait" style="width:36px;height:36px;"><div class="portrait-bg" style="width:36px;height:36px;background:linear-gradient(135deg,var(--coral),var(--coral-soft));"><div class="portrait-face" style="width:65%;"><div class="portrait-hair" style="height:25%;border-radius:6px;background:var(--coral);"></div><div class="portrait-face-bg" style="width:50%;height:40%;left:25%;top:25%;"></div><div class="portrait-shirt" style="height:30%;border-radius:6px;background:var(--coral);"></div><div class="portrait-eyes" style="top:30%;"><div class="portrait-eye" style="width:4px;height:4px;"></div><div class="portrait-eye" style="width:4px;height:4px;"></div></div></div></div></div>
+              <span style="font-size:15px;font-weight:600;color:var(--text);flex:1;">执行助手</span>
+              <span style="font-size:13px;font-family:monospace;color:var(--secondary);">17%</span>
+            </div>
+            <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="width:17%;height:100%;background:var(--coral-soft);border-radius:3px;"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:40px;"></div>
+    </div>
+
+    <!-- ====== PAGE 5: SETTINGS ====== -->
+    <div class="page" id="p-settings">
+      <div class="header">
+        <div class="header-row">
+          <div class="header-text">
+            <div class="page-title">设置</div>
+            <div class="page-subtitle">连接、权限、记忆与插件</div>
+          </div>
+          <div class="portrait" style="width:52px;height:52px;">
+            <div class="portrait-bg" style="background:linear-gradient(135deg,var(--mint-strong),var(--mint));">
+              <div class="portrait-face" style="width:70%;"><div class="portrait-hair" style="height:28%;border-radius:10px;"></div><div class="portrait-face-bg" style="width:55%;height:42%;left:22%;top:22%;"></div><div class="portrait-shirt" style="background:var(--mint-strong);height:35%;border-radius:10px;"></div><div class="portrait-eyes" style="top:30%;"><div class="portrait-eye" style="width:5px;height:5px;"></div><div class="portrait-eye" style="width:5px;height:5px;"></div></div></div>
+            </div>
+            <div class="portrait-status" style="width:12px;height:12px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card anim anim-d1">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="portrait" style="width:54px;height:54px;">
+            <div class="portrait-bg" style="background:linear-gradient(135deg,var(--mint-strong),var(--mint));">
+              <div class="portrait-face" style="width:70%;"><div class="portrait-hair" style="height:28%;border-radius:10px;"></div><div class="portrait-face-bg" style="width:55%;height:42%;left:22%;top:22%;"></div><div class="portrait-shirt" style="background:var(--mint-strong);height:35%;border-radius:10px;"></div><div class="portrait-eyes" style="top:30%;"><div class="portrait-eye" style="width:5px;height:5px;"></div><div class="portrait-eye" style="width:5px;height:5px;"></div></div></div>
+            </div>
+            <div class="portrait-status" style="width:12px;height:12px;"></div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:17px;font-weight:600;color:var(--ink);">wx-9f32a8</div>
+            <div style="font-size:13px;color:var(--secondary);margin-top:2px;">My Pilot Gateway · 中继在线</div>
+          </div>
+          <span class="pill" style="background:var(--mint);opacity:0.5;"><span class="pill-dot" style="background:var(--mint-strong)"></span>在线</span>
+        </div>
+      </div>
+
+      <div class="settings-group anim anim-d2">
+        <div class="card" style="margin:0 18px 14px;padding:4px 18px;">
+          <div class="settings-row" onclick="showNav('nav-connection')">
+            <div class="settings-icon" style="background:var(--mint);opacity:0.5;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0114.08 0M1.42 9a16 16 0 0121.16 0M8.53 16.11a6 6 0 016.95 0M12 20h.01"/></svg></div>
+            <div class="settings-text"><div class="settings-title">连接设置</div><div class="settings-sub">Relay、直连与心跳</div></div>
+            <span class="pill" style="background:var(--mint);opacity:0.3;font-size:11px;margin-right:6px;">已连接</span>
+            <svg class="settings-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+          <div class="settings-row" onclick="showNav('nav-permissions')">
+            <div class="settings-icon" style="background:var(--coral-soft);opacity:0.7;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="settings-text"><div class="settings-title">执行权限</div><div class="settings-sub">执行范围与审批策略</div></div>
+            <span class="pill" style="background:var(--coral-soft);opacity:0.3;font-size:11px;margin-right:6px;">混合</span>
+            <svg class="settings-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+          <div class="settings-row" onclick="showNav('nav-memory')">
+            <div class="settings-icon" style="background:var(--lavender);opacity:0.5;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+            <div class="settings-text"><div class="settings-title">记忆设置</div><div class="settings-sub">读取策略与隐私</div></div>
+            <span class="pill" style="background:var(--lavender);opacity:0.3;font-size:11px;margin-right:6px;">开启</span>
+            <svg class="settings-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group anim anim-d3">
+        <div class="card" style="margin:0 18px 14px;padding:4px 18px;">
+          <div class="settings-row">
+            <div class="settings-icon" style="background:var(--lavender);opacity:0.5;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+            <div class="settings-text"><div class="settings-title">搜索服务</div><div class="settings-sub">服务商与网页解析</div></div>
+            <span class="pill" style="background:var(--lavender);opacity:0.3;font-size:11px;margin-right:6px;">Brave</span>
+            <svg class="settings-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+          <div class="settings-row">
+            <div class="settings-icon" style="background:var(--mint);opacity:0.5;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 019-9 9 9 0 019 9z"/><path d="M12 11v8"/><path d="M8 15h8"/></svg></div>
+            <div class="settings-text"><div class="settings-title">插件库</div><div class="settings-sub">145+ 个可用工具</div></div>
+            <span class="pill" style="background:var(--mint);opacity:0.3;font-size:11px;margin-right:6px;">149</span>
+            <svg class="settings-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+          <div class="settings-row">
+            <div class="settings-icon" style="background:var(--coral-soft);opacity:0.7;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="settings-text"><div class="settings-title">文件浏览器</div><div class="settings-sub">远端 Soul 文件</div></div>
+            <span class="pill" style="background:var(--mint);opacity:0.3;font-size:11px;margin-right:6px;">已激活</span>
+            <svg class="settings-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group anim anim-d4">
+        <div class="card" style="margin:0 18px 14px;padding:4px 18px;">
+          <div class="settings-row">
+            <div class="settings-icon" style="background:var(--surface-soft);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="settings-text"><div class="settings-title">历史记录</div><div class="settings-sub">消息、指令、附件</div></div>
+            <svg class="settings-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+          <div class="settings-row">
+            <div class="settings-icon" style="background:var(--surface-soft);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+            <div class="settings-text"><div class="settings-title">状态组件</div><div class="settings-sub">空状态与错误态</div></div>
+            <svg class="settings-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+          <div class="settings-row">
+            <div class="settings-icon" style="background:var(--surface-soft);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+            <div class="settings-text"><div class="settings-title">订阅方案</div><div class="settings-sub">Free / Pro</div></div>
+            <span class="pill" style="background:var(--coral-soft);opacity:0.3;font-size:11px;margin-right:6px;">Free</span>
+            <svg class="settings-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center;padding:10px 0 30px;font-size:12px;color:var(--secondary);">My Pilot v1.0 · OpenClaw Gateway</div>
+    </div>
+
+    <!-- ====== NAV PAGES ====== -->
+    <div class="nav-page" id="nav-connection">
+      <div class="nav-header">
+        <button class="nav-back" onclick="hideNav('nav-connection')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>返回</button>
+        <div class="nav-title">连接设置</div>
+      </div>
+      <div style="padding:18px;">
+        <div class="card" style="margin:0 0 14px;background:var(--mint);opacity:0.85;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:20px;font-weight:600;color:var(--ink);">Gateway 已连接</div>
+              <div style="font-size:13px;color:var(--secondary);margin-top:3px;">Link Relay · HEARTBEAT_OK</div>
+            </div>
+            <span class="pill" style="background:rgba(255,255,255,0.5);"><span class="pill-dot" style="background:var(--mint-strong)"></span>在线</span>
+          </div>
+        </div>
+        <div class="card" style="margin:0 0 14px;">
+          <div class="segmented"><button class="segment on">Relay</button><button class="segment">Direct</button></div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:var(--secondary);">Relay URL</span><span style="color:var(--text);font-weight:500;">https://relay.clawpilot.com/</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:var(--secondary);">User ID</span><span style="color:var(--text);font-weight:500;">wx-9f32a8</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:var(--secondary);">WebSocket</span><span style="color:var(--text);font-weight:500;">已建立长连接</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:var(--secondary);">Direct IP</span><span style="color:var(--text);font-weight:500;">172.31.16.2</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:var(--secondary);">端口</span><span style="color:var(--text);font-weight:500;font-family:monospace;">52378</span></div>
+          </div>
+        </div>
+        <div class="card" style="margin:0 0 14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-size:15px;font-weight:500;color:var(--text);">自动重连</span>
+            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div style="font-size:13px;color:var(--secondary);">连接断开后使用指数退避策略重连。</div>
+        </div>
+        <button style="width:100%;padding:16px;background:var(--ink);color:white;border-radius:22px;border:none;font-size:16px;font-weight:600;font-family:var(--f);cursor:pointer;">测试连接</button>
+      </div>
+    </div>
+
+    <div class="nav-page" id="nav-permissions">
+      <div class="nav-header">
+        <button class="nav-back" onclick="hideNav('nav-permissions')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>返回</button>
+        <div class="nav-title">执行权限</div>
+      </div>
+      <div style="padding:18px;">
+        <div class="card" style="margin:0 0 14px;background:var(--coral-soft);opacity:0.85;">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div class="portrait" style="width:56px;height:56px;"><div class="portrait-bg" style="background:linear-gradient(135deg,var(--coral),var(--coral-soft));"><div class="portrait-face" style="width:70%;"><div class="portrait-hair" style="background:var(--coral);"></div><div class="portrait-face-bg"></div><div class="portrait-shirt" style="background:var(--coral);"></div><div class="portrait-eyes"><div class="portrait-eye"></div><div class="portrait-eye"></div></div></div></div><div class="portrait-status" style="background:var(--amber);"></div></div>
+            <div>
+              <div style="font-size:18px;font-weight:600;color:var(--ink);">混合执行 · 一次性审批</div>
+              <div style="font-size:13px;color:var(--secondary);margin-top:3px;">高风险命令会先请求确认</div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin:0 0 14px;">
+          <div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:10px;">执行范围</div>
+          <div class="segmented"><button class="segment">仅对话</button><button class="segment">本地</button><button class="segment on">混合</button><button class="segment">全量</button></div>
+        </div>
+        <div class="card" style="margin:0 0 14px;">
+          <div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:10px;">审批策略</div>
+          <div class="segmented"><button class="segment">始终</button><button class="segment on">一次性</button><button class="segment">从不</button></div>
+        </div>
+        <div class="card" style="margin:0 0 14px;">
+          <div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:10px;">特权授权</div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:15px;color:var(--text);">特权操作手动触发</span><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:15px;color:var(--text);">特权读取</span><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:15px;color:var(--text);">智能 Exec 审批</span><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:15px;color:var(--text);">代码编写与导出</span><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-page" id="nav-memory">
+      <div class="nav-header">
+        <button class="nav-back" onclick="hideNav('nav-memory')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>返回</button>
+        <div class="nav-title">记忆设置</div>
+      </div>
+      <div style="padding:18px;">
+        <div class="card" style="margin:0 0 14px;background:var(--lavender);opacity:0.85;">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div class="portrait" style="width:56px;height:56px;"><div class="portrait-bg" style="background:linear-gradient(135deg,var(--purple),var(--lavender));"><div class="portrait-face" style="width:70%;"><div class="portrait-hair" style="background:none;border:3px solid var(--ink);border-bottom:none;border-right:none;transform:rotate(20deg);"></div><div class="portrait-face-bg"></div><div class="portrait-shirt" style="background:var(--purple);"></div><div class="portrait-eyes"><div class="portrait-eye"></div><div class="portrait-eye"></div></div></div></div><div class="portrait-status"></div></div>
+            <div>
+              <div style="font-size:18px;font-weight:600;color:var(--ink);">记忆读取已启用</div>
+              <div style="font-size:13px;color:var(--secondary);margin-top:3px;">记忆管家 · 本周记录已同步</div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin:0 0 14px;">
+          <div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:10px;">更新频率</div>
+          <div class="segmented"><button class="segment on">每次</button><button class="segment">按需</button><button class="segment">每 6h</button></div>
+        </div>
+        <div class="card" style="margin:0 0 14px;">
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:15px;color:var(--text);">隐私模式</span><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:15px;color:var(--text);">显示同步状态</span><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:15px;color:var(--text);">解析历史</span><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          </div>
+        </div>
+        <div class="card" style="margin:0 0 14px;">
+          <div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:10px;">日志快照</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="portrait" style="width:32px;height:32px;"><div class="portrait-bg" style="width:32px;height:32px;background:linear-gradient(135deg,var(--purple),var(--lavender));"><div class="portrait-face" style="width:65%;"><div class="portrait-hair" style="height:25%;border-radius:6px;background:none;border:2px solid var(--ink);border-bottom:none;border-right:none;transform:rotate(20deg);"></div><div class="portrait-face-bg" style="width:50%;height:40%;left:25%;top:25%;"></div><div class="portrait-shirt" style="height:30%;border-radius:6px;background:var(--purple);"></div><div class="portrait-eyes" style="top:30%;"><div class="portrait-eye" style="width:4px;height:4px;"></div><div class="portrait-eye" style="width:4px;height:4px;"></div></div></div></div></div>
+              <span style="font-size:13px;color:var(--text);">operator · 今天 12:20</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="portrait" style="width:32px;height:32px;"><div class="portrait-bg" style="width:32px;height:32px;background:linear-gradient(135deg,var(--mint-strong),var(--mint));"><div class="portrait-face" style="width:65%;"><div class="portrait-hair" style="height:25%;border-radius:6px;"></div><div class="portrait-face-bg" style="width:50%;height:40%;left:25%;top:25%;"></div><div class="portrait-shirt" style="height:30%;border-radius:6px;background:var(--mint-strong);"></div><div class="portrait-eyes" style="top:30%;"><div class="portrait-eye" style="width:4px;height:4px;"></div><div class="portrait-eye" style="width:4px;height:4px;"></div></div></div></div></div>
+              <span style="font-size:13px;color:var(--text);">waiter-bot · 今天 11:44</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tabbar">
+      <button class="tab on" onclick="switchTab('p-workbench',this)" data-tab="workbench">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        工作台
+      </button>
+      <button class="tab" onclick="switchTab('p-agents',this)" data-tab="agents">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        智能体
+      </button>
+      <button class="tab" onclick="switchTab('p-tasks',this)" data-tab="tasks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        自动任务
+      </button>
+      <button class="tab" onclick="switchTab('p-monitor',this)" data-tab="monitor">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        监控
+      </button>
+      <button class="tab" onclick="switchTab('p-settings',this)" data-tab="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>
+        设置
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function switchTab(pageId, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.getElementById(pageId).classList.add('on');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  btn.classList.add('on');
+}
+function showNav(id) {
+  document.getElementById(id).classList.add('on');
+}
+function hideNav(id) {
+  document.getElementById(id).classList.remove('on');
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parham OpenClaw-ios — UI 参考规范 (给 Trae Solo)</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", monospace;
+  background: #0a0a0f;
+  color: #e0e0e8;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.wrap { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+
+header {
+  background: linear-gradient(180deg, #1a1a2e 0%, #0a0a0f 100%);
+  border-bottom: 1px solid #2a2a3a;
+  padding: 60px 20px 40px;
+  text-align: center;
+}
+h1 {
+  font-size: 32px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #5b8def 0%, #a96bff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.subtitle { color: #888; font-size: 14px; margin-bottom: 16px; }
+.badges { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.badge {
+  padding: 3px 10px; border-radius: 10px; font-size: 11px;
+  background: rgba(91, 141, 239, 0.15); color: #5b8def;
+  border: 1px solid rgba(91, 141, 239, 0.3);
+}
+
+h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 50px 0 16px;
+  color: #fff;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #5b8def;
+}
+h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 30px 0 12px;
+  color: #5b8def;
+}
+h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 16px 0 8px;
+  color: #a96bff;
+}
+p { color: #ccc; margin-bottom: 12px; }
+ul, ol { margin: 0 0 16px 24px; color: #ccc; }
+li { margin-bottom: 6px; }
+code {
+  background: rgba(91, 141, 239, 0.1);
+  padding: 1px 6px; border-radius: 3px;
+  font-family: "SF Mono", Menlo, monospace; font-size: 13px;
+  color: #5b8def;
+}
+pre {
+  background: #14141e;
+  border: 1px solid #2a2a3a;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #e0e0e8;
+  font-family: "SF Mono", Menlo, monospace;
+  margin-bottom: 16px;
+}
+.annotation { color: #c678dd; }
+.keyword { color: #c678dd; }
+.type    { color: #e5c07b; }
+.string  { color: #98c379; }
+.comment { color: #5c6370; font-style: italic; }
+.num     { color: #d19a66; }
+
+.alert {
+  background: rgba(255, 149, 0, 0.1);
+  border-left: 3px solid #ff9500;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 16px;
+  color: #ccc;
+}
+.alert strong { color: #ff9500; }
+.danger {
+  background: rgba(255, 59, 48, 0.1);
+  border-left: 3px solid #ff3b30;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 16px;
+  color: #ccc;
+}
+.danger strong { color: #ff3b30; }
+.success {
+  background: rgba(52, 199, 89, 0.1);
+  border-left: 3px solid #34c759;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 16px;
+  color: #ccc;
+}
+.success strong { color: #34c759; }
+
+.shot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+.shot-card {
+  background: #14141e;
+  border: 1px solid #2a2a3a;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+.shot-card:hover {
+  border-color: #5b8def;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(91, 141, 239, 0.15);
+}
+.shot-card img { width: 100%; display: block; }
+.shot-card-body { padding: 14px; }
+.shot-card h4 { color: #fff; font-size: 14px; margin-bottom: 4px; }
+.shot-card p { color: #888; font-size: 12px; margin: 0; }
+
+.ref-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+@media (max-width: 768px) { .ref-grid { grid-template-columns: 1fr; } }
+.ref-card {
+  background: #14141e;
+  border: 1px solid #2a2a3a;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+.ref-card .name {
+  color: #5b8def;
+  font-weight: 600;
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.ref-card .path {
+  color: #888;
+  font-size: 12px;
+  font-family: "SF Mono", Menlo, monospace;
+}
+.ref-card .desc { color: #ccc; font-size: 13px; margin-top: 6px; }
+
+ol.steps {
+  counter-reset: step;
+  list-style: none;
+  margin-left: 0;
+  padding: 0;
+}
+ol.steps > li {
+  counter-increment: step;
+  position: relative;
+  padding: 12px 0 12px 48px;
+  border-bottom: 1px solid #2a2a3a;
+}
+ol.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #5b8def, #a96bff);
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+footer {
+  margin-top: 60px;
+  padding: 30px 20px;
+  border-top: 1px solid #2a2a3a;
+  text-align: center;
+  color: #666;
+  font-size: 13px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📐 Parham OpenClaw-ios — UI 参考规范</h1>
+  <p class="subtitle">ClawPilot 客户端 UI 优化阶段 · 给 Trae Solo 读的完整参考文档</p>
+  <div class="badges">
+    <span class="badge">SwiftUI</span>
+    <span class="badge">iOS 17+</span>
+    <span class="badge">Swift 6</span>
+    <span class="badge">@Observable</span>
+    <span class="badge">MVVM</span>
+    <span class="badge">Design Tokens</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h2>🎯 任务目标</h2>
+<p>ClawPilot 客户端基本功能已开发完成，<strong>现在进入 UI 优化阶段</strong>。目标：让 ClawPilot 的 UI 风格、布局、组件<strong>全面对齐 Parham-dev/OpenClaw-ios 这个 SwiftUI 项目</strong>。</p>
+<p>Parham 的设计是<strong>工程师向但极致精致、克制、细节满满</strong>。把它的设计系统、组件库、架构约定引入 ClawPilot，作为 UI 优化的基线。</p>
+
+<div class="alert">
+<strong>📌 参考源仓库</strong>：<code>https://github.com/Parham-dev/OpenClaw-ios</code><br>
+<strong>📌 必读文档</strong>：仓库根目录的 <code>README.md</code> 和 <code>CLAUDE.md</code><br>
+<strong>📌 真实截图</strong>：仓库 <code>resources/</code> 目录下 7 张真机截图
+</div>
+
+<h2>1️⃣ 第一步：Clone Parham 仓库读源码</h2>
+
+<pre><span class="comment"># Clone 下来</span>
+git clone https://github.com/Parham-dev/OpenClaw-ios.git
+cd OpenClaw-ios
+
+<span class="comment"># 用 XcodeGen 生成 .xcodeproj（项目没有预生成）</span>
+xcodegen generate
+
+<span class="comment"># 打开 Xcode 编译运行（先 iOS 17+ 模拟器）</span>
+open OpenClaw.xcodeproj</pre>
+
+<p>在 Xcode 里<strong>先看 Parham 实际跑起来的样子</strong>，再开始改造 ClawPilot。一定要跑起来看，不能只看截图。</p>
+
+<h3>必读的仓库文件</h3>
+<ul>
+  <li><code>README.md</code> — 项目介绍、架构、API 列表</li>
+  <li><code>CLAUDE.md</code> — <strong>关键</strong>，完整的设计系统、架构约定、命名规范、组件清单（本文档下面所有内容都来自它）</li>
+  <li><code>resources/*.PNG</code> — 7 张 iPhone/iPad 真机截图</li>
+</ul>
+
+<h3>重点看的目录</h3>
+<pre>Sources/
+├── Core/
+│   ├── DesignSystem/      <span class="comment">⭐ Spacing / AppColors / AppTypography / AppRadius / Formatters</span>
+│   ├── Components/        <span class="comment">⭐ 17 个共享 UI 组件（卡片、徽章、图标、计时器等）</span>
+│   ├── LoadableViewModel.swift   <span class="comment">⭐ 通用 ViewModel 基类</span>
+│   ├── Networking/        <span class="comment">GatewayClient / DTOs</span>
+│   ├── Repositories/      <span class="comment">Remote*Repository 实现</span>
+│   ├── Prompts/           <span class="comment">PromptTemplates（提示词模板）</span>
+│   └── Storage/           <span class="comment">UserDefaults / InvestigationStore</span>
+└── Features/
+    ├── Home/              <span class="comment">首页 Dashboard</span>
+    ├── Crons/             <span class="comment">定时任务</span>
+    ├── Sessions/          <span class="comment">会话管理</span>
+    ├── Memory/            <span class="comment">记忆浏览</span>
+    ├── Chat/              <span class="comment">流式聊天</span>
+    ├── Tools/             <span class="comment">工具配置</span>
+    └── Settings/</pre>
+
+<h2>2️⃣ Parham 7 张真实截图</h2>
+<p>下面 7 张图都来自 Parham 仓库的 <code>resources/</code> 目录，<strong>真机运行截图</strong>。改造时对照这些图调整。</p>
+
+<div class="shot-grid">
+  <div class="shot-card">
+    <img src="resources/home-dashboard.png" alt="Home Dashboard">
+    <div class="shot-card-body">
+      <h4>🏠 Home Dashboard</h4>
+      <p>系统健康仪表盘 + 12 个命令卡片 + Cron 摘要 + Token 用量图表</p>
+    </div>
+  </div>
+  <div class="shot-card">
+    <img src="resources/cron-history.png" alt="Cron History">
+    <div class="shot-card-body">
+      <h4>⏰ Cron History</h4>
+      <p>定时任务列表 + 状态徽章 + 分段式历史记录 + 24h 时间线</p>
+    </div>
+  </div>
+  <div class="shot-card">
+    <img src="resources/schedule-timeline.png" alt="Schedule Timeline">
+    <div class="shot-card-body">
+      <h4>📅 Schedule Timeline</h4>
+      <p>24 小时任务时间线视图，横向滚动浏览所有计划任务</p>
+    </div>
+  </div>
+  <div class="shot-card">
+    <img src="resources/memory-skills.png" alt="Memory & Skills">
+    <div class="shot-card-body">
+      <h4>📚 Memory & Skills</h4>
+      <p>Markdown 文件 + Figma 风格段落评论 + Skills 文件树</p>
+    </div>
+  </div>
+  <div class="shot-card">
+    <img src="resources/execution-trace.png" alt="Execution Trace">
+    <div class="shot-card-body">
+      <h4>🔍 Execution Trace</h4>
+      <p>System prompt / Thinking / Tool calls / Tool results 步骤化展示</p>
+    </div>
+  </div>
+  <div class="shot-card">
+    <img src="resources/sessions.png" alt="Sessions">
+    <div class="shot-card-body">
+      <h4>💬 Sessions</h4>
+      <p>主会话卡片 + 上下文窗口环形图 + Sub-agent 列表</p>
+    </div>
+  </div>
+  <div class="shot-card">
+    <img src="resources/doctor-output.png" alt="Doctor Output">
+    <div class="shot-card-body">
+      <h4>🩺 Doctor Output</h4>
+      <p>openclaw doctor 命令的结构化输出展示</p>
+    </div>
+  </div>
+</div>
+
+<h2>3️⃣ 设计系统（Design Tokens）</h2>
+<p><strong>绝对禁止写字面量</strong>，所有尺寸/颜色/字号必须用 Design tokens：</p>
+
+<pre><span class="comment">// ✅ 正确</span>
+.padding(Spacing.md)
+.frame(width: AppRadius.card)
+.foregroundStyle(AppColors.success)
+.font(AppTypography.heroNumber)
+
+<span class="comment">// ❌ 错误 —— 禁止</span>
+.padding(16)
+.frame(width: 16)
+.foregroundStyle(.green)
+.font(.system(size: 34, weight: .bold))</pre>
+
+<h3>Spacing（4pt 网格）</h3>
+<pre><span class="keyword">enum</span> Spacing {
+    <span class="keyword">static let</span> xxs: <span class="type">CGFloat</span> = <span class="num">4</span>
+    <span class="keyword">static let</span> xs: <span class="type">CGFloat</span> = <span class="num">8</span>
+    <span class="keyword">static let</span> sm: <span class="type">CGFloat</span> = <span class="num">12</span>
+    <span class="keyword">static let</span> md: <span class="type">CGFloat</span> = <span class="num">16</span>
+    <span class="keyword">static let</span> lg: <span class="type">CGFloat</span> = <span class="num">24</span>
+    <span class="keyword">static let</span> xl: <span class="type">CGFloat</span> = <span class="num">32</span>
+    <span class="keyword">static let</span> xxl: <span class="type">CGFloat</span> = <span class="num">48</span>
+}</pre>
+
+<h3>AppColors</h3>
+<pre><span class="keyword">enum</span> AppColors {
+    <span class="keyword">static let</span> success      <span class="comment">// 绿 —— 成功/在线</span>
+    <span class="keyword">static let</span> danger       <span class="comment">// 红 —— 失败/危险</span>
+    <span class="keyword">static let</span> metricPrimary <span class="comment">// 蓝 —— 主指标</span>
+    <span class="keyword">static func</span> <span class="type">gauge</span>(percent: <span class="type">Double</span>, warn: <span class="type">Double</span>, critical: <span class="type">Double</span>) -&gt; <span class="type">Color</span>
+}</pre>
+
+<h3>AppTypography</h3>
+<pre><span class="keyword">enum</span> AppTypography {
+    <span class="keyword">static let</span> heroNumber  <span class="comment">// 大数字（指标卡）</span>
+    <span class="keyword">static let</span> cardTitle   <span class="comment">// 卡片标题</span>
+    <span class="keyword">static let</span> actionIcon  <span class="comment">// 操作按钮图标</span>
+    <span class="keyword">static let</span> badgeIcon   <span class="comment">// 徽章图标</span>
+    <span class="keyword">static let</span> statusIcon  <span class="comment">// 状态点</span>
+    <span class="keyword">static let</span> nano        <span class="comment">// 极小文字</span>
+}</pre>
+
+<h3>AppRadius</h3>
+<pre><span class="keyword">enum</span> AppRadius {
+    <span class="keyword">static let</span> sm: <span class="type">CGFloat</span> = <span class="num">8</span>
+    <span class="keyword">static let</span> md: <span class="type">CGFloat</span> = <span class="num">10</span>
+    <span class="keyword">static let</span> lg: <span class="type">CGFloat</span> = <span class="num">12</span>
+    <span class="keyword">static let</span> card: <span class="type">CGFloat</span> = <span class="num">16</span>
+}</pre>
+
+<div class="success">
+<strong>✅ 复用建议</strong>：Parham 项目里这些枚举都已实现并导出，<strong>直接 import 复用即可</strong>，或者把对应文件拷到 ClawPilot 项目里。
+</div>
+
+<h2>4️⃣ 17 个共享组件（必须复用）</h2>
+<p>Parham 提取了 17 个被多个页面复用的组件。<strong>改造时优先复用，不要自己造</strong>。</p>
+
+<div class="ref-grid">
+  <div class="ref-card">
+    <div class="name">CardContainer</div>
+    <div class="path">Core/Components/CardContainer.swift</div>
+    <div class="desc">Dashboard 卡片的统一外壳。承载所有指标卡。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">CardLoadingView</div>
+    <div class="path">Core/Components/CardLoadingView.swift</div>
+    <div class="desc">卡片加载态，带 skeleton shimmer 动画。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">CardErrorView</div>
+    <div class="path">Core/Components/CardErrorView.swift</div>
+    <div class="desc">卡片错误态，含重试按钮。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">CronStatusDot</div>
+    <div class="path">Core/Components/CronStatusDot.swift</div>
+    <div class="desc">6pt 状态指示点（绿/橙/红/灰）。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">CronStatusBadge</div>
+    <div class="path">Core/Components/CronStatusBadge.swift</div>
+    <div class="desc">状态徽章，<code>.small</code> 和 <code>.large</code> 两种样式。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">ModelPill</div>
+    <div class="path">Core/Components/ModelPill.swift</div>
+    <div class="desc">胶囊状模型标签，带 ProviderIcon。在 10+ 个地方用。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">ProviderIcon</div>
+    <div class="path">Core/Components/ProviderIcon.swift</div>
+    <div class="desc">5 个 provider 图标（claude/github/openai/gemini/openclaw）。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">DetailTitleView</div>
+    <div class="path">Core/Components/DetailTitleView.swift</div>
+    <div class="desc">主标题 + 动态副标题（"12 jobs · 2 failed"）。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">TokenBreakdownBar</div>
+    <div class="path">Core/Components/TokenBreakdownBar.swift</div>
+    <div class="desc">Token 比例条（input/output/cache 比例）。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">TokenLegendItem</div>
+    <div class="path">Core/Components/TokenLegendItem.swift</div>
+    <div class="desc">Token 比例条图例项。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">CopyButton / CopyToolbarButton</div>
+    <div class="path">Core/Components/CopyButton.swift</div>
+    <div class="desc">复制按钮，带成功态。Toolbar 图标变体。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">CommandButton</div>
+    <div class="path">Core/Components/CommandButton.swift</div>
+    <div class="desc">快捷命令按钮（icon + label + loading 态）。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">ElapsedTimer</div>
+    <div class="path">Core/Components/ElapsedTimer.swift</div>
+    <div class="desc">实时计时器，长响应时显示耗时。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">ParagraphRow</div>
+    <div class="path">Core/Components/ParagraphRow.swift</div>
+    <div class="desc">段落级 Markdown 阅读器，支持评论标注。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">CommentSheet</div>
+    <div class="path">Core/Components/CommentSheet.swift</div>
+    <div class="desc">评论弹层，三种模式：<code>.paragraph</code> / <code>.page</code> / <code>.skill</code>。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">CommentInputBar</div>
+    <div class="path">Core/Components/CommentInputBar.swift</div>
+    <div class="desc">多行输入栏 + 发送按钮（评论 + Chat 通用）。</div>
+  </div>
+  <div class="ref-card">
+    <div class="name">InvestigationStore</div>
+    <div class="path">Core/Storage/InvestigationStore.swift</div>
+    <div class="desc">保存每个 cron job 的最近一次 AI 调查结果。</div>
+  </div>
+</div>
+
+<div class="alert">
+<strong>📌 用法原则</strong>：如果需要新组件，<strong>先在 Parham 的 <code>Components/</code> 下找类似实现，照着改</strong>；如果确实没有，再自己新建（但必须放在 ClawPilot 项目的 <code>Components/</code> 目录下，遵循同样的命名和签名风格）。
+</div>
+
+<h2>5️⃣ 架构约定（必须遵守）</h2>
+
+<h3>5.1 ViewModel 必须继承 LoadableViewModel</h3>
+<pre><span class="annotation">@Observable</span>
+<span class="annotation">@MainActor</span>
+<span class="keyword">final class</span> <span class="type">MyFeatureViewModel</span>: <span class="type">LoadableViewModel</span>&lt;<span class="type">MyData</span>&gt; {
+    <span class="keyword">init</span>(repository: <span class="type">MyRepository</span>) { <span class="keyword">super</span>.<span class="keyword">init</span>() }
+    <span class="keyword">override func</span> <span class="type">start</span>() <span class="keyword">async</span> { <span class="comment">/* 加载逻辑 */</span> }
+}</pre>
+
+<p><code>LoadableViewModel&lt;T&gt;</code> 提供：<code>data</code>、<code>isLoading</code>、<code>error</code>、<code>isStale</code>、<code>start()</code>、<code>refresh()</code>、<code>cancel()</code>、<code>startPolling(interval:)</code>、<code>stopPolling()</code>。功能 VM 是它的<strong>一行子类</strong>。</p>
+
+<h3>5.2 Repository 必须用 Protocol 注入</h3>
+<pre><span class="keyword">protocol</span> <span class="type">MyRepository</span> {
+    <span class="keyword">func</span> <span class="type">fetch</span>() <span class="keyword">async throws</span> -&gt; <span class="type">MyData</span>
+}
+<span class="keyword">final class</span> <span class="type">RemoteMyRepository</span>: <span class="type">MyRepository</span> {
+    <span class="comment">/* 实现 */</span>
+}</pre>
+
+<div class="danger">
+<strong>❌ 禁止</strong>在 View 或 ViewModel 里直接 <code>new</code> Repository。必须 Protocol 注入，方便测试和替换。
+</div>
+
+<h3>5.3 View 接收注入</h3>
+<pre><span class="keyword">struct</span> <span class="type">MyView</span>: <span class="type">View</span> {
+    <span class="annotation">@State</span> <span class="keyword">private var</span> viewModel: <span class="type">MyViewModel</span>
+    <span class="keyword">init</span>(repository: <span class="keyword">any</span> <span class="type">MyRepository</span>) {
+        _viewModel = <span class="type">State</span>(initialValue: <span class="type">MyViewModel</span>(repository: repository))
+    }
+    <span class="keyword">var</span> body: <span class="keyword">some</span> <span class="type">View</span> {
+        <span class="type">CardContainer</span>(content: { ... })
+    }
+}</pre>
+
+<h3>5.4 DTO 和 Domain model 分离</h3>
+<ul>
+  <li><strong>DTO</strong>：放在 <code>Core/Networking/DTOs/</code>，<strong>带 DTO 后缀</strong>，纯 <code>Decodable</code></li>
+  <li><strong>Domain model</strong>：放在 Feature 文件夹里，有 <code>init(dto:)</code> 转换器</li>
+</ul>
+
+<h3>5.5 其他必须遵守的规范</h3>
+<ul>
+  <li>📏 <strong>文件不超过 300 行</strong>，超过就拆分</li>
+  <li>📱 iOS 17+ 部署目标，使用 Swift 6 模式（<code>@Observable</code>、strict <code>Sendable</code>）</li>
+  <li>🔄 <strong>并发</strong>：所有 ViewModel 加 <code>@MainActor</code>。Loader 闭包用 <code>@Sendable</code>。用 actor 做缓存（<code>MemoryCache</code>）。<strong>不用</strong> <code>@unchecked Sendable</code>。</li>
+  <li>📋 <strong>日志</strong>：用 <code>os.Logger</code>，subsystem 是你的 bundle id，<strong>不用 <code>print()</code></strong></li>
+  <li>♿ <strong>无障碍</strong>：所有自定义视觉组件加 <code>.accessibilityElement</code> + <code>.accessibilityLabel</code></li>
+  <li>📳 <strong>触感</strong>：用户操作反馈用 <code>Haptics.shared</code>（刷新、保存、错误）</li>
+  <li>💀 <strong>危险区</strong>：破坏性操作（重置、删除）必须先弹 Alert 确认</li>
+  <li>🧪 <strong>分页</strong>：用 limit/offset + "Load More" 按钮。Append 时按 ID 去重</li>
+  <li>🔤 <strong>Markdown 渲染</strong>：<code>Markdown(text).markdownTheme(.openClaw)</code>，<strong>不用</strong> <code>AttributedString(markdown:)</code></li>
+  <li>📊 <strong>Token 格式化</strong>：<code>Formatters.tokens()</code>，<strong>别自己造</strong></li>
+  <li>💲 <strong>费用格式化</strong>：<code>Formatters.cost()</code>（USD）</li>
+  <li>🕒 <strong>时间格式化</strong>：<code>Formatters.relativeString(for:)</code> / <code>absoluteString(for:)</code></li>
+</ul>
+
+<h2>6️⃣ ClawPilot UI 改造清单</h2>
+
+<h3>P0 — 必须做（决定整体观感）</h3>
+
+<h4>① Home Dashboard（主页）</h4>
+<ul>
+  <li>用 <code>CardContainer</code> 重新做所有卡片</li>
+  <li>系统健康卡：含 <code>gauge(percent:warn:critical:)</code> 颜色（CPU/RAM/磁盘）</li>
+  <li>Token 用量卡：含 <code>TokenBreakdownBar</code> 比例条 + 图例</li>
+  <li>Cron 摘要卡：用 <code>CronStatusBadge</code></li>
+  <li>快捷命令网格：3 列 × 2 行 = 6 个 <code>CommandButton</code></li>
+</ul>
+
+<h4>② Chat 流式聊天</h4>
+<ul>
+  <li>用户消息气泡：<code>.background(AppColors.metricPrimary)</code>，圆角 16</li>
+  <li>助手消息 Markdown：<code>Markdown(text).markdownTheme(.openClaw)</code></li>
+  <li>加载动画：3 个 6pt 圆点脉冲（<strong>不用菊花转</strong>）</li>
+  <li>长响应用 <code>ElapsedTimer</code> 实时显示耗时</li>
+  <li>输入栏用 <code>CommentInputBar</code> 模式（带附件/图片/语音图标 + 发送按钮）</li>
+  <li>空打字机状态显示"正在思考..."</li>
+</ul>
+
+<h4>③ Crons（定时任务）</h4>
+<ul>
+  <li>顶部 <code>DetailTitleView</code> 显示 "5 jobs · 0 failed"</li>
+  <li>Segmented Control：Jobs / History</li>
+  <li>Jobs 列表用 <code>CronStatusBadge</code>（ENABLED/PAUSED/FAILED）</li>
+  <li>每个任务显示 Cron 表达式 + 用的模型（用 <code>ModelPill</code>）</li>
+  <li>失败的任务显示 "Investigate with AI" 按钮</li>
+</ul>
+
+<h4>④ Memory & Skills</h4>
+<ul>
+  <li>顶部 <code>DetailTitleView</code> 显示 "8 files · 10 skills"</li>
+  <li>Segmented：Memory / Skills</li>
+  <li>Markdown 渲染用 <code>MarkdownUI</code></li>
+  <li>段落实时评论（点击段落 → <code>CommentSheet(.paragraph)</code>）</li>
+  <li>段落评论高亮（橙色 3px 左边框 + 浅橙背景）</li>
+</ul>
+
+<h4>⑤ Settings（设置）</h4>
+<ul>
+  <li>Gateway 状态卡（绿点 + IP + 版本）</li>
+  <li>外观分组：深色模式 Toggle、主色调选择（4 个 Color circle）</li>
+  <li>AI 模型分组：默认模型、参数设置</li>
+  <li><strong>危险区</strong>：重置所有设置（红色文字）</li>
+</ul>
+
+<h3>P1 — 应该做（提升专业感）</h3>
+
+<h4>⑥ Sessions（会话）</h4>
+<ul>
+  <li>主会话卡：状态点 + 上下文窗口环形图（28% / 149k tokens）</li>
+  <li>Sub-agent 列表用紧凑的列表行</li>
+</ul>
+
+<h4>⑦ Token 详情页</h4>
+<ul>
+  <li>多个 <code>TokenBreakdownBar</code>（按模型分）</li>
+  <li>折线图（用 <code>Charts</code> 系统框架，Parham 已用）</li>
+</ul>
+
+<h4>⑧ Loading / Error 状态</h4>
+<ul>
+  <li>所有异步数据：加载中显示 <code>CardLoadingView</code>（带 <code>.shimmer()</code>）</li>
+  <li>错误显示 <code>CardErrorView</code>（带重试按钮）</li>
+</ul>
+
+<h3>P2 — 可选锦上添花</h3>
+
+<h4>⑨ Haptics（触感反馈）</h4>
+<ul>
+  <li>刷新、保存、错误时调用 <code>Haptics.shared</code></li>
+</ul>
+
+<h4>⑩ Accessibility（无障碍）</h4>
+<ul>
+  <li>自定义视觉组件加 <code>.accessibilityElement(children: .combine)</code> + <code>.accessibilityLabel("...")</code></li>
+</ul>
+
+<h4>⑪ iPad 适配</h4>
+<ul>
+  <li>用 <code>NavigationSplitView</code> 替代 <code>NavigationStack</code>（侧边栏 + 详情）</li>
+</ul>
+
+<h2>7️⃣ 具体改造步骤</h2>
+
+<ol class="steps">
+  <li><code>git clone https://github.com/Parham-dev/OpenClaw-ios.git</code>，通读 <code>CLAUDE.md</code></li>
+  <li>打开 Xcode 模拟器，<strong>看 Parham 实际跑起来的样子</strong></li>
+  <li>把以下文件/目录直接拷到 ClawPilot 项目里（保持文件结构）：
+    <pre>Sources/Core/DesignSystem/      <span class="comment"># 全部 5 个文件</span>
+Sources/Core/Components/        <span class="comment"># 全部 17 个组件</span>
+Sources/Core/LoadableViewModel.swift</pre>
+  </li>
+  <li>ClawPilot 现有的 ViewModel 全部改成继承 <code>LoadableViewModel&lt;T&gt;</code></li>
+  <li>ClawPilot 现有的 View 全部按上面的 P0/P1/P2 清单改造</li>
+  <li>每改一个模块，跑模拟器看效果，对比 Parham 的截图调整</li>
+  <li>保持 ≤300 行/文件 的限制</li>
+  <li>完工后生成一份 UI 改造说明</li>
+</ol>
+
+<h2>8️⃣ 禁止做的事</h2>
+
+<div class="danger">
+<strong>❌ 写字面量</strong> — <code>.padding(16)</code> 改成 <code>.padding(Spacing.md)</code><br>
+<strong>❌ 直接 new Repository</strong> — 必须 Protocol 注入<br>
+<strong>❌ 用 <code>URLSession.shared</code></strong> 做长请求 — 用专用 session（15min timeout）<br>
+<strong>❌ 用菊花 loading</strong> — 用 shimmer skeleton 或 3 圆点<br>
+<strong>❌ 用 <code>print()</code></strong> — 用 <code>os.Logger</code>，subsystem 是你的 bundle id<br>
+<strong>❌ 用 <code>@unchecked Sendable</code></strong> — 用 actor 或 <code>@MainActor</code><br>
+<strong>❌ 复制粘贴大段代码</strong> — 先看 Parham 有没有现成组件
+</div>
+
+<h2>9️⃣ 验收标准</h2>
+<p>UI 优化完成后，ClawPilot 客户端应该：</p>
+<ul>
+  <li>✅ 跟 Parham OpenClaw-ios 在视觉上<strong>几乎一致</strong>（布局、间距、配色、组件、状态处理）</li>
+  <li>✅ 文件结构遵循 <code>Core/ + Features/</code> 模式</li>
+  <li>✅ 所有 ViewModel 继承 <code>LoadableViewModel&lt;T&gt;</code></li>
+  <li>✅ 所有 View 使用 Design tokens</li>
+  <li>✅ 加载/错误状态用统一组件</li>
+  <li>✅ 流式聊天有 ElapsedTimer</li>
+  <li>✅ Token 显示有 BreakdownBar</li>
+  <li>✅ 设置页有分组 + 危险区</li>
+  <li>✅ 单文件不超过 300 行</li>
+</ul>
+
+<h2>🔟 完成后报告</h2>
+<p>UI 优化完成后，请告诉我：</p>
+<ol>
+  <li>改造了哪些模块</li>
+  <li>复用了 Parham 哪些组件</li>
+  <li>新建了哪些组件</li>
+  <li>哪些地方有 trade-off（不得不偏离 Parham 风格）</li>
+  <li>文件大小合规率（多少文件超过 300 行）</li>
+</ol>
+
+<div class="success">
+<strong>🎯 终极目标</strong>：让 ClawPilot 的 UI <strong>看起来就是 Parham OpenClaw-ios 的孪生兄弟</strong>，但功能上覆盖 ClawPilot 视频里的所有特性。
+</div>
+
+</div>
+
+<footer>
+  📐 Parham OpenClaw-ios UI 参考规范 · 2026-06-05 · 给 Trae Solo 读<br>
+  仓库：github.com/Parham-dev/OpenClaw-ios
+</footer>
+
+</body>
+</html>

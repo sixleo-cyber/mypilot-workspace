@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyPilot Icon V2 — M! Logo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+    background: #F5F5F7;
+    padding: 60px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 60px;
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1C1C1E;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    font-size: 16px;
+    color: #8E8E93;
+    margin-top: 4px;
+  }
+
+  /* === M! Logo Core === */
+  .m-logo {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    line-height: 1;
+  }
+  .m-letter {
+    font-weight: 900;
+    font-family: 'Inter', -apple-system, sans-serif;
+    letter-spacing: -0.06em;
+    line-height: 0.85;
+  }
+  .m-exclaim {
+    font-weight: 900;
+    font-family: 'Inter', -apple-system, sans-serif;
+    line-height: 0.85;
+  }
+
+  /* === Icon Container (Big Sur) === */
+  .icon-container {
+    position: relative;
+    border-radius: 22.5%;
+    overflow: hidden;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.08),
+      0 16px 48px rgba(0,0,0,0.12),
+      inset 0 1px 0 rgba(255,255,255,0.2);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon-container:hover {
+    transform: scale(1.05) translateY(-4px);
+    box-shadow:
+      0 8px 24px rgba(0,0,0,0.12),
+      0 24px 64px rgba(0,0,0,0.16),
+      inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+
+  /* Size variants */
+  .size-1024 { width: 320px; height: 320px; }
+  .size-512 { width: 200px; height: 200px; }
+  .size-128 { width: 80px; height: 80px; }
+  .size-64 { width: 48px; height: 48px; }
+  .size-32 { width: 32px; height: 32px; }
+
+  /* === Color Schemes === */
+
+  /* 1. Dark on White (Original style) */
+  .scheme-dark .icon-container {
+    background: #FFFFFF;
+  }
+  .scheme-dark .m-letter,
+  .scheme-dark .m-exclaim {
+    color: #1C1C1E;
+  }
+
+  /* 2. White on Blue (System) */
+  .scheme-blue .icon-container {
+    background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+  }
+  .scheme-blue .m-letter,
+  .scheme-blue .m-exclaim {
+    color: #FFFFFF;
+  }
+
+  /* 3. White on Black (Pro) */
+  .scheme-black .icon-container {
+    background: #1C1C1E;
+  }
+  .scheme-black .m-letter,
+  .scheme-black .m-exclaim {
+    color: #FFFFFF;
+  }
+
+  /* 4. White on Leaf (Nature) */
+  .scheme-leaf .icon-container {
+    background: linear-gradient(135deg, #0DA945 0%, #007AFF 100%);
+  }
+  .scheme-leaf .m-letter,
+  .scheme-leaf .m-exclaim {
+    color: #FFFFFF;
+  }
+
+  /* 5. Dark on Gray (Subtle) */
+  .scheme-gray .icon-container {
+    background: #F5F5F7;
+  }
+  .scheme-gray .m-letter,
+  .scheme-gray .m-exclaim {
+    color: #1C1C1E;
+  }
+
+  /* === Typography sizing per container === */
+  .size-1024 .m-letter { font-size: 220px; }
+  .size-1024 .m-exclaim { font-size: 180px; }
+
+  .size-512 .m-letter { font-size: 140px; }
+  .size-512 .m-exclaim { font-size: 110px; }
+
+  .size-128 .m-letter { font-size: 56px; }
+  .size-128 .m-exclaim { font-size: 44px; }
+
+  .size-64 .m-letter { font-size: 34px; }
+  .size-64 .m-exclaim { font-size: 26px; }
+
+  .size-32 .m-letter { font-size: 22px; }
+  .size-32 .m-exclaim { font-size: 17px; }
+
+  /* === Layout === */
+  .showcase {
+    display: flex;
+    gap: 60px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .showcase-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .showcase-label {
+    font-size: 13px;
+    color: #8E8E93;
+    font-weight: 500;
+  }
+
+  /* === Variants Grid === */
+  .variants-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+    max-width: 1000px;
+  }
+  .variant-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    transition: transform 0.2s ease;
+  }
+  .variant-card:hover {
+    transform: translateY(-2px);
+  }
+  .variant-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #3A3A3C;
+  }
+  .variant-desc {
+    font-size: 11px;
+    color: #8E8E93;
+    text-align: center;
+  }
+
+  /* === Dock Preview === */
+  .dock-bar {
+    background: rgba(255,255,255,0.4);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 16px 28px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+  .dock-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .dock-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 13px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .dock-icon:hover {
+    transform: scale(1.1) translateY(-4px);
+  }
+  .dock-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #1C1C1E;
+  }
+
+  /* === Context Cards === */
+  .context-grid {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .context-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1C1C1E;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .section-desc {
+    font-size: 14px;
+    color: #8E8E93;
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  /* === Menu Bar Icon === */
+  .menubar-preview {
+    background: #1C1C1E;
+    border-radius: 8px;
+    padding: 6px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .menubar-item {
+    font-size: 13px;
+    color: rgba(255,255,255,0.9);
+  }
+  .menubar-icon {
+    display: flex;
+    align-items: center;
+  }
+
+  @media (max-width: 900px) {
+    .variants-grid { grid-template-columns: repeat(3, 1fr); }
+    .showcase { gap: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>MyPilot Icon V2</h1>
+<p class="subtitle">基于 "M!" Logo 的图标设计方案</p>
+
+<!-- Main Showcase -->
+<div class="showcase">
+  <div class="showcase-item">
+    <div class="scheme-blue">
+      <div class="icon-container size-1024">
+        <div class="m-logo">
+          <span class="m-letter">M</span><span class="m-exclaim">!</span>
+        </div>
+      </div>
+    </div>
+    <span class="showcase-label">1024×1024 (App Store)</span>
+  </div>
+
+  <div class="showcase-item">
+    <div class="scheme-blue">
+      <div class="icon-container size-512">
+        <div class="m-logo">
+          <span class="m-letter">M</span><span class="m-exclaim">!</span>
+        </div>
+      </div>
+    </div>
+    <span class="showcase-label">512×512 (Dock)</span>
+  </div>
+</div>
+
+<!-- Color Variants -->
+<div>
+  <div class="section-title">配色方案</div>
+  <div class="section-desc">5 种风格，推荐系统蓝</div>
+  <div class="variants-grid">
+    <div class="variant-card">
+      <div class="scheme-blue">
+        <div class="icon-container size-128">
+          <div class="m-logo">
+            <span class="m-letter">M</span><span class="m-exclaim">!</span>
+          </div>
+        </div>
+      </div>
+      <span class="variant-name">系统蓝</span>
+      <span class="variant-desc">推荐<br>#007AFF</span>
+    </div>
+
+    <div class="variant-card">
+      <div class="scheme-dark">
+        <div class="icon-container size-128">
+          <div class="m-logo">
+            <span class="m-letter">M</span><span class="m-exclaim">!</span>
+          </div>
+        </div>
+      </div>
+      <span class="variant-name">白底黑字</span>
+      <span class="variant-desc">极简<br>#1C1C1E</span>
+    </div>
+
+    <div class="variant-card">
+      <div class="scheme-black">
+        <div class="icon-container size-128">
+          <div class="m-logo">
+            <span class="m-letter">M</span><span class="m-exclaim">!</span>
+          </div>
+        </div>
+      </div>
+      <span class="variant-name">黑底白字</span>
+      <span class="variant-desc">专业<br>#1C1C1E</span>
+    </div>
+
+    <div class="variant-card">
+      <div class="scheme-leaf">
+        <div class="icon-container size-128">
+          <div class="m-logo">
+            <span class="m-letter">M</span><span class="m-exclaim">!</span>
+          </div>
+        </div>
+      </div>
+      <span class="variant-name">自然渐变</span>
+      <span class="variant-desc">活力<br>#0DA945→#007AFF</span>
+    </div>
+
+    <div class="variant-card">
+      <div class="scheme-gray">
+        <div class="icon-container size-128">
+          <div class="m-logo">
+            <span class="m-letter">M</span><span class="m-exclaim">!</span>
+          </div>
+        </div>
+      </div>
+      <span class="variant-name">灰底黑字</span>
+      <span class="variant-desc">低调<br>#F5F5F7</span>
+    </div>
+  </div>
+</div>
+
+<!-- Dock Preview -->
+<div>
+  <div class="section-title">macOS Dock 预览</div>
+  <div class="section-desc">悬停查看弹跳效果</div>
+  <div class="dock-bar">
+    <div class="dock-item">
+      <div class="dock-icon" style="background:linear-gradient(135deg,#007AFF,#5856D6);">
+        <div class="m-logo">
+          <span class="m-letter" style="font-size:32px;color:white;">M</span><span class="m-exclaim" style="font-size:26px;color:white;">!</span>
+        </div>
+      </div>
+      <div class="dock-dot"></div>
+    </div>
+    <div class="dock-item">
+      <div class="dock-icon" style="background:#007AFF;display:flex;align-items:center;justify-content:center;color:white;font-size:22px;">📁</div>
+    </div>
+    <div class="dock-item">
+      <div class="dock-icon" style="background:#34C759;display:flex;align-items:center;justify-content:center;color:white;font-size:22px;">💬</div>
+    </div>
+    <div class="dock-item">
+      <div class="dock-icon" style="background:#FF9500;display:flex;align-items:center;justify-content:center;color:white;font-size:22px;">⚙️</div>
+    </div>
+    <div class="dock-item">
+      <div class="dock-icon" style="background:#5856D6;display:flex;align-items:center;justify-content:center;color:white;font-size:22px;">🌐</div>
+    </div>
+  </div>
+</div>
+
+<!-- Size Comparison -->
+<div>
+  <div class="section-title">尺寸对比</div>
+  <div class="section-desc">不同场景下的显示效果</div>
+  <div class="showcase">
+    <div class="showcase-item">
+      <div class="scheme-blue">
+        <div class="icon-container size-64">
+          <div class="m-logo">
+            <span class="m-letter">M</span><span class="m-exclaim">!</span>
+          </div>
+        </div>
+      </div>
+      <span class="showcase-label">64×64 (Menu)</span>
+    </div>
+    <div class="showcase-item">
+      <div class="scheme-blue">
+        <div class="icon-container size-32">
+          <div class="m-logo">
+            <span class="m-letter">M</span><span class="m-exclaim">!</span>
+          </div>
+        </div>
+      </div>
+      <span class="showcase-label">32×32 (Small)</span>
+    </div>
+    <div class="showcase-item">
+      <div class="scheme-blue">
+        <div class="icon-container size-32" style="width:24px;height:24px;border-radius:6px;">
+          <div class="m-logo">
+            <span class="m-letter" style="font-size:16px;">M</span><span class="m-exclaim" style="font-size:13px;">!</span>
+          </div>
+        </div>
+      </div>
+      <span class="showcase-label">24×24 (Toolbar)</span>
+    </div>
+    <div class="showcase-item">
+      <div class="scheme-blue">
+        <div class="icon-container size-32" style="width:16px;height:16px;border-radius:4px;">
+          <div class="m-logo">
+            <span class="m-letter" style="font-size:11px;">M</span><span class="m-exclaim" style="font-size:9px;">!</span>
+          </div>
+        </div>
+      </div>
+      <span class="showcase-label">16×16 (Mini)</span>
+    </div>
+  </div>
+</div>
+
+<!-- Context Preview -->
+<div>
+  <div class="section-title">应用场景</div>
+  <div class="section-desc">图标在实际界面中的效果</div>
+  <div class="context-grid">
+    <!-- About Window -->
+    <div class="context-card" style="text-align:center;width:260px;">
+      <div class="scheme-blue" style="display:inline-block;">
+        <div class="icon-container size-128" style="margin-bottom:16px;">
+          <div class="m-logo">
+            <span class="m-letter">M</span><span class="m-exclaim">!</span>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:17px;font-weight:600;margin-bottom:4px;">MyPilot</div>
+      <div style="font-size:13px;color:#8E8E93;">版本 0.8.0</div>
+    </div>
+
+    <!-- Settings Row -->
+    <div class="context-card" style="width:300px;">
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:0.5px solid #E5E5EA;">
+        <div class="scheme-blue">
+          <div class="icon-container size-32">
+            <div class="m-logo">
+              <span class="m-letter">M</span><span class="m-exclaim">!</span>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:500;">MyPilot</div>
+          <div style="font-size:12px;color:#8E8E93;">AI 助手客户端</div>
+        </div>
+        <span style="color:#C7C7CC;">›</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 0;">
+        <div style="width:32px;height:32px;border-radius:8px;background:#F5F5F7;display:flex;align-items:center;justify-content:center;font-size:14px;">🔔</div>
+        <div style="flex:1;font-size:14px;">通知</div>
+        <span style="color:#C7C7CC;">›</span>
+      </div>
+    </div>
+
+    <!-- Menu Bar -->
+    <div class="context-card" style="padding:12px 20px;">
+      <div class="menubar-preview">
+        <div class="menubar-item" style="font-weight:600;">MyPilot</div>
+        <div class="menubar-item">文件</div>
+        <div class="menubar-item">编辑</div>
+        <div class="menubar-item">视图</div>
+        <div class="menubar-item">窗口</div>
+        <div class="menubar-item">帮助</div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+          <div class="scheme-blue">
+            <div class="icon-container size-32" style="width:18px;height:18px;border-radius:4px;">
+              <div class="m-logo">
+                <span class="m-letter" style="font-size:12px;">M</span><span class="m-exclaim" style="font-size:10px;">!</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Logo Mark Only -->
+<div>
+  <div class="section-title">纯文字 Logo</div>
+  <div class="section-desc">用于启动画面、品牌展示</div>
+  <div class="showcase">
+    <div class="showcase-item">
+      <div style="font-size:120px;font-weight:900;color:#1C1C1E;letter-spacing:-0.06em;line-height:0.85;font-family:'Inter',sans-serif;">
+        M<span style="color:#007AFF;">!</span>
+      </div>
+      <span class="showcase-label">深色 + 蓝色感叹号</span>
+    </div>
+    <div class="showcase-item">
+      <div style="font-size:120px;font-weight:900;color:#007AFF;letter-spacing:-0.06em;line-height:0.85;font-family:'Inter',sans-serif;">
+        M!
+      </div>
+      <span class="showcase-label">纯蓝色</span>
+    </div>
+    <div class="showcase-item">
+      <div style="font-size:120px;font-weight:900;color:#1C1C1E;letter-spacing:-0.06em;line-height:0.85;font-family:'Inter',sans-serif;">
+        M!
+      </div>
+      <span class="showcase-label">纯黑色</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

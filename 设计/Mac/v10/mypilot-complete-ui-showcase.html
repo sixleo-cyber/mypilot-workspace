@@ -1,0 +1,2368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyPilot 完整 UI 展示</title>
+<style>
+  :root {
+    /* MyPilot 实际项目设计 token */
+    --white: #FFFFFF;
+    --black: #000000;
+    --bg: #FFFFFF;
+    --bg-card: #F5F5F7;
+    --bg-elevated: #F5F5F7;
+    --bdr: #E5E5EA;
+    --bdr-strong: #D1D1D6;
+
+    --tx: #000000;
+    --tx-secondary: #8E8E93;
+    --tx-tertiary: #C7C7CC;
+
+    --user-bubble: #007AFF;
+    --ai-bubble: #E5E5EA;
+
+    --success: #34C759;
+    --danger: #FF3B30;
+    --warning: #FF9500;
+    --info: #007AFF;
+
+    --leaf: #0DA945;
+    --leaf-soft: rgba(13,169,69,0.10);
+    --amber: #F6AD02;
+    --amber-soft: rgba(246,173,2,0.12);
+    --lime: #ACCE22;
+    --lime-soft: rgba(172,206,34,0.14);
+
+    /* soft 背景（与 AppColors 对齐） */
+    --accent-soft: rgba(0,122,255,0.10);
+    --danger-soft: rgba(255,59,48,0.10);
+    --success-soft: rgba(52,199,89,0.10);
+    --warning-soft: rgba(255,149,0,0.10);
+
+    /* 渠道色 */
+    --ch-feishu: #3370FF;
+    --ch-wecom: #2AAE67;
+    --ch-dingtalk: #0089FF;
+    --ch-telegram: #0088CC;
+    --ch-slack: #611F69;
+    --ch-discord: #5865F2;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--tx);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ====== Hero Header (matches project) ====== */
+  .hero {
+    text-align: center;
+    padding: 80px 24px 56px;
+    background: var(--white);
+  }
+  .hero-logo {
+    width: 56px; height: 56px;
+    margin: 0 auto 20px;
+    border-radius: 14px;
+    background: var(--user-bubble);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+  }
+  .hero-logo svg { width: 30px; height: 30px; }
+  .hero h1 {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.022em;
+    margin-bottom: 8px;
+    color: var(--tx);
+  }
+  .hero p {
+    font-size: 15px;
+    color: var(--tx-secondary);
+    max-width: 460px;
+    margin: 0 auto;
+    line-height: 1.5;
+    font-weight: 400;
+  }
+  .hero-meta {
+    margin-top: 22px;
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 12px;
+    color: var(--tx-secondary);
+    font-weight: 400;
+  }
+  .hero-meta span { display: flex; align-items: center; gap: 6px; }
+
+  /* ====== Section dividers (Apple HIG) ====== */
+  .section-label {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 56px 24px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--tx-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  /* ====== Grid ====== */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; gap: 20px; padding: 0 16px 56px; }
+    .hero { padding: 64px 16px 48px; }
+    .hero h1 { font-size: 28px; }
+  }
+
+  /* ====== Window (Inset Grouped form style) ====== */
+  .window {
+    background: var(--bg);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 0.5px solid var(--bdr);
+    display: flex;
+    flex-direction: column;
+    min-height: 380px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: windowIn 0.5s cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
+  }
+  .section-label.full-width {
+    grid-column: 1 / -1;
+    padding: 48px 0 16px;
+    margin: 0;
+  }
+
+  @keyframes windowIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .window:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  }
+
+  .titlebar {
+    height: 32px;
+    background: var(--bg-card);
+    border-bottom: 0.5px solid var(--bdr);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .traffic-light { width: 10px; height: 10px; border-radius: 50%; }
+  .tl-red { background: #FF5F57; }
+  .tl-yellow { background: #FFBD2E; }
+  .tl-green { background: #28CA42; }
+  .window-title {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--tx-secondary);
+    margin-right: 38px;
+    letter-spacing: 0.2px;
+  }
+  .window-body {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+    background: var(--bg);
+  }
+  .icon {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+  .icon-lg { width: 24px; height: 24px; }
+  .icon-sm { width: 16px; height: 16px; }
+  .icon-xl { width: 64px; height: 64px; }
+
+  /* Chat Page */
+  /* ====== Sidebar (matches actual SidebarView) ====== */
+  .chat-layout { display: flex; height: 100%; min-height: 460px; background: var(--bg); }
+  .sidebar {
+    width: 230px;
+    background: var(--bg-card);
+    border-right: 0.5px solid var(--bdr);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  .sidebar-search {
+    margin: 10px 10px 6px;
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 5px 10px;
+    display: flex; align-items: center; gap: 6px;
+    border: 0.5px solid var(--bdr);
+  }
+  .sidebar-search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 12px;
+    flex: 1;
+    color: var(--tx);
+  }
+  .sidebar-search input::placeholder { color: var(--tx-secondary); }
+  .sidebar-search svg { color: var(--tx-secondary); }
+  .sidebar-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 6px;
+  }
+  .sidebar-section {
+    margin-top: 12px;
+  }
+  .sidebar-section-title {
+    font-size: 10px;
+    color: var(--tx-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 4px 8px;
+  }
+  .sidebar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--tx);
+    margin: 1px 0;
+  }
+  .sidebar-row:hover { background: rgba(0,0,0,0.04); }
+  .sidebar-row.selected {
+    background: var(--user-bubble);
+    color: #fff;
+  }
+  .sidebar-row.selected .sidebar-row-sub { color: rgba(255,255,255,0.8); }
+  .sidebar-row-sub {
+    font-size: 10px;
+    color: var(--tx-secondary);
+    line-height: 1.3;
+  }
+  .sidebar-row-circle {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .sidebar-row-circle.lime { background: var(--lime); color: var(--tx); }
+  .sidebar-row-circle.leaf { background: var(--leaf-soft); color: var(--leaf); }
+  .sidebar-row-circle.amber { background: var(--amber-soft); color: var(--amber); }
+  .sidebar-row-text { flex: 1; min-width: 0; line-height: 1.25; }
+  .sidebar-row-name { font-weight: 500; line-height: 1.2; }
+  .sidebar-row-check {
+    color: inherit;
+    font-size: 11px;
+  }
+  .sidebar-row-icon {
+    color: inherit;
+    font-size: 12px;
+    width: 14px;
+    text-align: center;
+  }
+  .sidebar-bottom {
+    padding: 10px;
+    border-top: 0.5px solid var(--bdr);
+    display: flex;
+    gap: 8px;
+    background: var(--bg-card);
+  }
+  .sidebar-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+  }
+  .sidebar-btn-primary {
+    background: var(--user-bubble);
+    color: #fff;
+  }
+  .sidebar-btn-primary:hover { background: #0066CC; }
+  .sidebar-btn-icon {
+    width: 36px; flex: 0 0 36px;
+    background: var(--bg);
+    color: var(--tx-secondary);
+    border: 0.5px solid var(--bdr);
+  }
+
+  /* Chat area (right of sidebar) */
+  .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg); min-width: 0; }
+  .chat-header {
+    padding: 12px 16px;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 0.5px solid var(--bdr);
+  }
+  .chat-header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .chat-agent-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 500;
+    flex-shrink: 0;
+  }
+  .chat-agent-avatar.leaf { background: var(--leaf-soft); color: var(--leaf); }
+  .chat-agent-avatar.amber { background: var(--amber-soft); color: var(--amber); }
+  .chat-agent-avatar.lime { background: var(--lime-soft); color: var(--lime); }
+  .chat-agent-info { min-width: 0; }
+  .chat-agent-name {
+    font-size: 15px; font-weight: 600;
+    color: var(--tx);
+    display: flex; align-items: center; gap: 4px;
+    line-height: 1.2;
+  }
+  .chat-chevron {
+    width: 14px; height: 14px;
+    color: var(--tx-tertiary);
+    display: flex; align-items: center;
+  }
+  .chat-agent-model {
+    font-size: 11px; color: var(--tx-secondary);
+    display: flex; align-items: center; gap: 3px;
+    margin-top: 1px;
+  }
+  .chat-header-right {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; color: var(--tx-secondary);
+  }
+  .conn-status {
+    display: flex; align-items: center; gap: 5px;
+  }
+  .conn-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .conn-dot.on { background: var(--success); }
+  .conn-dot.off { background: var(--warning); }
+  .conn-text { font-size: 11px; color: var(--tx-secondary); }
+  .conn-latency { font-size: 11px; color: var(--success); font-family: "SF Mono", Menlo, monospace; }
+  .conn-latency.warn { color: var(--warning); }
+  .conn-latency.danger { color: var(--danger); }
+  .header-action {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--tx-secondary);
+    border-radius: 5px;
+  }
+
+  /* Token Usage Bar */
+  .token-bar {
+    padding: 0 16px 8px;
+    background: var(--bg);
+  }
+  .token-progress-row {
+    height: 4px;
+    background: var(--bg-card);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+  .token-progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.6s ease;
+  }
+  .token-progress-fill.leaf { background: var(--leaf); }
+  .token-progress-fill.amber { background: var(--amber); }
+  .token-progress-fill.danger { background: var(--danger); }
+  .token-meta {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; color: var(--tx-secondary);
+  }
+  .token-stat { font-family: "SF Mono", Menlo, monospace; }
+  .token-stat.in { color: var(--info); }
+  .token-stat.out { color: var(--leaf); }
+  .token-stat.cache { color: var(--amber); }
+  .token-cost { color: var(--tx-secondary); }
+  .token-spacer { flex: 1; }
+  .token-warning {
+    display: flex; align-items: center; gap: 3px;
+    color: var(--amber);
+    font-weight: 500;
+  }
+
+  /* System prompt bar */
+  .sys-prompt-bar {
+    margin: 0 16px 8px;
+    padding: 8px 12px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    font-size: 11px;
+    color: var(--tx-secondary);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* Chat Messages */
+  .chat-messages {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: var(--bg);
+  }
+  .msg-row {
+    display: flex;
+    flex-direction: column;
+    max-width: 78%;
+  }
+  .msg-row.user { align-self: flex-end; align-items: flex-end; }
+  .msg-row.ai { align-self: flex-start; align-items: flex-start; }
+  .msg-name {
+    font-size: 10px; color: var(--tx-secondary);
+    margin-bottom: 2px;
+    padding: 0 4px;
+  }
+  .bubble {
+    padding: 8px 13px;
+    border-radius: 18px;
+    font-size: 13px;
+    line-height: 1.45;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .bubble-ai {
+    background: var(--ai-bubble);
+    color: var(--tx);
+    border-bottom-left-radius: 4px;
+  }
+  .bubble-user {
+    background: var(--user-bubble);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .msg-time {
+    font-size: 10px;
+    color: var(--tx-tertiary);
+    margin-top: 2px;
+    padding: 0 4px;
+  }
+  .bubble-system {
+    align-self: center;
+    background: var(--bg-card);
+    color: var(--tx-secondary);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    max-width: 90%;
+    text-align: center;
+  }
+
+  /* Input Bar (V10 — single row) */
+  .chat-input-bar {
+    padding: 8px 10px;
+    border-top: 0.5px solid var(--bdr);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg);
+  }
+  .icon-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--tx-secondary);
+    border: none;
+    flex-shrink: 0;
+  }
+  .icon-btn.accent { background: var(--user-bubble); color: #fff; }
+  .icon-btn.danger { background: var(--danger); color: #fff; }
+  .chat-input {
+    flex: 1;
+    background: var(--bg-card);
+    border: none;
+    border-radius: 20px;
+    padding: 8px 14px;
+    font-size: 13px;
+    outline: none;
+    color: var(--tx);
+    min-height: 36px;
+  }
+  .chat-input::placeholder { color: var(--tx-secondary); }
+
+  /* Welcome (empty state) */
+  .welcome-body {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    height: 100%;
+    min-height: 460px;
+    padding: 24px;
+  }
+  .welcome-icon {
+    width: 72px; height: 72px;
+    border-radius: 18px;
+    background: var(--amber-soft);
+    color: var(--amber);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+  }
+  .welcome-icon svg { width: 36px; height: 36px; }
+  .welcome-title {
+    font-size: 22px; font-weight: 700;
+    color: var(--tx);
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .welcome-subtitle {
+    font-size: 12px; color: var(--tx-secondary);
+    margin-bottom: 28px;
+  }
+  .welcome-steps {
+    width: 100%;
+    max-width: 360px;
+    margin-bottom: 24px;
+  }
+  .welcome-step {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    text-align: left;
+  }
+  .welcome-step-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--user-bubble);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .welcome-step-text { flex: 1; min-width: 0; }
+  .welcome-step-title { font-size: 13px; font-weight: 500; color: var(--tx); }
+  .welcome-step-subtitle { font-size: 11px; color: var(--tx-secondary); margin-top: 1px; }
+  .welcome-btn {
+    background: var(--user-bubble);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 16px;
+  }
+  .welcome-footer {
+    font-size: 11px;
+    color: var(--tx-tertiary);
+    margin-top: 4px;
+  }
+
+  /* AddInstance (sheet / windowed) */
+  .addinstance-body {
+    padding: 24px;
+    display: flex; flex-direction: column;
+    gap: 12px;
+    min-height: 460px;
+  }
+  .addinstance-icon {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    background: var(--accent-soft);
+    color: var(--info);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 4px;
+  }
+  .addinstance-icon svg { width: 28px; height: 28px; }
+  .addinstance-title {
+    text-align: center;
+    font-size: 18px; font-weight: 600;
+    color: var(--tx);
+  }
+  .addinstance-subtitle {
+    text-align: center;
+    font-size: 12px;
+    color: var(--tx-secondary);
+    margin-bottom: 4px;
+  }
+  .addinstance-input {
+    background: var(--bg);
+    border: 0.5px solid var(--bdr);
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: border-color 0.2s;
+  }
+  .addinstance-input:focus-within { border-color: var(--info); }
+  .addinstance-input input {
+    border: none; outline: none;
+    background: transparent;
+    font-size: 13px;
+    width: 100%;
+    color: var(--tx);
+  }
+  .addinstance-hints {
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 11px;
+    color: var(--tx-secondary);
+  }
+  .addinstance-hint-row {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 8px;
+    color: var(--tx);
+  }
+  .addinstance-hint-step { padding: 2px 0; line-height: 1.5; }
+  .addinstance-pair-row { display: flex; align-items: center; gap: 8px; }
+  .addinstance-qr-btn {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--tx);
+    border: 0.5px solid var(--bdr);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .addinstance-qr-btn svg { width: 18px; height: 18px; }
+  .addinstance-qr-card {
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+  }
+  .addinstance-qr-label { font-size: 11px; color: var(--tx-secondary); margin-bottom: 8px; }
+  .addinstance-qr-img { display: flex; justify-content: center; margin-bottom: 8px; }
+  .qr-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    width: 110px; height: 110px;
+    background: #fff;
+    padding: 4px;
+    border: 0.5px solid var(--bdr);
+    border-radius: 6px;
+  }
+  .qr-grid > div { background: var(--bg-card); }
+  .qr-grid > div.qr-on { background: var(--tx); }
+  .addinstance-qr-code {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 14px; font-weight: 600;
+    color: var(--tx);
+    letter-spacing: 1px;
+  }
+  .addinstance-actions {
+    display: flex; gap: 10px;
+    margin-top: auto;
+    padding-top: 12px;
+  }
+  .btn-icon {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--tx2);
+  }
+  .btn-icon.accent { background: var(--accent); color: #fff; }
+  .btn-icon:hover { background: rgba(0,0,0,0.06); }
+  .btn-icon.accent:hover { background: #0056CC; }
+
+  /* Settings — Inset Grouped Form style */
+  .settings-body { padding: 0; background: var(--bg); }
+  .settings-group { padding: 0; }
+  .settings-group-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--tx-secondary);
+    margin: 0;
+    padding: 24px 20px 8px;
+    letter-spacing: 0.4px;
+    font-weight: 600;
+  }
+  .settings-list {
+    background: var(--bg);
+    margin: 0 16px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 0.5px solid var(--bdr);
+  }
+  .settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    font-size: 13px;
+    border-bottom: 0.5px solid var(--bdr);
+    cursor: pointer;
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+  .settings-row-text { flex: 1; min-width: 0; }
+  .settings-row-title { font-size: 13px; font-weight: 400; color: var(--tx); line-height: 1.3; }
+  .settings-row-sub { font-size: 11px; color: var(--tx-secondary); margin-top: 2px; }
+  .settings-row-right { font-size: 13px; color: var(--tx-secondary); }
+  .icon-block {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .icon-block svg { width: 16px; height: 16px; }
+  .icon-block.leaf { background: var(--leaf-soft); color: var(--leaf); }
+  .icon-block.amber { background: var(--amber-soft); color: var(--amber); }
+  .icon-block.lime { background: var(--lime-soft); color: var(--lime); }
+  .icon-block.blue { background: var(--accent-soft); color: var(--info); }
+  .icon-block.green { background: var(--success-soft); color: var(--success); }
+  .icon-block.orange { background: var(--warning-soft); color: var(--warning); }
+  .icon-block.red { background: var(--danger-soft); color: var(--danger); }
+  .icon-block.gray { background: var(--bg-card); color: var(--tx-secondary); }
+  .chevron { color: var(--tx-tertiary); font-size: 12px; }
+
+  /* Toggle */
+  .toggle {
+    width: 36px; height: 20px;
+    background: var(--bdr);
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle.on { background: var(--accent); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    top: 2px; left: 2px;
+    transition: left 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .toggle.on::after { left: 18px; }
+
+  /* Network */
+  .status-card {
+    margin: 12px 16px 0;
+    padding: 12px 14px;
+    background: var(--success-soft);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 0.5px solid rgba(52,199,89,0.2);
+  }
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 3px var(--success-soft);
+  }
+  .status-text { font-size: 13px; font-weight: 500; color: var(--success); }
+  .config-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    border-bottom: 0.5px solid var(--bdr);
+    font-size: 13px;
+  }
+  .config-row:last-child { border-bottom: none; }
+  .config-label { color: var(--tx-secondary); }
+  .config-value { font-weight: 500; color: var(--tx); font-family: "SF Mono", Menlo, monospace; font-size: 12px; }
+
+  /* Agents */
+  .agent-list { padding: 0; }
+  .agent-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-bottom: 0.5px solid var(--bdr);
+  }
+  .agent-item:last-child { border-bottom: none; }
+  .agent-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 500;
+    flex-shrink: 0;
+  }
+  .agent-avatar.blue { background: var(--accent-soft); color: var(--info); }
+  .agent-avatar.leaf { background: var(--leaf-soft); color: var(--leaf); }
+  .agent-avatar.amber { background: var(--amber-soft); color: var(--amber); }
+  .agent-avatar.lime { background: var(--lime-soft); color: var(--lime); }
+  .agent-avatar.gray { background: var(--bg-card); color: var(--tx-secondary); }
+  .agent-info { flex: 1; min-width: 0; }
+  .agent-name { font-size: 13px; font-weight: 400; color: var(--tx); }
+  .agent-meta { font-size: 11px; color: var(--tx-secondary); margin-top: 2px; }
+  .badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+  .badge-leaf { background: var(--leaf-soft); color: var(--leaf); }
+  .badge-gray { background: var(--bg-card); color: var(--tx-secondary); }
+  .badge-amber { background: var(--amber-soft); color: var(--amber); }
+  .agent-actions { display: flex; gap: 6px; }
+  .btn-sm {
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--bdr);
+    background: var(--bg);
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--tx);
+  }
+  .btn-sm:hover { background: var(--bg2); }
+  .btn-sm.danger { color: var(--danger); border-color: rgba(255,59,48,0.3); }
+
+  /* Agent Detail */
+  .detail-body { padding: 20px; }
+  .detail-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .detail-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 500;
+  }
+  .detail-avatar.leaf { background: var(--leaf-soft); color: var(--leaf); }
+  .detail-avatar.amber { background: var(--amber-soft); color: var(--amber); }
+  .detail-avatar.lime { background: var(--lime-soft); color: var(--lime); }
+  .detail-avatar.gray { background: var(--bg-card); color: var(--tx-secondary); }
+  .detail-name { font-size: 15px; font-weight: 500; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 12px; color: var(--tx2); margin-bottom: 6px; display: block; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--bdr);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    outline: none;
+    font-family: inherit;
+  }
+  .form-textarea { min-height: 80px; resize: vertical; }
+  .slider-wrap { display: flex; align-items: center; gap: 12px; }
+  .slider { flex: 1; -webkit-appearance: none; height: 4px; border-radius: 2px; background: var(--bdr); outline: none; }
+  .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .slider-val { font-size: 13px; color: var(--tx2); min-width: 30px; text-align: right; }
+  .detail-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .btn {
+    flex: 1;
+    padding: 9px;
+    border-radius: 8px;
+    border: none;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: opacity 0.2s;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #0066CC; }
+  .btn-danger { background: var(--danger-soft); color: var(--danger); }
+  .btn-danger:hover { background: rgba(215,0,21,0.12); }
+  .btn-secondary { background: var(--bg2); color: var(--tx); border: 0.5px solid var(--bdr); }
+
+  /* Tasks */
+  .task-list { padding: 12px; }
+  .task-item {
+    background: var(--bg2);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    margin-bottom: 6px;
+  }
+  .task-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .task-name { font-size: 13px; font-weight: 500; }
+  .task-bottom { display: flex; gap: 8px; align-items: center; font-size: 11px; color: var(--tx3); }
+  .task-freq { background: var(--accent-soft); color: #0066CC; padding: 1px 7px; border-radius: 5px; font-weight: 500; font-size: 10px; }
+
+  /* Sheet */
+  .sheet-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 10;
+  }
+  .sheet {
+    background: var(--bg);
+    width: 100%;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 20px;
+    max-height: 90%;
+    overflow-y: auto;
+  }
+  .sheet-title { font-size: 14px; font-weight: 500; text-align: center; margin-bottom: 16px; }
+  .sheet .form-group { margin-bottom: 14px; }
+  .picker { display: flex; gap: 6px; }
+  .picker-option {
+    flex: 1;
+    padding: 8px;
+    border: 0.5px solid var(--bdr);
+    border-radius: 7px;
+    text-align: center;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--tx2);
+    background: var(--bg);
+  }
+  .picker-option.active { border-color: var(--accent); background: var(--accent-soft); color: #0066CC; font-weight: 500; }
+
+  /* Stats */
+  .stats-body { padding: 16px; }
+  .hero-row { display: flex; gap: 12px; margin-bottom: 16px; }
+  .hero-card {
+    flex: 1;
+    background: var(--bg2);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    text-align: center;
+  }
+  .hero-num { font-size: 24px; font-weight: 500; color: var(--tx); letter-spacing: -0.02em; }
+  .hero-label { font-size: 11px; color: var(--tx3); margin-top: 4px; }
+  .gauge-card {
+    background: var(--bg2);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    margin-bottom: 8px;
+  }
+  .gauge-title { font-size: 12px; font-weight: 500; margin-bottom: 8px; color: var(--tx); }
+  .gauge-bar { height: 6px; background: var(--bdr); border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+  .gauge-fill { height: 100%; border-radius: 3px; background: var(--tx); }
+  .gauge-fill.green { background: var(--leaf); }
+  .gauge-fill.amber { background: var(--amber); }
+  .gauge-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--tx3); }
+  .token-list { margin-top: 12px; }
+  .token-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--bdr); font-size: 12px; }
+  .token-item:last-child { border-bottom: none; }
+  .token-progress { flex: 1; height: 4px; background: var(--bdr); border-radius: 2px; overflow: hidden; }
+  .token-progress-fill { height: 100%; border-radius: 2px; }
+
+  /* Diagnostics */
+  .diag-body { padding: 16px; }
+  .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 12px 0; }
+  .metric-box {
+    background: var(--bg2);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    text-align: center;
+  }
+  .metric-val { font-size: 16px; font-weight: 500; letter-spacing: -0.01em; }
+  .metric-label { font-size: 10px; color: var(--tx3); margin-top: 3px; }
+  .gateway-card {
+    background: var(--bg2);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    margin: 12px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .log-list { margin-top: 12px; }
+  .log-item {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--bdr);
+    color: var(--tx2);
+  }
+  .log-time { color: var(--tx3); margin-right: 8px; }
+
+  /* Channels */
+  .channel-list { padding: 12px; }
+  .channel-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 4px;
+  }
+  .channel-item:hover { background: var(--bg2); }
+  .channel-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 500;
+    flex-shrink: 0;
+    background: var(--bg3);
+    color: var(--tx2);
+  }
+  .channel-icon.feishu { background: #E5EEFC; color: #0066CC; }
+  .channel-icon.wecom { background: #E0EFE5; color: #1F6B3A; }
+  .channel-icon.dingtalk { background: #E5EEFC; color: #0066CC; }
+  .channel-icon.telegram { background: #E5EEFC; color: #0066CC; }
+  .channel-icon.slack { background: #E5DEEB; color: #4A3576; }
+  .channel-icon.discord { background: #E5DEEB; color: #4A3576; }
+  .channel-info { flex: 1; }
+  .channel-name { font-size: 13px; font-weight: 500; color: var(--tx); }
+  .channel-status { font-size: 11px; color: var(--tx3); }
+  .channel-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .channel-dot.on { background: var(--leaf); }
+  .channel-dot.off { background: var(--tx2); }
+
+  /* Channel Detail */
+  .detail-section { padding: 16px; }
+  .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--bdr); font-size: 13px; }
+  .detail-row-label { color: var(--tx2); }
+  .masked { font-family: monospace; letter-spacing: 2px; color: var(--tx2); }
+  .plugin-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--leaf-soft);
+    color: #1F6B3A;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  /* Files */
+  .files-layout { display: flex; height: 100%; min-height: 360px; }
+  .file-tree {
+    width: 160px;
+    background: var(--bg2);
+    border-right: 1px solid var(--bdr);
+    padding: 12px;
+    font-size: 12px;
+  }
+  .file-tree-item {
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+  }
+  .file-tree-item:hover, .file-tree-item.active { background: rgba(0,122,255,0.1); color: var(--accent); }
+  .file-editor {
+    flex: 1;
+    padding: 16px;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--tx2);
+    overflow: auto;
+    white-space: pre-wrap;
+  }
+
+  /* Advanced */
+  .advanced-body { padding: 16px; }
+  .group-title { font-size: 13px; font-weight: 600; margin: 16px 0 8px; }
+  .group-title:first-child { margin-top: 0; }
+
+  /* Subscription */
+  .sub-body { padding: 16px; }
+  .plan-card {
+    background: var(--bg3);
+    border: 0.5px solid var(--bdr);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    color: var(--tx);
+    margin-bottom: 16px;
+  }
+  .plan-name { font-size: 15px; font-weight: 500; }
+  .plan-price { font-size: 12px; color: var(--tx2); margin-top: 4px; }
+  .usage-bar { margin-bottom: 12px; }
+  .usage-top { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+  .usage-track { height: 6px; background: var(--bdr); border-radius: 3px; overflow: hidden; }
+  .usage-fill { height: 100%; border-radius: 3px; }
+  .billing-toggle {
+    display: flex;
+    background: var(--bg2);
+    border-radius: 8px;
+    padding: 3px;
+    margin-bottom: 16px;
+  }
+  .billing-option {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .billing-option.active { background: var(--bg); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .plans-row { display: flex; gap: 10px; margin-bottom: 16px; }
+  .plan-option {
+    flex: 1;
+    border: 1px solid var(--bdr);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .plan-option.active { border-color: var(--accent); background: rgba(0,122,255,0.04); }
+  .plan-option-name { font-size: 14px; font-weight: 600; }
+  .plan-option-price { font-size: 12px; color: var(--tx2); margin-top: 4px; }
+  .invoice-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--bdr);
+    font-size: 13px;
+  }
+
+  /* Empty */
+  .empty-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 320px;
+    text-align: center;
+    padding: 24px;
+  }
+  .empty-title { font-size: 15px; font-weight: 500; margin-top: 14px; }
+  .empty-desc { font-size: 12px; color: var(--tx2); margin-top: 6px; line-height: 1.5; max-width: 240px; }
+  .empty-btn {
+    margin-top: 18px;
+    padding: 8px 18px;
+    background: var(--tx);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero Header -->
+<div class="hero">
+  <div class="hero-logo">
+    <svg viewBox="0 0 100 100" fill="none">
+      <rect x="14" y="20" width="72" height="14" rx="7" fill="currentColor"/>
+      <rect x="14" y="43" width="50" height="14" rx="7" fill="currentColor"/>
+      <rect x="14" y="66" width="32" height="14" rx="7" fill="currentColor"/>
+      <circle cx="86" cy="73" r="7" fill="currentColor"/>
+    </svg>
+  </div>
+  <h1>MyPilot</h1>
+  <p>macOS 原生 AI 助手客户端 · 完整界面系统</p>
+  <div class="hero-meta">
+    <span><svg class="icon icon-sm" style="color:var(--tx3)"><use xlink:href="#mp-chat"/></svg> 19 个页面</span>
+    <span><svg class="icon icon-sm" style="color:var(--tx3)"><use xlink:href="#mp-files"/></svg> 60 个图标</span>
+    <span><svg class="icon icon-sm" style="color:var(--tx3)"><use xlink:href="#mp-settings"/></svg> iMessage 风格</span>
+  </div>
+</div>
+
+<!-- SVG Symbols -->
+<svg style="display:none">
+<defs>
+<symbol id="mp-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8l-4 4v-4H5a2 2 0 0 1-2-2V6z"/></symbol>
+<symbol id="mp-chat-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8l-4 4v-4H5a2 2 0 0 1-2-2V6z"/></symbol>
+<symbol id="mp-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+<symbol id="mp-settings-fill" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" fill="currentColor"/><circle cx="12" cy="12" r="3" fill="#fff"/></symbol>
+<symbol id="mp-agents" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3"/><circle cx="5" cy="11" r="2.5"/><circle cx="19" cy="11" r="2.5"/><path d="M3 20c0-2.5 2-4 4-4M21 20c0-2.5-2-4-4-4M9 20c0-3 1.5-5 3-5s3 2 3 5"/></symbol>
+<symbol id="mp-agents-fill" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7" r="3"/><circle cx="5" cy="11" r="2.5"/><circle cx="19" cy="11" r="2.5"/><path d="M3 20c0-2.5 2-4 4-4M21 20c0-2.5-2-4-4-4M9 20c0-3 1.5-5 3-5s3 2 3 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="mp-network" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+<symbol id="mp-network-fill" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="mp-advanced" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></symbol>
+<symbol id="mp-advanced-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></symbol>
+<symbol id="mp-attach" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12l-8.5 8.5a5 5 0 0 1-7-7L13 5.5a3.5 3.5 0 0 1 5 5L9.5 19a2 2 0 0 1-3-3L14 9"/></symbol>
+<symbol id="mp-attach-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12l-8.5 8.5a5 5 0 0 1-7-7L13 5.5a3.5 3.5 0 0 1 5 5L9.5 19a2 2 0 0 1-3-3L14 9" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="mp-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></symbol>
+<symbol id="mp-back-fill" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9"/><path d="M15 6l-6 6 6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="mp-channels" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 18 0v5a2 2 0 0 1-2 2h-2v-7h4M3 12v5a2 2 0 0 0 2 2h2v-7H3"/></symbol>
+<symbol id="mp-channels-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M3 12a9 9 0 0 1 18 0v5a2 2 0 0 1-2 2h-2v-7h4M3 12v5a2 2 0 0 0 2 2h2v-7H3" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="mp-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="mp-close-fill" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="mp-connection" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 11l6-4M9 13l6 4"/></symbol>
+<symbol id="mp-connection-fill" viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 11l6-4M9 13l6 4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="mp-delete" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/></symbol>
+<symbol id="mp-delete-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M4 7h16M9 7V4h6v3M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="mp-diagnostics" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l-4 4 4 4M15 11l4 4-4 4M14 5l-4 14"/></symbol>
+<symbol id="mp-diagnostics-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M9 11l-4 4 4 4M15 11l4 4-4 4M14 5l-4 14" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="mp-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l6 6L8 22H2v-6zM12 6l6 6"/></symbol>
+<symbol id="mp-edit-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M14 4l6 6L8 22H2v-6z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="mp-empty" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></symbol>
+<symbol id="mp-empty-fill" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/><circle cx="9" cy="10" r="1" fill="#fff"/><circle cx="15" cy="10" r="1" fill="#fff"/></symbol>
+<symbol id="mp-files" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6"/></symbol>
+<symbol id="mp-files-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="mp-heartbeat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></symbol>
+<symbol id="mp-heartbeat-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M3 12h4l2-5 4 10 2-5h6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="mp-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v.01"/></symbol>
+<symbol id="mp-info-fill" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v.01" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="mp-memory" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7M3 7l3-4h12l3 4M3 7h18M8 11h8"/></symbol>
+<symbol id="mp-memory-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7M3 7l3-4h12l3 4M3 7h18" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 11h8" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="mp-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="mp-menu-fill" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="7" r="1.6"/><circle cx="12" cy="7" r="1.6"/><circle cx="19" cy="7" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/><circle cx="5" cy="17" r="1.6"/><circle cx="12" cy="17" r="1.6"/><circle cx="19" cy="17" r="1.6"/></symbol>
+<symbol id="mp-permission" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+<symbol id="mp-permission-fill" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="mp-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></symbol>
+<symbol id="mp-refresh-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="mp-scheduled" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="mp-scheduled-fill" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="mp-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M16 16l5 5"/></symbol>
+<symbol id="mp-search-fill" viewBox="0 0 24 24" fill="currentColor"><circle cx="11" cy="11" r="7"/><path d="M16 16l5 5" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="mp-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l18-9-6 18-3-7z"/></symbol>
+<symbol id="mp-send-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M3 12l18-9-6 18-3-7z"/></symbol>
+<symbol id="mp-stop" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1.5"/></symbol>
+<symbol id="mp-stop-outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="1.5"/></symbol>
+<symbol id="mp-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></symbol>
+<symbol id="mp-success-fill" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="mp-task-create" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M12 9v6M9 12h6"/></symbol>
+<symbol id="mp-task-create-fill" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M12 9v6M9 12h6" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="mp-tool" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 7a3 3 0 1 0-3 3l-8 8 2 2 8-8a3 3 0 0 0 3-3l3 3 3-3-5-5z"/></symbol>
+<symbol id="mp-tool-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M14 7a3 3 0 1 0-3 3l-8 8 2 2 8-8a3 3 0 0 0 3-3l3 3 3-3-5-5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="mp-usage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M6 17V9M11 17V5M16 17v-5M21 17v-3"/></symbol>
+<symbol id="mp-usage-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21h18M6 17V9M11 17V5M16 17v-5M21 17v-3" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="mp-warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2L12 3zM12 10v5M12 18v.01"/></symbol>
+<symbol id="mp-warning-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l10 18H2L12 3z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 10v5" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="12" cy="18" r="1" fill="#fff"/></symbol>
+<symbol id="mp-workflow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="3" width="6" height="6" rx="1"/><rect x="9" y="15" width="6" height="6" rx="1"/><path d="M6 9v3a2 2 0 0 0 2 2h4M18 9v3a2 2 0 0 1-2 2h-4"/></symbol>
+<symbol id="mp-workflow-fill" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="3" width="6" height="6" rx="1"/><rect x="9" y="15" width="6" height="6" rx="1"/><path d="M6 9v3a2 2 0 0 0 2 2h4M18 9v3a2 2 0 0 1-2 2h-4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="mp-add" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></symbol>
+<symbol id="mp-add-fill" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+</defs>
+</svg>
+
+<!-- Core Pages -->
+<div class="grid">
+<div class="section-label full-width">核心页面</div>
+
+<!-- A. 主聊天页 -->
+<div class="window" style="animation-delay:0.05s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">MyPilot — 聊天</div>
+  </div>
+  <div class="window-body">
+    <div class="chat-layout">
+      <!-- Sidebar (OpenClaw 实例 + Agents + 对话) -->
+      <div class="sidebar">
+        <div class="sidebar-search">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input placeholder="搜索历史消息..." />
+        </div>
+        <div class="sidebar-scroll">
+          <!-- OpenClaw 实例 section -->
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">OpenClaw 实例</div>
+            <div class="sidebar-row">
+              <div class="sidebar-row-circle lime">M</div>
+              <div class="sidebar-row-text">
+                <div class="sidebar-row-name">Mac Studio</div>
+                <div class="sidebar-row-sub">127.0.0.1:52378</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Agents section: per agent with conversations -->
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">智能体</div>
+
+            <!-- MyPilot (selected) -->
+            <div class="sidebar-row selected">
+              <div class="sidebar-row-circle leaf">M</div>
+              <div class="sidebar-row-text">
+                <div class="sidebar-row-name">MyPilot</div>
+                <div class="sidebar-row-sub">claude-sonnet-4.5</div>
+              </div>
+              <span class="sidebar-row-check">✓</span>
+            </div>
+            <div class="sidebar-row">
+              <div class="sidebar-row-icon">💬</div>
+              <div class="sidebar-row-text">
+                <div class="sidebar-row-name">iOS 端开发讨论</div>
+                <div class="sidebar-row-sub">帮我用 Swift 写一个...</div>
+              </div>
+            </div>
+            <div class="sidebar-row">
+              <div class="sidebar-row-icon">💬</div>
+              <div class="sidebar-row-text">
+                <div class="sidebar-row-name">OpenClaw 协议研究</div>
+                <div class="sidebar-row-sub">WebSocket 握手流程...</div>
+              </div>
+            </div>
+
+            <!-- Coder -->
+            <div class="sidebar-row">
+              <div class="sidebar-row-circle amber">C</div>
+              <div class="sidebar-row-text">
+                <div class="sidebar-row-name">Coder</div>
+                <div class="sidebar-row-sub">claude-sonnet-4.5</div>
+              </div>
+            </div>
+            <div class="sidebar-row">
+              <div class="sidebar-row-icon">💬</div>
+              <div class="sidebar-row-text">
+                <div class="sidebar-row-name">Refactor AppState</div>
+                <div class="sidebar-row-sub">优化 AppState 状态...</div>
+              </div>
+            </div>
+
+            <!-- Researcher -->
+            <div class="sidebar-row">
+              <div class="sidebar-row-circle lime">R</div>
+              <div class="sidebar-row-text">
+                <div class="sidebar-row-name">Researcher</div>
+                <div class="sidebar-row-sub">gemini-2.5-pro</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom buttons -->
+        <div class="sidebar-bottom">
+          <button class="sidebar-btn sidebar-btn-primary">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            添加实例
+          </button>
+          <button class="sidebar-btn sidebar-btn-icon" title="设置">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Chat area (right) -->
+      <div class="chat-area">
+        <!-- Header -->
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <div class="chat-agent-avatar leaf">M</div>
+            <div class="chat-agent-info">
+              <div class="chat-agent-name">
+                MyPilot
+                <span class="chat-chevron"><svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></span>
+              </div>
+              <div class="chat-agent-model">
+                Anthropic / claude-sonnet-4.5
+                <span class="chat-chevron"><svg class="icon icon-sm" style="width:9px;height:9px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+              </div>
+            </div>
+          </div>
+          <div class="chat-header-right">
+            <div class="conn-status">
+              <div class="conn-dot on"></div>
+              <span class="conn-latency">42ms</span>
+              <span class="conn-text">已连接</span>
+            </div>
+            <div class="header-action">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 21h14"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Token Usage Bar -->
+        <div class="token-bar">
+          <div class="token-progress-row">
+            <div class="token-progress-fill leaf" style="width:32%"></div>
+          </div>
+          <div class="token-meta">
+            <span class="token-stat in">↓1.2k</span>
+            <span class="token-stat out">↑486</span>
+            <span class="token-cost">$0.0042</span>
+            <span class="token-spacer"></span>
+            <span>64k / 200k</span>
+          </div>
+        </div>
+
+        <!-- System prompt bar -->
+        <div class="sys-prompt-bar">
+          <svg class="icon icon-sm" style="color:var(--tx-secondary)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16v.01"/></svg>
+          <span>You are MyPilot, an AI assistant. Be helpful, harmless, and honest.</span>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages">
+          <div class="bubble-system">🔄 会话已重启，上下文已清空</div>
+          <div class="msg-row ai">
+            <div class="bubble bubble-ai">你好！我是 MyPilot 助手。有什么可以帮你的吗？</div>
+            <div class="msg-time">14:23</div>
+          </div>
+          <div class="msg-row user">
+            <div class="bubble bubble-user">帮我用 Swift 写一个 iOS 端的网络请求封装</div>
+            <div class="msg-time">14:24</div>
+          </div>
+          <div class="msg-row ai">
+            <div class="bubble bubble-ai">好的，下面是一个基于 URLSession 的 Swift 网络请求封装示例：</div>
+            <div class="msg-time">14:24</div>
+          </div>
+        </div>
+
+        <!-- Input Bar -->
+        <div class="chat-input-bar">
+          <button class="icon-btn" title="添加附件">
+            <svg class="icon icon-md"><use xlink:href="#mp-attach"/></svg>
+          </button>
+          <button class="icon-btn" title="更多">
+            <svg class="icon icon-md"><use xlink:href="#mp-menu"/></svg>
+          </button>
+          <input class="chat-input" placeholder="发消息... 输入 / 查看指令" />
+          <button class="icon-btn accent" title="发送">
+            <svg class="icon icon-md"><use xlink:href="#mp-send"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Onboarding -->
+<div class="section-label full-width">引导 & 配对</div>
+
+<!-- A2. 欢迎页（无实例状态） -->
+<div class="window" style="animation-delay:0.06s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">MyPilot — 欢迎</div>
+  </div>
+  <div class="window-body">
+    <div class="welcome-body">
+      <div class="welcome-icon">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12a10 10 0 0 1 20 0M2 12a10 10 0 0 0 20 0M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10M12 2a15.3 15.3 0 0 0-4 10 15.3 15.3 0 0 0 4 10M2 12h20"/></svg>
+      </div>
+      <div class="welcome-title">MyPilot</div>
+      <div class="welcome-subtitle">私有化 OpenClaw 客户端</div>
+
+      <div class="welcome-steps">
+        <div class="welcome-step">
+          <div class="welcome-step-num">1</div>
+          <div class="welcome-step-text">
+            <div class="welcome-step-title">部署 OpenClaw</div>
+            <div class="welcome-step-subtitle">在服务器上安装 OpenClaw Gateway</div>
+          </div>
+          <div class="icon-block gray" style="width:24px;height:24px;border-radius:6px">
+            <svg class="icon" style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="2" y="3" width="20" height="6" rx="2"/><rect x="2" y="15" width="20" height="6" rx="2"/><circle cx="6" cy="6" r="0.5" fill="currentColor"/><circle cx="6" cy="18" r="0.5" fill="currentColor"/></svg>
+          </div>
+        </div>
+        <div class="welcome-step">
+          <div class="welcome-step-num">2</div>
+          <div class="welcome-step-text">
+            <div class="welcome-step-title">安装 MyPilot Link</div>
+            <div class="welcome-step-subtitle">npm i -g @mypilot/link && mypilot start</div>
+          </div>
+          <div class="icon-block gray" style="width:24px;height:24px;border-radius:6px">
+            <svg class="icon" style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+          </div>
+        </div>
+        <div class="welcome-step">
+          <div class="welcome-step-num">3</div>
+          <div class="welcome-step-text">
+            <div class="welcome-step-title">添加实例</div>
+            <div class="welcome-step-subtitle">输入服务器地址和配对码连接</div>
+          </div>
+          <div class="icon-block gray" style="width:24px;height:24px;border-radius:6px">
+            <svg class="icon" style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <button class="welcome-btn">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        添加实例
+      </button>
+
+      <div class="welcome-footer">v1.0.0 · 数据完全私有</div>
+    </div>
+  </div>
+</div>
+
+<!-- A3. 添加实例 — Step 1 (服务器地址) -->
+<div class="window" style="animation-delay:0.07s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">添加实例 — 步骤 1 / 2</div>
+  </div>
+  <div class="window-body">
+    <div class="addinstance-body">
+      <div class="addinstance-icon">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="2"/><rect x="2" y="15" width="20" height="6" rx="2"/><circle cx="6" cy="6" r="0.5" fill="currentColor"/><circle cx="6" cy="18" r="0.5" fill="currentColor"/><line x1="10" y1="6" x2="18" y2="6"/><line x1="10" y1="18" x2="18" y2="18"/></svg>
+      </div>
+      <div class="addinstance-title">输入服务器地址</div>
+
+      <div class="addinstance-input">
+        <input placeholder="例如: http://118.145.240.41:52378" value="http://127.0.0.1:52378" />
+      </div>
+
+      <div class="addinstance-hints">
+        <div class="addinstance-hint-row">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>MyPilot 通过本地 daemon 连接 OpenClaw Gateway</span>
+        </div>
+        <div class="addinstance-hint-step">1. 在服务器上安装 mypilot-link：npm install -g @mypilot/link</div>
+        <div class="addinstance-hint-step">2. 启动 daemon：mypilot start</div>
+        <div class="addinstance-hint-step">3. 输入 daemon 地址（默认端口 52378）</div>
+        <div class="addinstance-hint-step">4. 在下一步输入终端显示的配对码完成配对</div>
+      </div>
+
+      <div class="addinstance-actions">
+        <button class="btn btn-secondary">取消</button>
+        <button class="btn btn-primary">继续</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- A4. 添加实例 — Step 2 (配对码) -->
+<div class="window" style="animation-delay:0.08s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">添加实例 — 步骤 2 / 2</div>
+  </div>
+  <div class="window-body">
+    <div class="addinstance-body">
+      <div class="addinstance-icon">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-9 9M14.5 6.5 17.5 9.5"/><path d="M7 13a4 4 0 0 0 4 4"/><circle cx="7" cy="17" r="1.5" fill="currentColor"/></svg>
+      </div>
+      <div class="addinstance-title">输入配对码</div>
+      <div class="addinstance-subtitle">在服务器终端执行 mypilot pair 获取配对码，或扫描二维码</div>
+
+      <div class="addinstance-pair-row">
+        <div class="addinstance-input" style="flex:1">
+          <input placeholder="XXXX-XXXX-XXXX" value="MQ4F-N8L2-9A7B" style="font-family:'SF Mono', Menlo, monospace" />
+        </div>
+        <button class="addinstance-qr-btn" title="扫描二维码">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="14" y2="17"/><line x1="17" y1="14" x2="21" y2="14"/><line x1="20" y1="17" x2="21" y2="17"/><line x1="14" y1="20" x2="17" y2="20"/><line x1="20" y1="20" x2="20" y2="21"/><line x1="17" y1="17" x2="17" y2="20"/></svg>
+        </button>
+      </div>
+
+      <div class="addinstance-input">
+        <input placeholder="实例名称（可选）" value="Mac Studio" />
+      </div>
+
+      <div class="addinstance-qr-card">
+        <div class="addinstance-qr-label">或使用此服务器生成的配对码：</div>
+        <div class="addinstance-qr-img">
+          <div class="qr-grid">
+            <!-- 简易 QR 装饰 -->
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div class="qr-on"></div><div></div><div class="qr-on"></div><div></div><div class="qr-on"></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div class="qr-on"></div><div></div><div></div><div></div><div class="qr-on"></div><div></div>
+            <div></div><div></div><div class="qr-on"></div><div></div><div></div><div></div><div></div>
+            <div></div><div class="qr-on"></div><div></div><div class="qr-on"></div><div></div><div class="qr-on"></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+          </div>
+        </div>
+        <div class="addinstance-qr-code">MQ4F-N8L2-9A7B</div>
+      </div>
+
+      <div class="addinstance-actions">
+        <button class="btn btn-secondary">返回</button>
+        <button class="btn btn-primary">配对并连接</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Settings -->
+<div class="section-label full-width">设置</div>
+
+
+<!-- B. 设置主页 -->
+<div class="window" style="animation-delay:0.10s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">设置</div>
+  </div>
+  <div class="window-body">
+    <div class="settings-body">
+      <div class="settings-group">
+        <div class="settings-group-title">通用</div>
+        <div class="settings-list">
+          <div class="settings-row">
+            <div class="settings-row-left">
+              <div class="icon-block blue"><svg class="icon"><use xlink:href="#mp-settings"/></svg></div>
+              <div class="settings-row-text">
+                <div class="settings-row-title">外观</div>
+                <div class="settings-row-sub">主题、字体、显示</div>
+              </div>
+            </div>
+            <span class="chevron">›</span>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-left">
+              <div class="icon-block leaf"><svg class="icon"><use xlink:href="#mp-chat"/></svg></div>
+              <div class="settings-row-text">
+                <div class="settings-row-title">语言</div>
+                <div class="settings-row-sub">界面语言与时区</div>
+              </div>
+            </div>
+            <span class="chevron">›</span>
+          </div>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">网络</div>
+        <div class="settings-list">
+          <div class="settings-row">
+            <div class="settings-row-left">
+              <div class="icon-block blue"><svg class="icon"><use xlink:href="#mp-network"/></svg></div>
+              <div class="settings-row-text">
+                <div class="settings-row-title">连接设置</div>
+                <div class="settings-row-sub">服务器地址与端口</div>
+              </div>
+            </div>
+            <span class="chevron">›</span>
+          </div>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">Agents</div>
+        <div class="settings-list">
+          <div class="settings-row">
+            <div class="settings-row-left">
+              <div class="icon-block leaf"><svg class="icon"><use xlink:href="#mp-agents"/></svg></div>
+              <div class="settings-row-text">
+                <div class="settings-row-title">管理 Agents</div>
+                <div class="settings-row-sub">智能体与协作关系</div>
+              </div>
+            </div>
+            <span class="chevron">›</span>
+          </div>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">高级</div>
+        <div class="settings-list">
+          <div class="settings-row">
+            <div class="settings-row-left">
+              <div class="icon-block gray"><svg class="icon"><use xlink:href="#mp-advanced"/></svg></div>
+              <div class="settings-row-text">
+                <div class="settings-row-title">高级设置</div>
+                <div class="settings-row-sub">日志、诊断、实验功能</div>
+              </div>
+            </div>
+            <span class="chevron">›</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- C. 网络设置 -->
+<div class="window" style="animation-delay:0.15s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">网络设置</div>
+  </div>
+  <div class="window-body">
+    <div class="status-card">
+      <div class="status-dot"></div>
+      <span class="status-text">已连接</span>
+    </div>
+    <div class="config-row">
+      <span class="config-label">服务器地址</span>
+      <span class="config-value">127.0.0.1:52378</span>
+    </div>
+    <div class="config-row">
+      <span class="config-label">协议版本</span>
+      <span class="config-value">v2.1.0</span>
+    </div>
+    <div class="config-row">
+      <span class="config-label">自动重连</span>
+      <div class="toggle on"></div>
+    </div>
+    <div class="config-row">
+      <span class="config-label">使用代理</span>
+      <div class="toggle"></div>
+    </div>
+    <div class="config-row">
+      <span class="config-label">TLS 加密</span>
+      <div class="toggle on"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Agents -->
+<div class="section-label full-width">智能体</div>
+
+<!-- D. Agents管理 -->
+<div class="window" style="animation-delay:0.20s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">Agents 管理</div>
+  </div>
+  <div class="window-body">
+    <div class="agent-list">
+      <div class="agent-item">
+        <div class="agent-avatar blue">AI</div>
+        <div class="agent-info">
+          <div class="agent-name">MyPilot 助手</div>
+          <div class="agent-meta">GPT-4o · 通用对话</div>
+        </div>
+        <span class="badge badge-green">运行中</span>
+        <div class="agent-actions">
+          <button class="btn-sm"><svg class="icon icon-sm"><use xlink:href="#mp-edit"/></svg></button>
+          <button class="btn-sm danger"><svg class="icon icon-sm"><use xlink:href="#mp-delete"/></svg></button>
+        </div>
+      </div>
+      <div class="agent-item">
+        <div class="agent-avatar green">码</div>
+        <div class="agent-info">
+          <div class="agent-name">代码助手</div>
+          <div class="agent-meta">Claude 3.5 · 编程</div>
+        </div>
+        <span class="badge badge-green">运行中</span>
+        <div class="agent-actions">
+          <button class="btn-sm"><svg class="icon icon-sm"><use xlink:href="#mp-edit"/></svg></button>
+          <button class="btn-sm danger"><svg class="icon icon-sm"><use xlink:href="#mp-delete"/></svg></button>
+        </div>
+      </div>
+      <div class="agent-item">
+        <div class="agent-avatar purple">翻</div>
+        <div class="agent-info">
+          <div class="agent-name">翻译官</div>
+          <div class="agent-meta">GPT-4o-mini · 翻译</div>
+        </div>
+        <span class="badge badge-gray">已暂停</span>
+        <div class="agent-actions">
+          <button class="btn-sm"><svg class="icon icon-sm"><use xlink:href="#mp-edit"/></svg></button>
+          <button class="btn-sm danger"><svg class="icon icon-sm"><use xlink:href="#mp-delete"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- E. Agent详情 -->
+<div class="window" style="animation-delay:0.25s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">Agent 详情</div>
+  </div>
+  <div class="window-body">
+    <div class="detail-body">
+      <div class="detail-header">
+        <div class="detail-avatar">AI</div>
+        <div class="detail-name">MyPilot 助手</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">模型</label>
+        <select class="form-select">
+          <option>GPT-4o</option>
+          <option>Claude 3.5 Sonnet</option>
+          <option>GPT-4o-mini</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">工作区</label>
+        <input class="form-input" value="/Users/mypilot/workspace" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Temperature</label>
+        <div class="slider-wrap">
+          <input type="range" class="slider" min="0" max="20" value="7" />
+          <span class="slider-val">0.7</span>
+        </div>
+      </div>
+      <div class="detail-actions">
+        <button class="btn btn-primary">保存</button>
+        <button class="btn btn-danger">删除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tasks -->
+<div class="section-label full-width">任务与调度</div>
+
+<!-- F. 定时任务 -->
+<div class="window" style="animation-delay:0.30s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">定时任务</div>
+  </div>
+  <div class="window-body">
+    <div class="task-list">
+      <div class="task-item">
+        <div class="task-top">
+          <span class="task-name">每日数据备份</span>
+          <span class="badge badge-green">运行中</span>
+        </div>
+        <div class="task-bottom">
+          <span class="task-freq">每天</span>
+          <span>下次运行: 02:00</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <div class="task-top">
+          <span class="task-name">周报生成</span>
+          <span class="badge badge-green">运行中</span>
+        </div>
+        <div class="task-bottom">
+          <span class="task-freq">每周</span>
+          <span>下次运行: 周五 18:00</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <div class="task-top">
+          <span class="task-name">日志清理</span>
+          <span class="badge badge-gray">已暂停</span>
+        </div>
+        <div class="task-bottom">
+          <span class="task-freq">每天</span>
+          <span>已暂停</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- G. 任务编辑Sheet -->
+<div class="window" style="animation-delay:0.35s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">编辑任务</div>
+  </div>
+  <div class="window-body" style="position:relative">
+    <div class="task-list" style="padding:12px;opacity:0.4">
+      <div class="task-item">
+        <div class="task-top"><span class="task-name">每日数据备份</span><span class="badge badge-green">运行中</span></div>
+        <div class="task-bottom"><span class="task-freq">每天</span><span>下次运行: 02:00</span></div>
+      </div>
+    </div>
+    <div class="sheet-overlay">
+      <div class="sheet">
+        <div class="sheet-title">编辑任务</div>
+        <div class="form-group">
+          <label class="form-label">任务名称</label>
+          <input class="form-input" value="每日数据备份" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">任务内容</label>
+          <textarea class="form-textarea">执行数据库备份并上传到云存储</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">执行频率</label>
+          <div class="picker">
+            <div class="picker-option active">每天</div>
+            <div class="picker-option">每周</div>
+            <div class="picker-option">每月</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">选择 Agent</label>
+          <select class="form-select">
+            <option>MyPilot 助手</option>
+            <option>代码助手</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:6px">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Analytics -->
+<div class="section-label full-width">数据与监控</div>
+
+<!-- H. 运行统计 -->
+<div class="window" style="animation-delay:0.40s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">运行统计</div>
+  </div>
+  <div class="window-body">
+    <div class="stats-body">
+      <div class="hero-row">
+        <div class="hero-card">
+          <div class="hero-num">12,456</div>
+          <div class="hero-label">总请求数</div>
+        </div>
+        <div class="hero-card">
+          <div class="hero-num">98.2%</div>
+          <div class="hero-label">可用性</div>
+        </div>
+      </div>
+      <div class="gauge-card">
+        <div class="gauge-title">CPU 使用率</div>
+        <div class="gauge-bar"><div class="gauge-fill green" style="width:34%"></div></div>
+        <div class="gauge-meta"><span>34%</span><span>8 核</span></div>
+      </div>
+      <div class="gauge-card">
+        <div class="gauge-title">内存使用</div>
+        <div class="gauge-bar"><div class="gauge-fill amber" style="width:62%"></div></div>
+        <div class="gauge-meta"><span>4.2 GB</span><span>8 GB</span></div>
+      </div>
+      <div class="token-list">
+        <div class="token-item">
+          <span style="width:70px">GPT-4o</span>
+          <div class="token-progress"><div class="token-progress-fill" style="width:72%;background:var(--accent)"></div></div>
+          <span style="width:50px;text-align:right">72%</span>
+        </div>
+        <div class="token-item">
+          <span style="width:70px">Claude</span>
+          <div class="token-progress"><div class="token-progress-fill" style="width:45%;background:var(--leaf)"></div></div>
+          <span style="width:50px;text-align:right">45%</span>
+        </div>
+        <div class="token-item">
+          <span style="width:70px">其他</span>
+          <div class="token-progress"><div class="token-progress-fill" style="width:18%;background:var(--amber)"></div></div>
+          <span style="width:50px;text-align:right">18%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- I. 诊断中心 -->
+<div class="window" style="animation-delay:0.45s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">诊断中心</div>
+  </div>
+  <div class="window-body">
+    <div class="diag-body">
+      <div class="status-card" style="margin:0 0 12px">
+        <div class="status-dot"></div>
+        <span class="status-text">连接正常</span>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <div class="metric-val" style="color:var(--accent)">24ms</div>
+          <div class="metric-label">延迟</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-val" style="color:var(--leaf)">0%</div>
+          <div class="metric-label">丢包率</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-val" style="color:var(--amber)">12</div>
+          <div class="metric-label">活跃连接</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-val">v2.1</div>
+          <div class="metric-label">版本</div>
+        </div>
+      </div>
+      <div class="gateway-card">
+        <div>
+          <div style="font-size:13px;font-weight:600">网关状态</div>
+          <div style="font-size:11px;color:var(--tx2);margin-top:2px">127.0.0.1:52378</div>
+        </div>
+        <span class="badge badge-green">正常</span>
+      </div>
+      <div class="log-list">
+        <div class="log-item"><span class="log-time">09:23:14</span> 心跳检测通过</div>
+        <div class="log-item"><span class="log-time">09:22:44</span> 连接保持稳定</div>
+        <div class="log-item"><span class="log-time">09:22:14</span> 自动重连成功</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Communication -->
+<div class="section-label full-width">通信</div>
+
+<!-- J. IM渠道 -->
+<div class="window" style="animation-delay:0.50s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">IM 渠道</div>
+  </div>
+  <div class="window-body">
+    <div class="channel-list">
+      <div class="channel-item">
+        <div class="channel-icon feishu">飞</div>
+        <div class="channel-info">
+          <div class="channel-name">飞书</div>
+          <div class="channel-status">已连接 · 3 个群组</div>
+        </div>
+        <div class="channel-dot on"></div>
+      </div>
+      <div class="channel-item">
+        <div class="channel-icon wecom">微</div>
+        <div class="channel-info">
+          <div class="channel-name">企业微信</div>
+          <div class="channel-status">已连接 · 5 个群组</div>
+        </div>
+        <div class="channel-dot on"></div>
+      </div>
+      <div class="channel-item">
+        <div class="channel-icon dingtalk">钉</div>
+        <div class="channel-info">
+          <div class="channel-name">钉钉</div>
+          <div class="channel-status">未连接</div>
+        </div>
+        <div class="channel-dot off"></div>
+      </div>
+      <div class="channel-item">
+        <div class="channel-icon telegram">T</div>
+        <div class="channel-info">
+          <div class="channel-name">Telegram</div>
+          <div class="channel-status">已连接 · 2 个群组</div>
+        </div>
+        <div class="channel-dot on"></div>
+      </div>
+      <div class="channel-item">
+        <div class="channel-icon slack">S</div>
+        <div class="channel-info">
+          <div class="channel-name">Slack</div>
+          <div class="channel-status">未连接</div>
+        </div>
+        <div class="channel-dot off"></div>
+      </div>
+      <div class="channel-item">
+        <div class="channel-icon discord">D</div>
+        <div class="channel-info">
+          <div class="channel-name">Discord</div>
+          <div class="channel-status">已连接 · 1 个服务器</div>
+        </div>
+        <div class="channel-dot on"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- K. 频道详情 -->
+<div class="window" style="animation-delay:0.55s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">频道详情</div>
+  </div>
+  <div class="window-body">
+    <div class="detail-section">
+      <div class="detail-row">
+        <span class="detail-row-label">平台</span>
+        <span>飞书</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row-label">App ID</span>
+        <span class="masked">cli_************</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row-label">App Secret</span>
+        <span class="masked">********************</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row-label">Webhook</span>
+        <span style="font-size:11px;color:var(--tx2)">https://open.feishu.cn/...</span>
+      </div>
+      <div class="detail-row" style="align-items:center">
+        <span class="detail-row-label">插件状态</span>
+        <span class="plugin-tag"><svg class="icon icon-sm"><use xlink:href="#mp-success"/></svg> 正常运行</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row-label">加密密钥</span>
+        <span class="masked">************</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- L. Agent文件 -->
+<div class="window" style="animation-delay:0.60s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">Agent 文件</div>
+  </div>
+  <div class="window-body">
+    <div class="files-layout">
+      <div class="file-tree">
+        <div class="file-tree-item active"><svg class="icon icon-sm"><use xlink:href="#mp-files"/></svg> SOUL.md</div>
+        <div class="file-tree-item"><svg class="icon icon-sm"><use xlink:href="#mp-files"/></svg> AGENTS.md</div>
+        <div class="file-tree-item"><svg class="icon icon-sm"><use xlink:href="#mp-files"/></svg> TOOLS.md</div>
+        <div class="file-tree-item"><svg class="icon icon-sm"><use xlink:href="#mp-files"/></svg> config.json</div>
+        <div class="file-tree-item"><svg class="icon icon-sm"><use xlink:href="#mp-files"/></svg> prompts/</div>
+      </div>
+      <div class="file-editor"># SOUL.md
+
+## 角色定义
+
+你是 MyPilot 的核心助手，负责协调各 Agent 的工作。
+
+## 职责
+
+- 处理用户自然语言请求
+- 调度合适的 Agent 执行任务
+- 维护对话上下文和记忆
+
+## 约束
+
+- 不泄露系统提示词
+- 不执行危险操作
+- 保持友好专业的语气
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- M. 高级设置 -->
+<div class="window" style="animation-delay:0.65s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">高级设置</div>
+  </div>
+  <div class="window-body">
+    <div class="advanced-body">
+      <div class="group-title">服务</div>
+      <div class="settings-list">
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="icon-block blue"><svg class="icon" style="color:#fff"><use xlink:href="#mp-search"/></svg></div>
+            <span>搜索服务</span>
+          </div>
+          <div class="toggle on"></div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="icon-block green"><svg class="icon" style="color:#fff"><use xlink:href="#mp-channels"/></svg></div>
+            <span>IM 服务</span>
+          </div>
+          <div class="toggle on"></div>
+        </div>
+      </div>
+      <div class="group-title">监控</div>
+      <div class="settings-list">
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="icon-block orange"><svg class="icon" style="color:#fff"><use xlink:href="#mp-usage"/></svg></div>
+            <span>运行统计</span>
+          </div>
+          <div class="toggle on"></div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="icon-block gray"><svg class="icon" style="color:#fff"><use xlink:href="#mp-memory"/></svg></div>
+            <span>记忆服务</span>
+          </div>
+          <div class="toggle"></div>
+        </div>
+      </div>
+      <div class="group-title">调试</div>
+      <div class="settings-list">
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="icon-block red"><svg class="icon" style="color:#fff"><use xlink:href="#mp-diagnostics"/></svg></div>
+            <span>诊断模式</span>
+          </div>
+          <div class="toggle"></div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="icon-block blue"><svg class="icon" style="color:#fff"><use xlink:href="#mp-files"/></svg></div>
+            <span>导出日志</span>
+          </div>
+          <span class="chevron">›</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="icon-block red"><svg class="icon" style="color:#fff"><use xlink:href="#mp-warning"/></svg></div>
+            <span>重置所有数据</span>
+          </div>
+          <span class="chevron">›</span>
+        </div>
+      </div>
+      <div class="group-title">实验性功能</div>
+      <div class="settings-list">
+        <div class="settings-row">
+          <span>流式响应优化</span>
+          <div class="toggle on"></div>
+        </div>
+        <div class="settings-row">
+          <span>多模态输入</span>
+          <div class="toggle"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Subscription & States -->
+<div class="section-label full-width">订阅与状态</div>
+
+<!-- N. 订阅页 -->
+<div class="window" style="animation-delay:0.70s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">订阅</div>
+  </div>
+  <div class="window-body">
+    <div class="sub-body">
+      <div class="plan-card">
+        <div class="plan-name">Pro 计划</div>
+        <div class="plan-price">¥99 / 月 · 下次扣费 2026-07-13</div>
+      </div>
+      <div class="usage-bar">
+        <div class="usage-top"><span>Token 用量</span><span>6.2k / 50k</span></div>
+        <div class="usage-track"><div class="usage-fill" style="width:12%;background:var(--accent)"></div></div>
+      </div>
+      <div class="usage-bar">
+        <div class="usage-top"><span>Agent 数量</span><span>3 / 10</span></div>
+        <div class="usage-track"><div class="usage-fill" style="width:30%;background:var(--leaf)"></div></div>
+      </div>
+      <div class="usage-bar">
+        <div class="usage-top"><span>存储空间</span><span>1.2 GB / 5 GB</span></div>
+        <div class="usage-track"><div class="usage-fill" style="width:24%;background:var(--amber)"></div></div>
+      </div>
+      <div class="billing-toggle">
+        <div class="billing-option active">月付</div>
+        <div class="billing-option">年付 <span style="color:var(--leaf);font-size:11px">省20%</span></div>
+      </div>
+      <div class="plans-row">
+        <div class="plan-option">
+          <div class="plan-option-name">Free</div>
+          <div class="plan-option-price">¥0/月</div>
+        </div>
+        <div class="plan-option active">
+          <div class="plan-option-name">Pro</div>
+          <div class="plan-option-price">¥99/月</div>
+        </div>
+        <div class="plan-option">
+          <div class="plan-option-name">Team</div>
+          <div class="plan-option-price">¥299/月</div>
+        </div>
+      </div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px">账单记录</div>
+      <div class="invoice-item">
+        <span>2026-06-13 Pro 续费</span>
+        <span>¥99.00</span>
+      </div>
+      <div class="invoice-item">
+        <span>2026-05-13 Pro 续费</span>
+        <span>¥99.00</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- O. 新建任务Sheet -->
+<div class="window" style="animation-delay:0.75s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">新建任务</div>
+  </div>
+  <div class="window-body" style="position:relative">
+    <div style="padding:40px;text-align:center;opacity:0.3;font-size:13px;color:var(--tx2)">任务列表占位</div>
+    <div class="sheet-overlay">
+      <div class="sheet">
+        <div class="sheet-title">新建定时任务</div>
+        <div class="form-group">
+          <label class="form-label">任务名称</label>
+          <input class="form-input" placeholder="例如：每日数据备份" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">任务描述</label>
+          <textarea class="form-textarea" placeholder="描述任务的具体内容..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">执行计划</label>
+          <div class="picker">
+            <div class="picker-option active">每天</div>
+            <div class="picker-option">每周</div>
+            <div class="picker-option">每月</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">执行时间</label>
+          <input class="form-input" value="02:00" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">选择 Agent</label>
+          <select class="form-select">
+            <option>MyPilot 助手</option>
+            <option>代码助手</option>
+            <option>翻译官</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:6px">创建任务</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- P. 空状态 -->
+<div class="window" style="animation-delay:0.80s">
+  <div class="titlebar">
+    <div class="traffic-light tl-red"></div>
+    <div class="traffic-light tl-yellow"></div>
+    <div class="traffic-light tl-green"></div>
+    <div class="window-title">任务列表</div>
+  </div>
+  <div class="window-body">
+    <div class="empty-body">
+      <svg class="icon icon-xl" style="color:var(--tx2)"><use xlink:href="#mp-empty"/></svg>
+      <div class="empty-title">暂无任务</div>
+      <div class="empty-desc">您还没有创建任何定时任务，点击下方按钮开始创建。</div>
+      <button class="empty-btn">
+        <svg class="icon icon-sm" style="margin-right:4px;vertical-align:-2px"><use xlink:href="#mp-add"/></svg>
+        新建任务
+      </button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

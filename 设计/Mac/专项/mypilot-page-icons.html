@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyPilot Page Icons</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    background: #F5F5F7;
+    color: #1D1D1F;
+    padding: 60px 40px;
+    line-height: 1.5;
+  }
+  .container { max-width: 1280px; margin: 0 auto; }
+  h1 {
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    font-size: 21px;
+    color: #86868B;
+    margin-bottom: 60px;
+    font-weight: 400;
+  }
+
+  .section { margin-bottom: 64px; }
+  .section-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+  .icon-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px 16px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .icon-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  }
+  .icon-glyph {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 12px;
+    color: #007AFF;
+  }
+  .icon-glyph svg { width: 100%; height: 100%; }
+  .icon-name {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .icon-id {
+    font-size: 11px;
+    color: #86868B;
+    font-family: 'SF Mono', Menlo, monospace;
+  }
+
+  /* SVG defaults */
+  .icon-glyph svg path,
+  .icon-glyph svg circle,
+  .icon-glyph svg rect,
+  .icon-glyph svg line {
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
+  .icon-glyph svg .fill {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  /* Dark mode preview */
+  .dark-section {
+    background: #1C1C1E;
+    border-radius: 20px;
+    padding: 40px;
+  }
+  .dark-section .section-title { color: #fff; }
+  .dark-section .icon-card {
+    background: #2C2C2E;
+    color: #fff;
+  }
+  .dark-section .icon-id { color: #8E8E93; }
+
+  /* Size demonstration */
+  .size-section {
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+  }
+  .size-row {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .size-item {
+    text-align: center;
+    color: #007AFF;
+  }
+  .size-item .label {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #86868B;
+  }
+  .size-16 { width: 16px; height: 16px; }
+  .size-20 { width: 20px; height: 20px; }
+  .size-24 { width: 24px; height: 24px; }
+  .size-32 { width: 32px; height: 32px; }
+  .size-48 { width: 48px; height: 48px; }
+  .size-64 { width: 64px; height: 64px; }
+
+  .footer {
+    text-align: center;
+    padding-top: 40px;
+    border-top: 1px solid #E5E5EA;
+    color: #86868B;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>MyPilot Page Icons</h1>
+  <p class="subtitle">SF Symbols 风格 · 统一几何语言 · 1.6pt 描边 · 24×24 网格</p>
+
+  <!-- Light Mode -->
+  <div class="section">
+    <h2 class="section-title">核心功能图标</h2>
+    <div class="icon-grid">
+
+      <!-- Chat / 对话 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8l-4 4v-4H5a2 2 0 0 1-2-2V6z"/></svg>
+        </div>
+        <div class="icon-name">对话</div>
+        <div class="icon-id">mp.chat</div>
+      </div>
+
+      <!-- Agents / 智能体 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><circle cx="5" cy="11" r="2.5"/><circle cx="19" cy="11" r="2.5"/><path d="M3 20c0-2.5 2-4 4-4M21 20c0-2.5-2-4-4-4M9 20c0-3 1.5-5 3-5s3 2 3 5"/></svg>
+        </div>
+        <div class="icon-name">智能体</div>
+        <div class="icon-id">mp.agents</div>
+      </div>
+
+      <!-- Settings / 设置 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        </div>
+        <div class="icon-name">设置</div>
+        <div class="icon-id">mp.settings</div>
+      </div>
+
+      <!-- Network / 网络 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+        </div>
+        <div class="icon-name">网络</div>
+        <div class="icon-id">mp.network</div>
+      </div>
+
+      <!-- Scheduled Tasks / 定时任务 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </div>
+        <div class="icon-name">定时任务</div>
+        <div class="icon-id">mp.scheduled</div>
+      </div>
+
+      <!-- Usage / 运行统计 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M3 21h18M6 17V9M11 17V5M16 17v-5M21 17v-3"/></svg>
+        </div>
+        <div class="icon-name">运行统计</div>
+        <div class="icon-id">mp.usage</div>
+      </div>
+
+      <!-- Diagnostics / 诊断中心 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M9 11l-4 4 4 4M15 11l4 4-4 4M14 5l-4 14"/></svg>
+        </div>
+        <div class="icon-name">诊断中心</div>
+        <div class="icon-id">mp.diagnostics</div>
+      </div>
+
+      <!-- IM Channels / 通信渠道 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 18 0v5a2 2 0 0 1-2 2h-2v-7h4M3 12v5a2 2 0 0 0 2 2h2v-7H3"/></svg>
+        </div>
+        <div class="icon-name">通信渠道</div>
+        <div class="icon-id">mp.channels</div>
+      </div>
+
+      <!-- Files / Agent 文件 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6"/></svg>
+        </div>
+        <div class="icon-name">Agent 文件</div>
+        <div class="icon-id">mp.files</div>
+      </div>
+
+      <!-- Task Sheet / 新建任务 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M12 9v6M9 12h6"/></svg>
+        </div>
+        <div class="icon-name">新建任务</div>
+        <div class="icon-id">mp.task.create</div>
+      </div>
+
+      <!-- Advanced / 高级设置 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+        </div>
+        <div class="icon-name">高级设置</div>
+        <div class="icon-id">mp.advanced</div>
+      </div>
+
+      <!-- Empty / 空状态 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
+        </div>
+        <div class="icon-name">空状态</div>
+        <div class="icon-id">mp.empty</div>
+      </div>
+
+      <!-- Send / 发送 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M3 12l18-9-6 18-3-7z"/></svg>
+        </div>
+        <div class="icon-name">发送</div>
+        <div class="icon-id">mp.send</div>
+      </div>
+
+      <!-- Stop / 停止 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <div class="icon-name">停止</div>
+        <div class="icon-id">mp.stop</div>
+      </div>
+
+      <!-- Attach / 附件 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M21 12l-8.5 8.5a5 5 0 0 1-7-7L13 5.5a3.5 3.5 0 0 1 5 5L9.5 19a2 2 0 0 1-3-3L14 9"/></svg>
+        </div>
+        <div class="icon-name">附件</div>
+        <div class="icon-id">mp.attach</div>
+      </div>
+
+      <!-- Search / 搜索 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16 16l5 5"/></svg>
+        </div>
+        <div class="icon-name">搜索</div>
+        <div class="icon-id">mp.search</div>
+      </div>
+
+      <!-- Add / 新建 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+        </div>
+        <div class="icon-name">新建</div>
+        <div class="icon-id">mp.add</div>
+      </div>
+
+      <!-- Delete / 删除 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/></svg>
+        </div>
+        <div class="icon-name">删除</div>
+        <div class="icon-id">mp.delete</div>
+      </div>
+
+      <!-- Edit / 编辑 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M14 4l6 6L8 22H2v-6zM12 6l6 6"/></svg>
+        </div>
+        <div class="icon-name">编辑</div>
+        <div class="icon-id">mp.edit</div>
+      </div>
+
+      <!-- Refresh / 刷新 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>
+        </div>
+        <div class="icon-name">刷新</div>
+        <div class="icon-id">mp.refresh</div>
+      </div>
+
+      <!-- Connection / 连接状态 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 11l6-4M9 13l6 4"/></svg>
+        </div>
+        <div class="icon-name">连接</div>
+        <div class="icon-id">mp.connection</div>
+      </div>
+
+      <!-- Workflow / 工作流 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="3" width="6" height="6" rx="1"/><rect x="9" y="15" width="6" height="6" rx="1"/><path d="M6 9v3a2 2 0 0 0 2 2h4M18 9v3a2 2 0 0 1-2 2h-4"/></svg>
+        </div>
+        <div class="icon-name">工作流</div>
+        <div class="icon-id">mp.workflow</div>
+      </div>
+
+      <!-- Memory / 记忆 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7M3 7l3-4h12l3 4M3 7h18M8 11h8"/></svg>
+        </div>
+        <div class="icon-name">记忆</div>
+        <div class="icon-id">mp.memory</div>
+      </div>
+
+      <!-- Permission / 权限 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        </div>
+        <div class="icon-name">权限</div>
+        <div class="icon-id">mp.permission</div>
+      </div>
+
+      <!-- Heartbeat / 心跳 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg>
+        </div>
+        <div class="icon-name">心跳</div>
+        <div class="icon-id">mp.heartbeat</div>
+      </div>
+
+      <!-- Tool / 工具 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M14 7a3 3 0 1 0-3 3l-8 8 2 2 8-8a3 3 0 0 0 3-3l3 3 3-3-5-5z"/></svg>
+        </div>
+        <div class="icon-name">工具</div>
+        <div class="icon-id">mp.tool</div>
+      </div>
+
+      <!-- Info / 信息 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v.01"/></svg>
+        </div>
+        <div class="icon-name">信息</div>
+        <div class="icon-id">mp.info</div>
+      </div>
+
+      <!-- Warning / 警告 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M12 3l10 18H2L12 3zM12 10v5M12 18v.01"/></svg>
+        </div>
+        <div class="icon-name">警告</div>
+        <div class="icon-id">mp.warning</div>
+      </div>
+
+      <!-- Success / 成功 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>
+        </div>
+        <div class="icon-name">成功</div>
+        <div class="icon-id">mp.success</div>
+      </div>
+
+      <!-- Close / 关闭 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </div>
+        <div class="icon-name">关闭</div>
+        <div class="icon-id">mp.close</div>
+      </div>
+
+      <!-- Back / 返回 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+        </div>
+        <div class="icon-name">返回</div>
+        <div class="icon-id">mp.back</div>
+      </div>
+
+      <!-- Menu / 菜单 -->
+      <div class="icon-card">
+        <div class="icon-glyph">
+          <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </div>
+        <div class="icon-name">菜单</div>
+        <div class="icon-id">mp.menu</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Dark Mode Preview -->
+  <div class="section">
+    <div class="dark-section">
+      <h2 class="section-title">深色模式预览</h2>
+      <div class="icon-grid">
+        <div class="icon-card">
+          <div class="icon-glyph" style="color:#0A84FF">
+            <svg viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8l-4 4v-4H5a2 2 0 0 1-2-2V6z"/></svg>
+          </div>
+          <div class="icon-name">对话</div>
+          <div class="icon-id">mp.chat</div>
+        </div>
+        <div class="icon-card">
+          <div class="icon-glyph" style="color:#0A84FF">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><circle cx="5" cy="11" r="2.5"/><circle cx="19" cy="11" r="2.5"/><path d="M3 20c0-2.5 2-4 4-4M21 20c0-2.5-2-4-4-4M9 20c0-3 1.5-5 3-5s3 2 3 5"/></svg>
+          </div>
+          <div class="icon-name">智能体</div>
+          <div class="icon-id">mp.agents</div>
+        </div>
+        <div class="icon-card">
+          <div class="icon-glyph" style="color:#0A84FF">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+          </div>
+          <div class="icon-name">设置</div>
+          <div class="icon-id">mp.settings</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Size demonstration -->
+  <div class="section">
+    <h2 class="section-title">尺寸规范</h2>
+    <div class="size-section">
+      <div class="size-row">
+        <div class="size-item">
+          <svg class="size-16" viewBox="0 0 24 24" style="color:#007AFF;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round"><path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8l-4 4v-4H5a2 2 0 0 1-2-2V6z"/></svg>
+          <div class="label">16pt · 菜单栏</div>
+        </div>
+        <div class="size-item">
+          <svg class="size-20" viewBox="0 0 24 24" style="color:#007AFF;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round"><path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8l-4 4v-4H5a2 2 0 0 1-2-2V6z"/></svg>
+          <div class="label">20pt · 列表</div>
+        </div>
+        <div class="size-item">
+          <svg class="size-24" viewBox="0 0 24 24" style="color:#007AFF;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round"><path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8l-4 4v-4H5a2 2 0 0 1-2-2V6z"/></svg>
+          <div class="label">24pt · 侧边栏</div>
+        </div>
+        <div class="size-item">
+          <svg class="size-32" viewBox="0 0 24 24" style="color:#007AFF;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round"><path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8l-4 4v-4H5a2 2 0 0 1-2-2V6z"/></svg>
+          <div class="label">32pt · 工具栏</div>
+        </div>
+        <div class="size-item">
+          <svg class="size-48" viewBox="0 0 24 24" style="color:#007AFF;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round"><path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8l-4 4v-4H5a2 2 0 0 1-2-2V6z"/></svg>
+          <div class="label">48pt · 详情页</div>
+        </div>
+        <div class="size-item">
+          <svg class="size-64" viewBox="0 0 24 24" style="color:#007AFF;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round"><path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8l-4 4v-4H5a2 2 0 0 1-2-2V6z"/></svg>
+          <div class="label">64pt · 空状态</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    MyPilot Page Icons · SF Symbols 风格 · 1.6pt 描边 · 24×24 网格
+  </div>
+
+</div>
+</body>
+</html>

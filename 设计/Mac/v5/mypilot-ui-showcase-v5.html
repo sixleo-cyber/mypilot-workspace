@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyPilot UI — macOS App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        ink: {
+                            50: '#FAFBF7', 100: '#F2F4EC', 200: '#D4D9C8', 300: '#A8B092',
+                            400: '#7C8760', 500: '#5A6342', 600: '#424A30', 700: '#2E3322',
+                            800: '#1C1F14', 900: '#0D0F09',
+                        },
+                        amber: {
+                            50: '#FFFBF0', 100: '#FFF3D6', 300: '#F6AD02', 900: '#322400',
+                        },
+                        lime: { 50: '#FAFDF0', 300: '#ACCE22', 900: '#222C04' },
+                        leaf: { 50: '#F0FBF2', 300: '#0DA945', 900: '#01190B' },
+                        surface: '#FFFFFF',
+                        elevated: '#FAFBF7',
+                        separator: '#E8EBE0',
+                        page: '#F2F4EC',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+            background: #E8EBE0;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 40px 20px;
+            transition: background 0.3s ease;
+        }
+        html.dark body { background: #0D0F09; }
+
+        .window {
+            width: 1100px; height: 700px;
+            background: #F2F4EC; border-radius: 12px;
+            box-shadow: 0 24px 48px -12px rgba(13,15,9,0.15), 0 0 0 1px rgba(13,15,9,0.08);
+            display: flex; flex-direction: column; overflow: hidden;
+            transition: background 0.3s ease;
+        }
+        html.dark .window { background: #0D0F09; box-shadow: 0 24px 48px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05); }
+
+        .titlebar {
+            height: 36px; background: rgba(250,251,247,0.85);
+            backdrop-filter: blur(20px);
+            display: flex; align-items: center; padding: 0 14px;
+            gap: 8px; flex-shrink: 0;
+            border-bottom: 1px solid #E8EBE0;
+            transition: all 0.3s ease;
+        }
+        html.dark .titlebar { background: rgba(13,15,9,0.85); border-bottom-color: #2E3322; }
+
+        .traffic-lights { display: flex; gap: 6px; width: 52px; flex-shrink: 0; }
+        .traffic-light { width: 12px; height: 12px; border-radius: 50%; }
+        .tl-red { background: #FF5F57; }
+        .tl-yellow { background: #FEBC2E; }
+        .tl-green { background: #28C840; }
+
+        .titlebar-title { flex: 1; text-align: center; font-size: 12px; font-weight: 500; color: #5A6342; }
+        html.dark .titlebar-title { color: #A8B092; }
+
+        .titlebar-actions { width: 52px; display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+        .tb-btn { width: 24px; height: 24px; border-radius: 6px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #7C8760; transition: all 0.15s ease; }
+        .tb-btn:hover { background: rgba(0,0,0,0.06); }
+        html.dark .tb-btn { color: #7C8760; }
+        html.dark .tb-btn:hover { background: rgba(255,255,255,0.06); }
+
+        .content-area { display: flex; flex: 1; overflow: hidden; }
+
+        .sidebar {
+            width: 260px; background: #FAFBF7;
+            border-right: 1px solid #E8EBE0;
+            display: flex; flex-direction: column; flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        html.dark .sidebar { background: #1C1F14; border-right-color: #2E3322; }
+
+        .sidebar-inner { flex: 1; overflow-y: auto; }
+
+        .search-box { padding: 8px; }
+        .search-field {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 10px; background: #FAFBF7;
+            border: 1px solid #D4D9C8; border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        html.dark .search-field { background: #2E3322; border-color: #424A30; }
+        .search-field input {
+            flex: 1; border: none; outline: none; background: transparent;
+            font-size: 13px; font-family: inherit; color: #1C1F14;
+        }
+        html.dark .search-field input { color: #F2F4EC; }
+        .search-field input::placeholder { color: #7C8760; }
+        html.dark .search-field input::placeholder { color: #7C8760; }
+        .search-field svg { color: #7C8760; flex-shrink: 0; }
+
+        .sidebar-list { list-style: none; padding: 0; }
+        .sidebar-section-header {
+            padding: 6px 16px 2px;
+            font-size: 10px; font-weight: 600; color: #7C8760;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        html.dark .sidebar-section-header { color: #7C8760; }
+        .sidebar-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 12px; cursor: pointer; transition: background 0.1s ease;
+            border-radius: 0;
+        }
+        .sidebar-item:hover { background: rgba(0,0,0,0.04); }
+        html.dark .sidebar-item:hover { background: rgba(255,255,255,0.04); }
+        .sidebar-item.selected { background: rgba(0,0,0,0.06); }
+        html.dark .sidebar-item.selected { background: rgba(255,255,255,0.06); }
+
+        .sidebar-avatar {
+            width: 32px; height: 32px; border-radius: 50%; background: #ACCE22;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 600; color: white; flex-shrink: 0;
+        }
+        .sidebar-agent-avatar {
+            width: 24px; height: 24px; border-radius: 50%; background: #F6AD02;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .sidebar-agent-avatar svg { width: 12px; height: 12px; color: white; }
+
+        .sidebar-conv-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 4px 12px 4px 28px; cursor: pointer; transition: background 0.1s ease;
+        }
+        .sidebar-conv-item:hover { background: rgba(0,0,0,0.04); }
+        html.dark .sidebar-conv-item:hover { background: rgba(255,255,255,0.04); }
+        .sidebar-conv-item.selected { background: rgba(0,0,0,0.06); }
+        html.dark .sidebar-conv-item.selected { background: rgba(255,255,255,0.06); }
+
+        .sidebar-bottom {
+            padding: 16px; display: flex; gap: 12px;
+            border-top: 1px solid #E8EBE0;
+            transition: border-color 0.3s ease;
+        }
+        html.dark .sidebar-bottom { border-top-color: #2E3322; }
+
+        .btn-primary {
+            flex: 1; height: 36px; border-radius: 12px; border: none;
+            background: #0DA945; color: white; font-size: 14px; font-weight: 500;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+            transition: opacity 0.15s ease;
+        }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-icon {
+            width: 36px; height: 36px; border-radius: 12px; border: 1px solid #D4D9C8;
+            background: white; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease; flex-shrink: 0;
+        }
+        html.dark .btn-icon { background: #1C1F14; border-color: #424A30; }
+        html.dark .btn-icon svg { color: #A8B092; }
+
+        .detail {
+            flex: 1; display: flex; flex-direction: column; overflow: hidden;
+            background: #F2F4EC; transition: background 0.3s ease;
+        }
+        html.dark .detail { background: #0D0F09; }
+
+        .chat-header {
+            padding: 12px 16px; display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.6); backdrop-filter: blur(20px);
+            border-bottom: 1px solid #E8EBE0; flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        html.dark .chat-header { background: rgba(13,15,9,0.6); border-bottom-color: #2E3322; }
+
+        .ch-avatar {
+            width: 28px; height: 28px; border-radius: 50%; background: #F6AD02;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .ch-avatar svg { width: 14px; height: 14px; color: white; }
+
+        .ch-model { font-size: 11px; color: #7C8760; display: flex; align-items: center; gap: 2px; cursor: pointer; }
+        .ch-model:hover { color: #5A6342; }
+
+        .ch-status { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+        .ch-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .ch-dot.online { background: #0DA945; }
+        .ch-dot.offline { background: #F6AD02; }
+        .ch-latency { font-size: 9px; color: #0DA945; }
+        .ch-connected { font-size: 9px; color: #7C8760; }
+
+        .token-bar {
+            padding: 8px 16px 4px; flex-shrink: 0;
+        }
+        .token-track {
+            height: 3px; background: #D4D9C8; border-radius: 2px; overflow: hidden;
+            transition: background 0.3s ease;
+        }
+        html.dark .token-track { background: #424A30; }
+        .token-fill {
+            height: 100%; background: #0DA945; border-radius: 2px; width: 22%;
+            transition: width 0.8s ease, background 0.3s ease;
+        }
+        .token-info {
+            display: flex; justify-content: space-between; margin-top: 2px;
+            font-size: 11px; color: #7C8760;
+        }
+
+        .chat-messages {
+            flex: 1; overflow-y: auto; padding: 16px;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+
+        .msg-row { display: flex; gap: 8px; }
+        .msg-row.user { justify-content: flex-end; }
+        .msg-row.ai { justify-content: flex-start; }
+
+        .msg-bubble {
+            max-width: 75%; padding: 10px 16px; font-size: 14px; line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+        .msg-row.user .msg-bubble {
+            background: #1C1F14; color: white;
+            border-radius: 18px 18px 4px 18px;
+        }
+        html.dark .msg-row.user .msg-bubble { background: #F2F4EC; color: #0D0F09; }
+        .msg-row.ai .msg-bubble {
+            background: #F2F4EC; color: #1C1F14;
+            border: 1px solid #D4D9C8;
+            border-radius: 18px 18px 18px 4px;
+        }
+        html.dark .msg-row.ai .msg-bubble { background: #1C1F14; color: #F2F4EC; border-color: #2E3322; }
+
+        .msg-row.ai .msg-avatar {
+            width: 24px; height: 24px; border-radius: 50%; background: #F6AD02;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            margin-top: 6px;
+        }
+
+        .thinking-section {
+            background: #FAFBF7; border: 1px solid #E8EBE0; border-radius: 8px;
+            margin-bottom: 8px; overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        html.dark .thinking-section { background: #2E3322; border-color: #2E3322; }
+        .thinking-header {
+            display: flex; align-items: center; gap: 6px;
+            padding: 8px 12px; cursor: pointer; user-select: none;
+            font-size: 11px; color: #7C8760; font-weight: 600;
+        }
+        .thinking-body {
+            padding: 12px; font-size: 12px; color: #7C8760;
+            border-top: 1px solid #E8EBE0; max-height: 160px; overflow-y: auto;
+            transition: border-color 0.3s ease;
+        }
+        html.dark .thinking-body { border-top-color: #424A30; }
+
+        .input-bar {
+            padding: 8px 12px; display: flex; align-items: center; gap: 8px;
+            flex-shrink: 0;
+            border-top: 1px solid #E8EBE0;
+            transition: border-color 0.3s ease;
+        }
+        html.dark .input-bar { border-top-color: #2E3322; }
+
+        .ib-btn {
+            width: 28px; height: 28px; border: none; background: transparent;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: #7C8760; border-radius: 6px; transition: all 0.15s ease; flex-shrink: 0;
+        }
+        .ib-btn:hover { background: rgba(0,0,0,0.06); color: #5A6342; }
+        html.dark .ib-btn:hover { background: rgba(255,255,255,0.06); color: #A8B092; }
+
+        .ib-input-wrap {
+            flex: 1; position: relative;
+        }
+        .ib-input-wrap input {
+            width: 100%; padding: 8px 14px; border: 1px solid #D4D9C8;
+            border-radius: 18px; background: #FAFBF7;
+            font-size: 14px; font-family: inherit; outline: none;
+            color: #1C1F14; transition: all 0.3s ease;
+        }
+        html.dark .ib-input-wrap input { background: #2E3322; border-color: #424A30; color: #F2F4EC; }
+        .ib-input-wrap input::placeholder { color: #7C8760; }
+
+        .ib-send {
+            width: 32px; height: 32px; border: none; background: #0DA945;
+            cursor: pointer; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; flex-shrink: 0; transition: opacity 0.15s ease;
+        }
+        .ib-send:hover { opacity: 0.9; }
+        .ib-send.disabled { background: #A8B092; cursor: not-allowed; }
+
+        .page { display: none; }
+        .page.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+        .welcome {
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 20px; padding: 60px 40px;
+            background: #F2F4EC; transition: background 0.3s ease;
+        }
+        html.dark .welcome { background: #0D0F09; }
+        .welcome-icon {
+            width: 80px; height: 80px; border-radius: 50%; background: rgba(246,173,2,0.12);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .welcome-title { font-size: 24px; font-weight: 600; color: #1C1F14; }
+        html.dark .welcome-title { color: #F2F4EC; }
+        .welcome-sub { font-size: 12px; color: #7C8760; margin-top: 4px; }
+
+        .step-list { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 360px; }
+        .step-row {
+            display: flex; align-items: center; gap: 14px;
+        }
+        .step-icon {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(246,173,2,0.12);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .step-icon svg { color: #F6AD02; }
+
+        .welcome-btn {
+            margin-top: 8px; padding: 10px 28px; border-radius: 12px; border: none;
+            background: #0DA945; color: white; font-size: 15px; font-weight: 500;
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+            transition: opacity 0.15s ease;
+        }
+        .welcome-btn:hover { opacity: 0.9; }
+
+        .version { font-size: 9px; color: #A8B092; margin-top: auto; }
+        html.dark .version { color: #5A6342; }
+
+        .popover {
+            position: absolute; background: white; border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.06);
+            padding: 4px; z-index: 100; min-width: 220px;
+            transition: all 0.3s ease;
+        }
+        html.dark .popover { background: #1C1F14; box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06); }
+        .popover.hidden { display: none; }
+        .popover-title {
+            font-size: 14px; font-weight: 600; padding: 10px 14px 8px;
+            color: #1C1F14;
+        }
+        html.dark .popover-title { color: #F2F4EC; }
+        .popover-divider { height: 1px; background: #E8EBE0; margin: 4px 0; transition: background 0.3s ease; }
+        html.dark .popover-divider { background: #2E3322; }
+
+        .popover-item {
+            display: flex; align-items: center; gap: 10px; padding: 8px 14px;
+            border-radius: 6px; cursor: pointer; font-size: 13px; color: #1C1F14;
+            transition: background 0.1s ease; border: none; background: none; width: 100%; text-align: left;
+            font-family: inherit;
+        }
+        html.dark .popover-item { color: #F2F4EC; }
+        .popover-item:hover { background: rgba(0,0,0,0.05); }
+        html.dark .popover-item:hover { background: rgba(255,255,255,0.05); }
+        .popover-item svg { color: #7C8760; flex-shrink: 0; }
+        .popover-item .sub { font-size: 11px; color: #7C8760; }
+
+        .settings-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.3);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 200; backdrop-filter: blur(4px);
+        }
+        .settings-modal.hidden { display: none; }
+        .settings-panel {
+            width: 540px; max-height: 560px; background: #FAFBF7;
+            border-radius: 12px; box-shadow: 0 24px 48px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        html.dark .settings-panel { background: #1C1F14; }
+        .settings-nav {
+            padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid #E8EBE0; flex-shrink: 0;
+            transition: border-color 0.3s ease;
+        }
+        html.dark .settings-nav { border-bottom-color: #2E3322; }
+        .settings-title { font-size: 16px; font-weight: 600; color: #1C1F14; }
+        html.dark .settings-title { color: #F2F4EC; }
+        .settings-body { flex: 1; overflow-y: auto; padding: 8px 0; }
+
+        .settings-section-header {
+            padding: 8px 20px 4px; font-size: 11px; font-weight: 600;
+            color: #7C8760; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .settings-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 20px; cursor: pointer; transition: background 0.1s ease;
+        }
+        .settings-row:hover { background: rgba(0,0,0,0.03); }
+        html.dark .settings-row:hover { background: rgba(255,255,255,0.03); }
+        .settings-row-icon {
+            width: 28px; height: 28px; border-radius: 7px;
+            background: rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        html.dark .settings-row-icon { background: rgba(255,255,255,0.06); }
+
+        .settings-conn {
+            display: flex; align-items: center; gap: 12px; padding: 8px 20px;
+        }
+        .settings-conn-dot {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        }
+        .settings-conn-dot.online { background: #0DA945; }
+        .settings-conn-dot.offline { background: #F6AD02; }
+
+        .delivery-badge {
+            display: inline-flex; align-items: center; gap: 2px;
+            font-size: 9px; color: #7C8760; margin-top: 4px;
+        }
+        .delivery-badge.double { color: #0DA945; }
+        .delivery-badge svg { width: 10px; height: 10px; }
+
+        .new-msg-banner {
+            position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%);
+            padding: 6px 14px; background: #1C1F14; color: white;
+            border-radius: 18px; font-size: 11px; font-weight: 500;
+            cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            z-index: 10; transition: all 0.3s ease;
+        }
+        html.dark .new-msg-banner { background: #F2F4EC; color: #0D0F09; }
+
+        .code-block {
+            background: #1C1F14; color: #F2F4EC; font-family: 'SF Mono', monospace;
+            font-size: 12px; padding: 10px 14px; border-radius: 8px; margin-top: 8px;
+            overflow-x: auto; white-space: pre;
+            transition: all 0.3s ease;
+        }
+        html.dark .code-block { background: #2E3322; color: #D4D9C8; }
+
+        .highlighted-msg {
+            outline: 2px solid #F6AD02;
+            background: rgba(246,173,2,0.08);
+            border-radius: 8px;
+            margin: -4px; padding: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="window">
+    <!-- Title bar -->
+    <div class="titlebar">
+        <div class="traffic-lights">
+            <div class="traffic-light tl-red"></div>
+            <div class="traffic-light tl-yellow"></div>
+            <div class="traffic-light tl-green"></div>
+        </div>
+        <div class="titlebar-title">MyPilot</div>
+        <div class="titlebar-actions">
+            <button class="tb-btn" onclick="toggleDarkMode()" title="切换深色模式">
+                <svg id="moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                <svg id="sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="content-area">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-inner">
+                <div class="search-box">
+                    <div class="search-field">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                        <input type="text" placeholder="搜索历史消息..." value="" onfocus="showSearch()" onblur="hideSearch()">
+                    </div>
+                </div>
+                <ul class="sidebar-list" id="sidebar-list">
+                    <div class="sidebar-section-header">OpenClaw 实例</div>
+                    <li class="sidebar-item selected" onclick="selectInstance(this)">
+                        <div class="sidebar-avatar">M</div>
+                        <div>
+                            <div style="font-size:14px;font-weight:600;color:#1C1F14;">MyPilot Main</div>
+                            <div style="font-size:11px;color:#7C8760;">relay.clawpilot.com</div>
+                        </div>
+                        <div style="margin-left:auto;width:8px;height:8px;border-radius:50%;background:#0DA945;"></div>
+                    </li>
+                    <div style="margin-top:8px">
+                        <div class="sidebar-section-header">未来</div>
+                        <li class="sidebar-item" style="padding-top:4px;padding-bottom:4px">
+                            <div class="sidebar-agent-avatar">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            </div>
+                            <div>
+                                <div style="font-size:13px;font-weight:600;color:#1C1F14;">未来</div>
+                                <div style="font-size:11px;color:#7C8760;">qwen-qlm-2.1</div>
+                            </div>
+                            <svg style="margin-left:auto" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F6AD02" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                        </li>
+                    </div>
+                    <div class="sidebar-section-header" style="padding-left:28px">今天</div>
+                    <li class="sidebar-conv-item selected" onclick="selectConv(this)">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F6AD02" stroke-width="2" style="flex-shrink:0"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                        <div style="flex:1;min-width:0">
+                            <div style="font-size:12px;font-weight:600;color:#1C1F14;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">项目架构讨论</div>
+                            <div style="font-size:10px;color:#7C8760;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">嗯，让我分析一下这个项目...</div>
+                        </div>
+                    </li>
+                    <li class="sidebar-conv-item" onclick="selectConv(this)">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7C8760" stroke-width="2" style="flex-shrink:0"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                        <div style="flex:1;min-width:0">
+                            <div style="font-size:12px;color:#5A6342;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">API 接口设计</div>
+                            <div style="font-size:10px;color:#A8B092;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">已生成 API 文档</div>
+                        </div>
+                    </li>
+                    <li style="display:flex;align-items:center;gap:8px;padding:4px 12px 4px 28px">
+                        <button style="background:none;border:none;cursor:pointer;color:#7C8760;padding:0;display:flex;align-items:center;gap:4px;font-size:11px;font-family:inherit" onclick="newConversation()">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> 新对话
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="sidebar-bottom">
+                <button class="btn-primary" onclick="showAddInstance()">添加实例</button>
+                <button class="btn-icon" onclick="showSettings()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5A6342" stroke-width="2"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Detail area -->
+        <div style="flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column">
+            <!-- Chat Page -->
+            <div class="page active" id="page-chat">
+                <!-- Chat Header -->
+                <div class="chat-header">
+                    <div class="ch-avatar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                    </div>
+                    <div>
+                        <div style="display:flex;align-items:center;gap:4px">
+                            <span style="font-size:18px;font-weight:600;color:#1C1F14;">未来</span>
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#7C8760" stroke-width="3" style="cursor:pointer"><path d="m6 9 6 6 6-6"/></svg>
+                        </div>
+                        <div class="ch-model" onclick="toggleModelPicker()">
+                            火山引擎 / qwen-qlm-2.1
+                            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
+                        </div>
+                    </div>
+                    <div class="ch-status">
+                        <div class="ch-dot online"></div>
+                        <span class="ch-latency">12ms</span>
+                        <span class="ch-connected">已连接</span>
+                        <button style="background:none;border:none;cursor:pointer;padding:2px;margin-left:4px;display:flex;color:#7C8760" title="导出">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Token Usage Bar -->
+                <div class="token-bar">
+                    <div class="token-track">
+                        <div class="token-fill" style="width:22%"></div>
+                    </div>
+                    <div class="token-info">
+                        <span>≈7,200 tokens</span>
+                        <span>22% / 32k</span>
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <div class="chat-messages" id="chat-msgs">
+                    <!-- AI message -->
+                    <div class="msg-row ai">
+                        <div class="msg-avatar" style="width:28px;height:28px;border-radius:50%;background:#F6AD02;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:6px">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        </div>
+                        <div style="max-width:75%">
+                            <div class="thinking-section">
+                                <div class="thinking-header" onclick="toggleThinking(this)">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F6AD02" stroke-width="2"><path d="M12 2a4 4 0 00-4 4v1H6a2 2 0 00-2 2v3a2 2 0 001 1.73V21a1 1 0 001 1h12a1 1 0 001-1v-7.27A2 2 0 0020 12V9a2 2 0 00-2-2h-2V6a4 4 0 00-4-4z"/></svg>
+                                    <span>思考过程</span>
+                                </div>
+                                <div class="thinking-body" style="display:none">
+                                    用户询问项目架构，我需要先理解 MyPilot 的整体结构：这是一个 macOS 客户端，通过 WebSocket 连接 OpenClaw Gateway。主界面使用 NavigationSplitView 布局...
+                                </div>
+                            </div>
+                            <div class="msg-bubble" style="border-radius:18px 18px 18px 4px">
+                                你好！我是你的 AI 助手。我可以帮你解答问题、分析文档、编写代码，或者进行联网搜索。有什么可以帮你的吗？
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User message -->
+                    <div class="msg-row user">
+                        <div style="max-width:75%">
+                            <div class="msg-bubble">
+                                帮我分析一下这个项目的架构设计
+                            </div>
+                            <div class="delivery-badge double" style="text-align:right">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="margin-left:-4px"><path d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI message with markdown -->
+                    <div class="msg-row ai">
+                        <div class="msg-avatar" style="width:28px;height:28px;border-radius:50%;background:#F6AD02;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:6px">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        </div>
+                        <div style="max-width:75%">
+                            <div class="thinking-section">
+                                <div class="thinking-header" onclick="toggleThinking(this)">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F6AD02" stroke-width="2"><path d="M12 2a4 4 0 00-4 4v1H6a2 2 0 00-2 2v3a2 2 0 001 1.73V21a1 1 0 001 1h12a1 1 0 001-1v-7.27A2 2 0 0020 12V9a2 2 0 00-2-2h-2V6a4 4 0 00-4-4z"/></svg>
+                                    <span>思考过程</span>
+                                </div>
+                                <div class="thinking-body" style="display:none">
+                                    我需要分析这个项目的整体架构。MyPilot 是一个 macOS 原生客户端应用，通过 WebSocket 连接到 OpenClaw Gateway。让我从几个层面来分析...
+                                </div>
+                            </div>
+                            <div class="msg-bubble">
+                                <p style="margin-bottom:8px">这是一个典型的<strong>客户端-服务端架构</strong>，主要分为三层：</p>
+                                <p style="margin-bottom:4px;font-weight:600;font-size:13px;color:#0DA945">📱 客户端层 (MyPilot App)</p>
+                                <p style="font-size:12px;color:#7C8760;margin-bottom:8px;padding-left:12px">macOS 原生 SwiftUI 应用，负责 UI 渲染、消息管理、本地持久化</p>
+                                <p style="margin-bottom:4px;font-weight:600;font-size:13px;color:#F6AD02">🔗 中继层 (MyPilot Link)</p>
+                                <p style="font-size:12px;color:#7C8760;margin-bottom:8px;padding-left:12px">Node.js daemon，负责 WebSocket 中继、设备身份管理</p>
+                                <p style="margin-bottom:4px;font-weight:600;font-size:13px;color:#2563EB">🧠 AI 引擎 (OpenClaw Core)</p>
+                                <p style="font-size:12px;color:#7C8760;padding-left:12px">Python/Node.js 混合，模型推理、Agent 调度、工具执行</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User message with attachment -->
+                    <div class="msg-row user">
+                        <div style="max-width:75%">
+                            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(250,251,247,0.8);border-radius:8px;margin-bottom:4px;border:1px solid #E8EBE0">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E53935" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                <div style="flex:1;min-width:0">
+                                    <div style="font-size:12px;font-weight:500;color:#1C1F14">架构图.png</div>
+                                    <div style="font-size:10px;color:#7C8760">PDF · 245 KB</div>
+                                </div>
+                            </div>
+                            <div class="msg-bubble">
+                                这里有一份架构图供你参考
+                            </div>
+                            <div class="delivery-badge" style="text-align:right">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Bar -->
+                <div class="input-bar" style="position:relative">
+                    <button class="ib-btn" title="添加附件">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.44 11.05-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                    </button>
+                    <button class="ib-btn" onclick="toggleMorePopup()" id="more-btn" title="更多">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                    </button>
+                    <div class="ib-input-wrap">
+                        <input type="text" placeholder="发消息... 输入 / 查看指令" value="">
+                    </div>
+                    <button class="ib-send" title="发送">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                    </button>
+
+                    <!-- More Popover -->
+                    <div class="popover hidden" id="more-popover" style="bottom:48px;left:40px">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:8px">
+                            <button class="popover-item" style="flex-direction:column;align-items:center;gap:6px;padding:10px 8px;text-align:center">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                                <span style="font-size:11px;color:#7C8760">插件库</span>
+                            </button>
+                            <button class="popover-item" style="flex-direction:column;align-items:center;gap:6px;padding:10px 8px;text-align:center">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                                <span style="font-size:11px;color:#7C8760">AI 建议</span>
+                            </button>
+                            <button class="popover-item" style="flex-direction:column;align-items:center;gap:6px;padding:10px 8px;text-align:center" onclick="showSettings();toggleMorePopup()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <span style="font-size:11px;color:#7C8760">设置</span>
+                            </button>
+                            <button class="popover-item" style="flex-direction:column;align-items:center;gap:6px;padding:10px 8px;text-align:center">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                <span style="font-size:11px;color:#7C8760">截屏</span>
+                            </button>
+                            <button class="popover-item" style="flex-direction:column;align-items:center;gap:6px;padding:10px 8px;text-align:center">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                <span style="font-size:11px;color:#7C8760">图片</span>
+                            </button>
+                            <button class="popover-item" style="flex-direction:column;align-items:center;gap:6px;padding:10px 8px;text-align:center">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                <span style="font-size:11px;color:#7C8760">角色</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Welcome Page -->
+            <div class="page" id="page-welcome">
+                <div class="welcome">
+                    <div class="welcome-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F6AD02" stroke-width="1.5"><path d="M5 16l2-6 2 6 2-4 2 4 2-6 2 6"/></svg>
+                    </div>
+                    <div>
+                        <div class="welcome-title" style="text-align:center">MyPilot</div>
+                        <div class="welcome-sub" style="text-align:center">私有化 OpenClaw 客户端</div>
+                    </div>
+                    <div class="step-list">
+                        <div class="step-row">
+                            <div class="step-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F6AD02" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/></svg>
+                            </div>
+                            <div>
+                                <div style="font-size:16px;font-weight:600;color:#1C1F14">部署 OpenClaw</div>
+                                <div style="font-size:12px;color:#7C8760">在服务器上安装 OpenClaw Gateway</div>
+                            </div>
+                        </div>
+                        <div class="step-row">
+                            <div class="step-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F6AD02" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+                            </div>
+                            <div>
+                                <div style="font-size:16px;font-weight:600;color:#1C1F14">安装 MyPilot Link</div>
+                                <div style="font-size:12px;color:#7C8760">npm i -g @mypilot/link && mypilot start</div>
+                            </div>
+                        </div>
+                        <div class="step-row">
+                            <div class="step-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F6AD02" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+                            </div>
+                            <div>
+                                <div style="font-size:16px;font-weight:600;color:#1C1F14">添加实例</div>
+                                <div style="font-size:12px;color:#7C8760">输入服务器地址和配对码连接</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="welcome-btn" onclick="showPage('chat')">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+                        添加实例
+                    </button>
+                    <div class="version">v1.0.0 · 数据完全私有</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="settings-modal hidden" id="settings-modal" onclick="if(event.target===this)hideSettings()">
+    <div class="settings-panel">
+        <div class="settings-nav">
+            <button style="background:none;border:none;color:#0DA945;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500" onclick="hideSettings()">关闭</button>
+            <span class="settings-title">设置</span>
+            <div style="width:40px"></div>
+        </div>
+        <div class="settings-body">
+            <div style="padding:0 20px 8px">
+                <div class="settings-conn">
+                    <div class="settings-conn-dot online"></div>
+                    <div>
+                        <div style="font-size:18px;font-weight:600;color:#1C1F14">MyPilot Main</div>
+                        <div style="font-size:12px;color:#7C8760">已连接 · relay.clawpilot.com</div>
+                    </div>
+                    <button style="margin-left:auto;padding:6px 14px;border:1px solid #D4D9C8;border-radius:8px;background:white;font-size:12px;cursor:pointer;font-family:inherit;color:#5A6342">测试连接</button>
+                </div>
+            </div>
+
+            <div class="settings-section-header">配置</div>
+            <div class="settings-row" onclick="alert('网络设置 - 管理实例地址、隐私模式、搜索服务等')">
+                <div class="settings-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0DA945" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
+                <span style="flex:1;font-size:14px;color:#1C1F14">网络设置</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A8B092" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+            <div class="settings-row" onclick="alert('Agent 文件编辑 - SOUL.md, AGENTS.md 等')">
+                <div class="settings-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F6AD02" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <span style="flex:1;font-size:14px;color:#1C1F14">Agent 文件</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A8B092" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+            <div class="settings-row" onclick="alert('IM 通信渠道 - 飞书、企业微信、钉钉等')">
+                <div class="settings-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ACCE22" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+                <span style="flex:1;font-size:14px;color:#1C1F14">IM 通信渠道</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A8B092" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+
+            <div class="settings-section-header" style="margin-top:8px">管理</div>
+            <div class="settings-row" onclick="alert('Agents 管理 - 创建/删除/配置 Agent')">
+                <div class="settings-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0DA945" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+                <span style="flex:1;font-size:14px;color:#1C1F14">Agents 管理</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A8B092" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+            <div class="settings-row" onclick="alert('定时任务 - 管理周期执行任务')">
+                <div class="settings-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F6AD02" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <span style="flex:1;font-size:14px;color:#1C1F14">定时任务</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A8B092" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+            <div class="settings-row" onclick="alert('文件浏览器 - 浏览服务器文件')">
+                <div class="settings-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F6AD02" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
+                <span style="flex:1;font-size:14px;color:#1C1F14">文件浏览器</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A8B092" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+            <div class="settings-row" onclick="alert('诊断中心 - 查看连接状态和系统健康')">
+                <div class="settings-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+                <span style="flex:1;font-size:14px;color:#1C1F14">诊断中心</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A8B092" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+
+            <div class="settings-section-header" style="margin-top:8px">其他</div>
+            <div class="settings-row" onclick="alert('高级设置')">
+                <div class="settings-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5A6342" stroke-width="2"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                <span style="flex:1;font-size:14px;color:#1C1F14">高级设置</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A8B092" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+            <div class="settings-row" onclick="alert('订阅管理')">
+                <div class="settings-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C8760" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+                <span style="flex:1;font-size:14px;color:#1C1F14">订阅管理</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A8B092" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Instance Modal -->
+<div class="settings-modal hidden" id="add-instance-modal" onclick="if(event.target===this)hideAddInstance()">
+    <div class="settings-panel" style="width:460px;max-height:480px">
+        <div class="settings-nav">
+            <button style="background:none;border:none;color:#0DA945;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500" onclick="hideAddInstance()">取消</button>
+            <span class="settings-title">添加实例</span>
+            <div style="width:40px"></div>
+        </div>
+        <div class="settings-body" style="padding:20px">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:16px">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.5"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/></svg>
+                <div style="font-size:18px;font-weight:600;color:#1C1F14">输入服务器地址</div>
+                <input type="text" placeholder="例如: http://118.145.240.41:52378" style="width:100%;padding:8px 12px;border:1px solid #D4D9C8;border-radius:8px;font-size:14px;font-family:monospace;outline:none;color:#1C1F14">
+                <div style="font-size:12px;color:#7C8760;text-align:left;width:100%">
+                    <div>1. 在服务器上安装 mypilot-link：npm install -g @mypilot/link</div>
+                    <div>2. 启动 daemon：mypilot start</div>
+                    <div>3. 输入 daemon 地址（默认端口 52378）</div>
+                    <div>4. 输入终端显示的配对码完成配对</div>
+                </div>
+                <div style="display:flex;gap:10px;width:100%;margin-top:8px">
+                    <input type="text" placeholder="XXXX-XXXX-XXXX (配对码)" style="flex:1;padding:8px 12px;border:1px solid #D4D9C8;border-radius:8px;font-size:14px;font-family:monospace;outline:none;color:#1C1F14">
+                </div>
+                <button style="width:100%;padding:10px;border-radius:12px;border:none;background:#0DA945;color:white;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit">配对并连接</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleDarkMode() {
+    const html = document.documentElement;
+    const isDark = html.classList.toggle('dark');
+    localStorage.setItem('mypilot-dark-mode', isDark ? 'true' : 'false');
+    document.getElementById('moon').style.display = isDark ? 'none' : '';
+    document.getElementById('sun').style.display = isDark ? '' : 'none';
+}
+function selectInstance(el) {
+    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+}
+function selectConv(el) {
+    document.querySelectorAll('.sidebar-conv-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+}
+function newConversation() { alert('创建新对话'); }
+function toggleMorePopup() {
+    document.getElementById('more-popover').classList.toggle('hidden');
+}
+function toggleThinking(el) {
+    const body = el.nextElementSibling;
+    body.style.display = body.style.display === 'none' ? 'block' : 'none';
+}
+function showSettings() {
+    document.getElementById('settings-modal').classList.remove('hidden');
+}
+function hideSettings() {
+    document.getElementById('settings-modal').classList.add('hidden');
+}
+function showAddInstance() {
+    document.getElementById('add-instance-modal').classList.remove('hidden');
+}
+function hideAddInstance() {
+    document.getElementById('add-instance-modal').classList.add('hidden');
+}
+function toggleModelPicker() { alert('模型选择器 - 火山引擎 / qwen-qlm-2.1\nDeepSeek / deepseek-chat\nOpenAI / gpt-4o'); }
+function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+}
+function showSearch() {}
+function hideSearch() {}
+
+(function init() {
+    const saved = localStorage.getItem('mypilot-dark-mode');
+    if (saved === 'true') {
+        document.documentElement.classList.add('dark');
+        document.getElementById('moon').style.display = 'none';
+        document.getElementById('sun').style.display = '';
+    }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyPilot V10 — 其他页面设计</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #FFFFFF;
+    --bg2: #F5F5F7;
+    --bdr: #E5E5EA;
+    --tx: #000000;
+    --tx2: #8E8E93;
+    --tx3: #C7C7CC;
+    --accent: #007AFF;
+    --accent-soft: #007AFF1A;
+    --danger: #FF3B30;
+    --danger-soft: #FF3B301A;
+    --success: #34C759;
+    --success-soft: #34C7591A;
+    --warning: #FF9500;
+    --warning-soft: #FF95001A;
+    --ink-50: #FAFAFA;
+    --ink-100: #F5F5F7;
+    --ink-200: #E5E5EA;
+    --ink-300: #D1D1D6;
+    --ink-400: #8E8E93;
+    --ink-500: #636366;
+    --ink-700: #3A3A3C;
+    --ink-900: #1C1C1E;
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 18px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', sans-serif;
+    background: var(--bg2);
+    color: var(--tx);
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    padding: 40px 20px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--tx2);
+    font-size: 15px;
+    margin-bottom: 40px;
+  }
+
+  .page-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .page-card {
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    border: 0.5px solid var(--bdr);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .page-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .page-header {
+    padding: 16px 20px;
+    border-bottom: 0.5px solid var(--bdr);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .page-header h2 {
+    font-size: 15px;
+    font-weight: 600;
+    flex: 1;
+  }
+  .page-header .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .mock-window {
+    background: var(--bg);
+    min-height: 360px;
+    position: relative;
+  }
+
+  /* === Settings Home === */
+  .settings-list {
+    padding: 8px 0;
+  }
+  .settings-section {
+    margin-bottom: 16px;
+  }
+  .settings-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--tx2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 8px 20px 4px;
+  }
+  .settings-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .settings-row:hover { background: var(--bg2); }
+  .settings-row .icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .settings-row .icon.blue { background: var(--accent-soft); color: var(--accent); }
+  .settings-row .icon.green { background: var(--success-soft); color: var(--success); }
+  .settings-row .icon.orange { background: var(--warning-soft); color: var(--warning); }
+  .settings-row .icon.red { background: var(--danger-soft); color: var(--danger); }
+  .settings-row .icon.gray { background: var(--ink-100); color: var(--ink-500); }
+  .settings-row .label {
+    flex: 1;
+    font-size: 14px;
+  }
+  .settings-row .chevron {
+    color: var(--tx3);
+    font-size: 12px;
+  }
+  .settings-row .status {
+    font-size: 13px;
+    color: var(--tx2);
+  }
+
+  /* === Network Settings === */
+  .network-card {
+    padding: 16px 20px;
+    border-bottom: 0.5px solid var(--bdr);
+  }
+  .network-card:last-child { border-bottom: none; }
+  .network-card h3 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--tx);
+  }
+  .connection-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--success);
+    flex-shrink: 0;
+  }
+  .status-dot.offline { background: var(--danger); }
+  .status-info h4 { font-size: 15px; font-weight: 600; }
+  .status-info p { font-size: 12px; color: var(--tx2); }
+  .address-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-top: 0.5px solid var(--bdr);
+  }
+  .address-row:first-of-type { border-top: none; }
+  .address-row .addr-label { font-size: 13px; font-weight: 500; flex: 1; }
+  .address-row .addr-url { font-size: 12px; color: var(--tx2); }
+  .address-row .addr-badge {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--success-soft);
+    color: var(--success);
+  }
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-top: 0.5px solid var(--bdr);
+  }
+  .toggle-row:first-of-type { border-top: none; }
+  .toggle-label h4 { font-size: 14px; font-weight: 500; }
+  .toggle-label p { font-size: 12px; color: var(--tx2); margin-top: 1px; }
+  .toggle-switch {
+    width: 44px;
+    height: 26px;
+    border-radius: 13px;
+    background: var(--ink-200);
+    position: relative;
+    cursor: pointer;
+    transition: background 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-shrink: 0;
+  }
+  .toggle-switch.on { background: var(--success); }
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: white;
+    top: 2px;
+    left: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .toggle-switch.on::after { transform: translateX(18px); }
+
+  /* === Agents Management === */
+  .agent-list { padding: 8px 0; }
+  .agent-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .agent-row:hover { background: var(--bg2); }
+  .agent-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #007AFF, #5856D6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .agent-info { flex: 1; }
+  .agent-info h4 { font-size: 14px; font-weight: 500; }
+  .agent-info p { font-size: 12px; color: var(--tx2); }
+  .agent-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: var(--success-soft);
+    color: var(--success);
+  }
+  .agent-actions {
+    display: flex;
+    gap: 8px;
+    padding: 12px 20px;
+    border-top: 0.5px solid var(--bdr);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: #0056D6; }
+  .btn-secondary {
+    background: var(--bg2);
+    color: var(--tx);
+  }
+  .btn-secondary:hover { background: var(--ink-200); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--accent);
+  }
+  .btn-ghost:hover { background: var(--accent-soft); }
+  .btn-danger {
+    background: var(--danger-soft);
+    color: var(--danger);
+  }
+
+  /* === Scheduled Tasks === */
+  .task-list { padding: 0; }
+  .task-row {
+    padding: 12px 20px;
+    border-bottom: 0.5px solid var(--bdr);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .task-row:hover { background: var(--bg2); }
+  .task-row:last-child { border-bottom: none; }
+  .task-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .task-name { font-size: 14px; font-weight: 500; flex: 1; }
+  .task-tag {
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .task-tag.cron { background: var(--ink-100); color: var(--ink-500); }
+  .task-tag.paused { background: var(--warning-soft); color: var(--warning); }
+  .task-tag.success { background: var(--success-soft); color: var(--success); }
+  .task-tag.failed { background: var(--danger-soft); color: var(--danger); }
+  .task-desc {
+    font-size: 13px;
+    color: var(--tx2);
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+  .task-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--tx3);
+  }
+  .task-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+  }
+  .empty-state .icon {
+    font-size: 40px;
+    color: var(--ink-300);
+    margin-bottom: 12px;
+  }
+  .empty-state h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .empty-state p { font-size: 13px; color: var(--tx2); margin-bottom: 16px; }
+
+  /* === Usage Stats === */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 16px 20px;
+  }
+  .stat-card {
+    background: var(--bg2);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-card .stat-label {
+    font-size: 12px;
+    color: var(--tx2);
+    margin-bottom: 8px;
+  }
+  .stat-card .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-card .stat-unit {
+    font-size: 12px;
+    color: var(--tx3);
+    margin-top: 4px;
+  }
+  .stats-section {
+    padding: 16px 20px;
+    border-top: 0.5px solid var(--bdr);
+  }
+  .stats-section h3 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .model-usage-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-top: 0.5px solid var(--bdr);
+  }
+  .model-usage-row:first-of-type { border-top: none; }
+  .model-name { font-size: 13px; }
+  .model-tokens { font-size: 13px; color: var(--tx2); }
+
+  /* === Diagnostics === */
+  .diag-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 16px 20px;
+  }
+  .diag-card {
+    background: var(--bg2);
+    border-radius: var(--radius-md);
+    padding: 14px;
+  }
+  .diag-card .diag-icon {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  .diag-card .diag-value {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .diag-card .diag-label {
+    font-size: 12px;
+    color: var(--tx2);
+  }
+  .diag-section {
+    padding: 16px 20px;
+    border-top: 0.5px solid var(--bdr);
+  }
+  .diag-section h3 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 13px;
+  }
+  .info-row .info-label { color: var(--tx2); }
+  .info-row .info-value { color: var(--tx); font-weight: 500; }
+  .info-row .info-value.success { color: var(--success); }
+  .info-row .info-value.danger { color: var(--danger); }
+
+  /* === IM Channels === */
+  .channel-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    border-bottom: 0.5px solid var(--bdr);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .channel-row:hover { background: var(--bg2); }
+  .channel-row:last-child { border-bottom: none; }
+  .channel-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .channel-info { flex: 1; }
+  .channel-info h4 { font-size: 14px; font-weight: 500; }
+  .channel-info p { font-size: 12px; color: var(--tx2); }
+  .channel-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    flex-shrink: 0;
+  }
+  .channel-status.off { background: var(--ink-300); }
+
+  /* === Agent Files === */
+  .file-browser {
+    display: flex;
+    height: 320px;
+  }
+  .file-sidebar {
+    width: 180px;
+    border-right: 0.5px solid var(--bdr);
+    padding: 8px 0;
+    overflow-y: auto;
+  }
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .file-item:hover { background: var(--bg2); }
+  .file-item.active {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .file-item .file-icon { font-size: 14px; }
+  .file-editor {
+    flex: 1;
+    padding: 12px 16px;
+    overflow-y: auto;
+  }
+  .file-editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .file-editor-header h4 { font-size: 14px; font-weight: 600; }
+  .file-editor-header .file-meta { font-size: 12px; color: var(--tx2); }
+  .code-block {
+    background: var(--ink-900);
+    color: #E8E8ED;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+
+  /* === Animations === */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+  .page-card {
+    animation: fadeIn 0.35s ease both;
+  }
+  .page-card:nth-child(1) { animation-delay: 0.05s; }
+  .page-card:nth-child(2) { animation-delay: 0.1s; }
+  .page-card:nth-child(3) { animation-delay: 0.15s; }
+  .page-card:nth-child(4) { animation-delay: 0.2s; }
+  .page-card:nth-child(5) { animation-delay: 0.25s; }
+  .page-card:nth-child(6) { animation-delay: 0.3s; }
+  .page-card:nth-child(7) { animation-delay: 0.35s; }
+  .page-card:nth-child(8) { animation-delay: 0.4s; }
+
+  @media (max-width: 900px) {
+    .page-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: repeat(3, 1fr); }
+    .diag-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<h1>MyPilot V10 其他页面设计</h1>
+<p class="subtitle">基于 Apple HIG 与 iMessage 风格 — 设置、Agents、任务、监控、诊断、通信渠道、文件管理</p>
+
+<div class="page-grid">
+
+  <!-- 1. Settings Home -->
+  <div class="page-card">
+    <div class="page-header">
+      <span style="font-size:18px;">⚙️</span>
+      <h2>设置主页</h2>
+      <span class="badge">SettingsView</span>
+    </div>
+    <div class="mock-window">
+      <div class="settings-list">
+        <div class="settings-section">
+          <div class="settings-section-title">状态</div>
+          <div class="settings-row">
+            <div class="icon green" style="width:10px;height:10px;border-radius:50%;"></div>
+            <div class="label">
+              <div style="font-weight:500;">本地实例</div>
+              <div style="font-size:12px;color:var(--tx2);">已连接</div>
+            </div>
+            <span class="chevron">›</span>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">配置</div>
+          <div class="settings-row">
+            <div class="icon blue">🌐</div>
+            <div class="label">网络设置</div>
+            <span class="chevron">›</span>
+          </div>
+          <div class="settings-row">
+            <div class="icon blue">📄</div>
+            <div class="label">Agent 文件</div>
+            <span class="chevron">›</span>
+          </div>
+          <div class="settings-row">
+            <div class="icon blue">💬</div>
+            <div class="label">IM 通信渠道</div>
+            <span class="chevron">›</span>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">管理</div>
+          <div class="settings-row">
+            <div class="icon green">👥</div>
+            <div class="label">Agents 管理</div>
+            <span class="chevron">›</span>
+          </div>
+          <div class="settings-row">
+            <div class="icon orange">⏰</div>
+            <div class="label">定时任务</div>
+            <span class="chevron">›</span>
+          </div>
+          <div class="settings-row">
+            <div class="icon gray">📁</div>
+            <div class="label">文件浏览器</div>
+            <span class="chevron">›</span>
+          </div>
+          <div class="settings-row">
+            <div class="icon gray">🔍</div>
+            <div class="label">诊断中心</div>
+            <span class="chevron">›</span>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">其他</div>
+          <div class="settings-row">
+            <div class="icon gray">⚙️</div>
+            <div class="label">高级设置</div>
+            <span class="chevron">›</span>
+          </div>
+          <div class="settings-row">
+            <div class="icon gray">💳</div>
+            <div class="label">订阅管理</div>
+            <span class="chevron">›</span>
+          </div>
+        </div>
+        <div style="text-align:center;padding:16px;font-size:12px;color:var(--tx3);">MyPilot v0.8.0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Network Settings -->
+  <div class="page-card">
+    <div class="page-header">
+      <span style="font-size:18px;">🌐</span>
+      <h2>网络设置</h2>
+      <span class="badge">NetworkSettingsView</span>
+    </div>
+    <div class="mock-window">
+      <div class="network-card">
+        <div class="connection-status">
+          <div class="status-dot"></div>
+          <div class="status-info">
+            <h4>本地实例</h4>
+            <p>已连接 · http://127.0.0.1:52378</p>
+          </div>
+          <button class="btn btn-secondary" style="margin-left:auto;">测试连接</button>
+        </div>
+        <div class="address-row">
+          <span class="addr-label">本地地址</span>
+          <span class="addr-url">http://127.0.0.1:52378</span>
+          <span class="addr-badge">当前</span>
+        </div>
+        <div class="address-row">
+          <span class="addr-label">公网地址</span>
+          <span class="addr-url">https://mypilot.example.com</span>
+          <button class="btn btn-ghost" style="padding:2px 8px;font-size:11px;">切换</button>
+        </div>
+      </div>
+      <div class="network-card">
+        <h3>隐私</h3>
+        <div class="toggle-row">
+          <div class="toggle-label">
+            <h4>隐私模式</h4>
+            <p>AI 不会将你的对话上传任何第三方</p>
+          </div>
+          <div class="toggle-switch on"></div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label">
+            <h4>智能记忆</h4>
+            <p>AI 已自动开启隐私脱敏和记忆</p>
+          </div>
+          <div class="toggle-switch on"></div>
+        </div>
+      </div>
+      <div class="network-card">
+        <h3>执行权限</h3>
+        <div class="toggle-row">
+          <div class="toggle-label">
+            <h4>命令执行</h4>
+            <p>允许 Agent 执行系统命令</p>
+          </div>
+          <div class="toggle-switch"></div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label">
+            <h4>网络访问</h4>
+            <p>允许 Agent 主动发起网络请求</p>
+          </div>
+          <div class="toggle-switch on"></div>
+        </div>
+      </div>
+      <div class="network-card">
+        <h3>联网搜索</h3>
+        <div class="toggle-row">
+          <div class="toggle-label">
+            <h4>OpenClaw 网页解析</h4>
+            <p>AI 回复时自动解析网页内容</p>
+          </div>
+          <div class="toggle-switch on"></div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label">
+            <h4>自动导入</h4>
+            <p>自动将网页内容导入到对话上下文</p>
+          </div>
+          <div class="toggle-switch"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Agents Management -->
+  <div class="page-card">
+    <div class="page-header">
+      <span style="font-size:18px;">👥</span>
+      <h2>Agents 管理</h2>
+      <span class="badge">AgentsManagementView</span>
+    </div>
+    <div class="mock-window">
+      <div class="agent-list">
+        <div class="agent-row">
+          <div class="agent-avatar">M</div>
+          <div class="agent-info">
+            <h4>Main Agent</h4>
+            <p>DeepSeek / deepseek-chat</p>
+          </div>
+          <span class="agent-badge">活跃</span>
+          <span class="chevron" style="color:var(--tx3);">›</span>
+        </div>
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:linear-gradient(135deg,#34C759,#30D158);">C</div>
+          <div class="agent-info">
+            <h4>Coder</h4>
+            <p>OpenAI / gpt-4o</p>
+          </div>
+          <span class="chevron" style="color:var(--tx3);">›</span>
+        </div>
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:linear-gradient(135deg,#FF9500,#FF9F0A);">D</div>
+          <div class="agent-info">
+            <h4>Designer</h4>
+            <p>Anthropic / claude-3-5-sonnet</p>
+          </div>
+          <span class="chevron" style="color:var(--tx3);">›</span>
+        </div>
+      </div>
+      <div class="agent-actions">
+        <button class="btn btn-secondary">
+          <span>🔄</span> 同步 Agent
+        </button>
+        <button class="btn btn-primary">
+          <span>+</span> 创建新 Agent
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Agent Detail -->
+  <div class="page-card">
+    <div class="page-header">
+      <span style="font-size:18px;">👤</span>
+      <h2>Agent 详情</h2>
+      <span class="badge">AgentDetailView</span>
+    </div>
+    <div class="mock-window">
+      <div class="network-card">
+        <h3>基本信息</h3>
+        <div class="info-row">
+          <span class="info-label">头像</span>
+          <div class="agent-avatar" style="width:28px;height:28px;font-size:12px;">M</div>
+        </div>
+        <div class="info-row">
+          <span class="info-label">ID</span>
+          <span class="info-value" style="font-family:monospace;font-size:12px;">main</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">名称</span>
+          <span class="info-value">Main Agent</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">模型</span>
+          <span class="info-value" style="font-family:monospace;font-size:12px;">DeepSeek / deepseek-chat</span>
+        </div>
+      </div>
+      <div class="network-card">
+        <div class="agent-actions" style="border-top:none;padding:0;">
+          <button class="btn btn-primary">保存修改</button>
+          <button class="btn btn-danger">删除 Agent</button>
+        </div>
+      </div>
+      <div class="network-card">
+        <h3>Agent 文件</h3>
+        <div class="settings-row" style="padding:8px 0;">
+          <span style="font-size:14px;">SOUL.md</span>
+          <span style="font-size:12px;color:var(--tx2);">2.4 KB</span>
+          <span class="chevron">›</span>
+        </div>
+        <div class="settings-row" style="padding:8px 0;">
+          <span style="font-size:14px;">AGENTS.md</span>
+          <span style="font-size:12px;color:var(--tx2);">1.1 KB</span>
+          <span class="chevron">›</span>
+        </div>
+        <div class="settings-row" style="padding:8px 0;">
+          <span style="font-size:14px;">IDENTITY.md</span>
+          <span style="font-size:12px;color:var(--tx3);">未创建</span>
+          <span class="chevron">›</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Scheduled Tasks -->
+  <div class="page-card">
+    <div class="page-header">
+      <span style="font-size:18px;">⏰</span>
+      <h2>定时任务</h2>
+      <span class="badge">ScheduledTasksView</span>
+    </div>
+    <div class="mock-window">
+      <div class="task-list">
+        <div class="task-row">
+          <div class="task-header">
+            <span class="task-name">每日新闻简报</span>
+            <span class="task-tag cron">crontab</span>
+            <span class="task-tag success">✓</span>
+          </div>
+          <div class="task-desc">每天早上 8 点自动获取新闻并生成简报</div>
+          <div class="task-meta">
+            <span>⏰ 0 8 * * *</span>
+            <span>🤖 main</span>
+            <span>上次: 今天 08:00</span>
+          </div>
+        </div>
+        <div class="task-row">
+          <div class="task-header">
+            <span class="task-name">代码审查</span>
+            <span class="task-tag paused">已暂停</span>
+          </div>
+          <div class="task-desc">每小时检查一次代码仓库并生成审查报告</div>
+          <div class="task-meta">
+            <span>⏰ 0 * * * *</span>
+            <span>🤖 coder</span>
+            <span>上次: 昨天 18:00</span>
+          </div>
+        </div>
+        <div class="task-row">
+          <div class="task-header">
+            <span class="task-name">健康检查</span>
+            <span class="task-tag failed">✗</span>
+          </div>
+          <div class="task-desc">每 30 分钟检查系统健康状态</div>
+          <div class="task-meta">
+            <span>⏰ */30 * * * *</span>
+            <span>🤖 main</span>
+            <span style="color:var(--danger);">上次失败: 连接超时</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Usage Stats -->
+  <div class="page-card">
+    <div class="page-header">
+      <span style="font-size:18px;">📊</span>
+      <h2>运行统计</h2>
+      <span class="badge">UsageStatsView</span>
+    </div>
+    <div class="mock-window">
+      <div class="stats-section" style="border-top:none;">
+        <h3>系统健康</h3>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">CPU</div>
+            <div class="stat-value">23</div>
+            <div class="stat-unit">%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">RAM</div>
+            <div class="stat-value" style="color:var(--warning);">67</div>
+            <div class="stat-unit">%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Disk</div>
+            <div class="stat-value" style="color:var(--success);">45</div>
+            <div class="stat-unit">%</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-size:12px;color:var(--tx2);">
+          <span>⏱️ 运行时间: 3d 12h</span>
+        </div>
+      </div>
+      <div class="stats-section">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h3>Token 使用量</h3>
+          <span style="font-size:12px;color:var(--tx2);">最近 7 天</span>
+        </div>
+        <div style="font-size:32px;font-weight:700;color:var(--success);line-height:1;">1.2M</div>
+        <div style="margin-top:12px;">
+          <div class="model-usage-row">
+            <span class="model-name">deepseek-chat</span>
+            <div style="display:flex;gap:12px;">
+              <span style="font-size:12px;color:var(--tx2);">↓ 输入 450k</span>
+              <span style="font-size:12px;color:var(--tx2);">↑ 输出 320k</span>
+            </div>
+            <span class="model-tokens">770k</span>
+          </div>
+          <div class="model-usage-row">
+            <span class="model-name">gpt-4o</span>
+            <div style="display:flex;gap:12px;">
+              <span style="font-size:12px;color:var(--tx2);">↓ 输入 180k</span>
+              <span style="font-size:12px;color:var(--tx2);">↑ 输出 95k</span>
+            </div>
+            <span class="model-tokens">275k</span>
+          </div>
+          <div class="model-usage-row">
+            <span class="model-name">claude-3-5-sonnet</span>
+            <div style="display:flex;gap:12px;">
+              <span style="font-size:12px;color:var(--tx2);">↓ 输入 120k</span>
+              <span style="font-size:12px;color:var(--tx2);">↑ 输出 55k</span>
+            </div>
+            <span class="model-tokens">175k</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Diagnostics Center -->
+  <div class="page-card">
+    <div class="page-header">
+      <span style="font-size:18px;">🔍</span>
+      <h2>诊断中心</h2>
+      <span class="badge">DiagnosticsCenterView</span>
+    </div>
+    <div class="mock-window">
+      <div class="network-card" style="border-bottom:0.5px solid var(--bdr);">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:15px;font-weight:600;">当前连接</div>
+            <div style="font-size:12px;color:var(--tx2);font-family:monospace;margin-top:2px;">http://127.0.0.1:52378</div>
+          </div>
+          <span style="font-size:12px;padding:2px 8px;border-radius:100px;background:var(--success-soft);color:var(--success);font-weight:500;">已连接</span>
+        </div>
+      </div>
+      <div class="diag-grid">
+        <div class="diag-card">
+          <div class="diag-icon" style="color:var(--success);">📶</div>
+          <div class="diag-value" style="color:var(--success);">优秀</div>
+          <div class="diag-label">连接质量</div>
+        </div>
+        <div class="diag-card">
+          <div class="diag-icon" style="color:var(--accent);">🔗</div>
+          <div class="diag-value" style="color:var(--accent);">mypilot-link</div>
+          <div class="diag-label">运行链路</div>
+        </div>
+        <div class="diag-card">
+          <div class="diag-icon" style="color:var(--warning);">🏷️</div>
+          <div class="diag-value" style="color:var(--warning);">v2.1.0</div>
+          <div class="diag-label">版本</div>
+        </div>
+        <div class="diag-card">
+          <div class="diag-icon" style="color:var(--success);">👥</div>
+          <div class="diag-value" style="color:var(--success);">3</div>
+          <div class="diag-label">活跃连接</div>
+        </div>
+      </div>
+      <div class="diag-section">
+        <h3><span>🌐</span> Gateway</h3>
+        <div class="info-row">
+          <span class="info-label">状态</span>
+          <span class="info-value success">已连接</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">连接时间</span>
+          <span class="info-value">2024-06-13 08:30:15</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">重连次数</span>
+          <span class="info-value">0</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">监听端口</span>
+          <span class="info-value">52378</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">进程 PID</span>
+          <span class="info-value">38472</span>
+        </div>
+      </div>
+      <div class="diag-section">
+        <h3><span>📁</span> 目录状态</h3>
+        <div class="info-row">
+          <span class="info-label">权限检查</span>
+          <span class="info-value success">正常</span>
+        </div>
+      </div>
+      <div style="padding:12px 20px;display:flex;gap:8px;">
+        <button class="btn btn-secondary" style="flex:1;">📋 复制关键信息</button>
+        <button class="btn btn-primary" style="flex:1;">📤 导出诊断包</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. IM Channels -->
+  <div class="page-card">
+    <div class="page-header">
+      <span style="font-size:18px;">💬</span>
+      <h2>IM 通信渠道</h2>
+      <span class="badge">IMChannelsView</span>
+    </div>
+    <div class="mock-window">
+      <div style="padding:8px 0;">
+        <div class="channel-row">
+          <div class="channel-icon" style="background:#00B96B1A;color:#00B96B;">📱</div>
+          <div class="channel-info">
+            <h4>飞书</h4>
+            <p style="color:var(--success);">已启用</p>
+          </div>
+          <div class="channel-status"></div>
+          <span class="chevron" style="color:var(--tx3);">›</span>
+        </div>
+        <div class="channel-row">
+          <div class="channel-icon" style="background:#007AFF1A;color:#007AFF;">💼</div>
+          <div class="channel-info">
+            <h4>企业微信</h4>
+            <p style="color:var(--tx2);">未启用</p>
+          </div>
+          <div class="channel-status off"></div>
+          <span class="chevron" style="color:var(--tx3);">›</span>
+        </div>
+        <div class="channel-row">
+          <div class="channel-icon" style="background:#FF95001A;color:#FF9500;">🔔</div>
+          <div class="channel-info">
+            <h4>钉钉</h4>
+            <p style="color:var(--warning);">插件已安装，未配置渠道</p>
+          </div>
+          <div class="channel-status off"></div>
+          <span class="chevron" style="color:var(--tx3);">›</span>
+        </div>
+        <div class="channel-row">
+          <div class="channel-icon" style="background:#8E8E931A;color:#8E8E93;">✈️</div>
+          <div class="channel-info">
+            <h4>Telegram</h4>
+            <p style="color:var(--tx2);">未配置</p>
+          </div>
+          <div class="channel-status off"></div>
+          <span class="chevron" style="color:var(--tx3);">›</span>
+        </div>
+      </div>
+      <div style="padding:12px 20px;border-top:0.5px solid var(--bdr);">
+        <button class="btn btn-primary">
+          <span>+</span> 添加通信渠道
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Agent Files -->
+  <div class="page-card">
+    <div class="page-header">
+      <span style="font-size:18px;">📁</span>
+      <h2>Agent 文件</h2>
+      <span class="badge">AgentFilesView</span>
+    </div>
+    <div class="mock-window">
+      <div class="file-browser">
+        <div class="file-sidebar">
+          <div class="file-item active">
+            <span class="file-icon" style="color:var(--warning);">✨</span>
+            <span>SOUL.md</span>
+          </div>
+          <div class="file-item">
+            <span class="file-icon" style="color:var(--accent);">👥</span>
+            <span>AGENTS.md</span>
+          </div>
+          <div class="file-item">
+            <span class="file-icon" style="color:var(--success);">🆔</span>
+            <span>IDENTITY.md</span>
+          </div>
+          <div class="file-item">
+            <span class="file-icon" style="color:var(--ink-500);">👤</span>
+            <span>USER.md</span>
+          </div>
+          <div class="file-item">
+            <span class="file-icon" style="color:var(--ink-500);">🔧</span>
+            <span>TOOLS.md</span>
+          </div>
+          <div class="file-item">
+            <span class="file-icon" style="color:var(--danger);">❤️</span>
+            <span>HEARTBEAT.md</span>
+          </div>
+          <div class="file-item">
+            <span class="file-icon" style="color:var(--ink-500);">🧠</span>
+            <span>MEMORY.md</span>
+          </div>
+        </div>
+        <div class="file-editor">
+          <div class="file-editor-header">
+            <div>
+              <h4>SOUL.md</h4>
+              <span class="file-meta">2.4 KB · 2024-06-12 修改</span>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-secondary" style="padding:4px 10px;font-size:12px;">重置</button>
+              <button class="btn btn-primary" style="padding:4px 10px;font-size:12px;">保存</button>
+            </div>
+          </div>
+          <div class="code-block"># SOUL — 人格与行为
+
+## 核心人格
+- 友善、专业、高效
+- 使用中文回复
+- 保持简洁明了的表达
+
+## 行为准则
+1. 优先使用用户提供的上下文
+2. 不确定时主动询问
+3. 代码回复需包含注释
+4. 拒绝执行有害操作
+
+## 能力范围
+- 代码编写与审查
+- 技术问题解答
+- 文件操作与管理
+- 系统命令执行（需授权）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. Task Edit Sheet -->
+  <div class="page-card">
+    <div class="page-header">
+      <span style="font-size:18px;">✏️</span>
+      <h2>新建定时任务</h2>
+      <span class="badge">TaskEditSheet</span>
+    </div>
+    <div class="mock-window">
+      <div style="padding:16px 20px;">
+        <div style="font-size:16px;font-weight:600;margin-bottom:16px;">新建定时任务</div>
+        <div class="network-card" style="padding:12px 0;border-bottom:none;">
+          <h3 style="margin-bottom:10px;">基本信息</h3>
+          <input type="text" placeholder="任务名称" style="width:100%;padding:8px 10px;border:0.5px solid var(--bdr);border-radius:var(--radius-md);font-size:14px;margin-bottom:8px;background:var(--bg);outline:none;">
+          <textarea placeholder="任务内容" style="width:100%;padding:8px 10px;border:0.5px solid var(--bdr);border-radius:var(--radius-md);font-size:14px;min-height:60px;resize:vertical;background:var(--bg);outline:none;font-family:inherit;"></textarea>
+        </div>
+        <div class="network-card" style="padding:12px 0;border-bottom:none;">
+          <h3 style="margin-bottom:10px;">执行频率</h3>
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <select style="flex:1;padding:6px 8px;border:0.5px solid var(--bdr);border-radius:var(--radius-md);font-size:13px;background:var(--bg);outline:none;">
+              <option>每天</option>
+              <option>每小时</option>
+              <option>每周</option>
+              <option>每月</option>
+            </select>
+          </div>
+          <div class="toggle-row" style="border-top:none;padding:4px 0;">
+            <div class="toggle-label">
+              <h4>自定义 Cron 表达式</h4>
+            </div>
+            <div class="toggle-switch"></div>
+          </div>
+        </div>
+        <div class="network-card" style="padding:12px 0;border-bottom:none;">
+          <h3 style="margin-bottom:10px;">Agent</h3>
+          <select style="width:100%;padding:6px 8px;border:0.5px solid var(--bdr);border-radius:var(--radius-md);font-size:13px;background:var(--bg);outline:none;">
+            <option>默认助手 (main)</option>
+            <option>Coder</option>
+            <option>Designer</option>
+          </select>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">
+          <button class="btn btn-secondary">取消</button>
+          <button class="btn btn-primary">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. Advanced Settings -->
+  <div class="page-card">
+    <div class="page-header">
+      <span style="font-size:18px;">⚙️</span>
+      <h2>高级设置</h2>
+      <span class="badge">AdvancedSettingsView</span>
+    </div>
+    <div class="mock-window">
+      <div class="settings-list">
+        <div class="settings-section">
+          <div class="settings-section-title">服务</div>
+          <div class="settings-row">
+            <div class="icon blue">🔍</div>
+            <div class="label">搜索引擎与服务</div>
+            <span class="chevron">›</span>
+          </div>
+          <div class="settings-row">
+            <div class="icon green">💬</div>
+            <div class="label">IM 通信渠道</div>
+            <span class="chevron">›</span>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">监控</div>
+          <div class="settings-row">
+            <div class="icon orange">📊</div>
+            <div class="label">运行统计</div>
+            <span class="chevron">›</span>
+          </div>
+          <div class="settings-row">
+            <div class="icon gray">🧠</div>
+            <div class="label">记忆读取</div>
+            <span class="chevron">›</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. Empty State -->
+  <div class="page-card">
+    <div class="page-header">
+      <span style="font-size:18px;">📭</span>
+      <h2>空状态</h2>
+      <span class="badge">Empty State</span>
+    </div>
+    <div class="mock-window">
+      <div class="empty-state">
+        <div class="icon">⏰</div>
+        <h3>暂无定时任务</h3>
+        <p>创建定时任务，让 AI 按计划自动执行</p>
+        <button class="btn btn-primary">
+          <span>+</span> 新建任务
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

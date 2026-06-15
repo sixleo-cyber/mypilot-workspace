@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyPilot · 高级设置 + 订阅</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #FFFFFF; --bg2: #F5F5F7; --bdr: #E5E5EA;
+    --tx: #000000; --tx2: #8E8E93; --tx3: #C7C7CC;
+    --accent: #007AFF; --accent-soft: rgba(0,122,255,0.1);
+    --leaf: #0DA945; --leaf-soft: rgba(13,169,69,0.1);
+    --lime: #ACCE22; --lime-soft: rgba(172,206,34,0.1);
+    --amber: #F6AD02; --amber-soft: rgba(246,173,2,0.1);
+    --danger: #FF3B30; --danger-soft: rgba(255,59,48,0.1);
+    --purple: #5856D6; --purple-soft: rgba(88,86,214,0.1);
+    --pink: #FF2D55; --pink-soft: rgba(255,45,85,0.1);
+    --radius-sm: 8px; --radius-md: 10px; --radius-lg: 14px; --radius-xl: 18px;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    background: var(--bg2);
+    color: var(--tx);
+    padding: 40px 20px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1280px; margin: 0 auto; }
+  h1 {
+    font-size: 36px; font-weight: 700; letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .subtitle { font-size: 17px; color: var(--tx2); margin-bottom: 32px; }
+
+  .pages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(580px, 1fr));
+    gap: 32px;
+  }
+
+  .frame {
+    background: var(--bg);
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  }
+  .frame-title {
+    font-size: 13px; font-weight: 600; color: var(--tx2);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 16px;
+  }
+
+  /* ====== Phone frame (macOS window simulation) ====== */
+  .window {
+    background: var(--bg);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+  .window-header {
+    height: 38px;
+    background: linear-gradient(180deg, #FAFAFA 0%, #F0F0F2 100%);
+    border-bottom: 0.5px solid var(--bdr);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .traffic-lights { position: absolute; left: 12px; display: flex; gap: 8px; }
+  .traffic-light { width: 12px; height: 12px; border-radius: 50%; }
+  .tl-red { background: #FF5F57; }
+  .tl-yellow { background: #FFBD2E; }
+  .tl-green { background: #28CA42; }
+  .window-title { font-size: 13px; font-weight: 600; color: var(--tx); }
+  .window-body { display: flex; min-height: 600px; }
+
+  /* ====== Sidebar ====== */
+  .sidebar {
+    width: 220px;
+    background: var(--bg);
+    border-right: 0.5px solid var(--bdr);
+    padding: 12px 8px;
+    flex-shrink: 0;
+  }
+  .sidebar-section { font-size: 11px; font-weight: 600; color: var(--tx2);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 12px 12px 4px;
+  }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 12px; border-radius: 6px;
+    font-size: 13px; cursor: pointer;
+    color: var(--tx);
+  }
+  .sidebar-item.active { background: var(--accent); color: #fff; }
+  .sidebar-item .ic {
+    width: 16px; height: 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-item .ic svg { width: 100%; height: 100%; }
+  .sidebar-item.active .ic svg { stroke: #fff; color: #fff; }
+
+  /* ====== Main content ====== */
+  .main {
+    flex: 1;
+    padding: 24px 32px 40px;
+    overflow: auto;
+  }
+  .page-title {
+    font-size: 22px; font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+  .page-subtitle { font-size: 13px; color: var(--tx2); margin-bottom: 24px; }
+
+  /* ====== List group ====== */
+  .group { margin-bottom: 24px; }
+  .group-title {
+    font-size: 11px; font-weight: 600; color: var(--tx2);
+    text-transform: uppercase; letter-spacing: 0.6px;
+    padding: 0 4px 6px;
+  }
+  .group-card {
+    background: var(--bg);
+    border-radius: 10px;
+    border: 0.5px solid var(--bdr);
+    overflow: hidden;
+  }
+  .list-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    border-bottom: 0.5px solid var(--bdr);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .list-row:last-child { border-bottom: 0; }
+  .list-row:hover { background: var(--bg2); }
+  .row-icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .row-icon svg { width: 16px; height: 16px; }
+  .row-icon.blue { background: var(--accent-soft); color: var(--accent); }
+  .row-icon.green { background: var(--leaf-soft); color: var(--leaf); }
+  .row-icon.lime { background: var(--lime-soft); color: #6B7F1A; }
+  .row-icon.amber { background: var(--amber-soft); color: var(--amber); }
+  .row-icon.red { background: var(--danger-soft); color: var(--danger); }
+  .row-icon.purple { background: var(--purple-soft); color: var(--purple); }
+  .row-icon.pink { background: var(--pink-soft); color: var(--pink); }
+  .row-icon.gray { background: rgba(142,142,147,0.1); color: var(--tx2); }
+  .row-icon.ink { background: rgba(58,58,60,0.08); color: var(--tx); }
+
+  .row-content { flex: 1; min-width: 0; }
+  .row-title { font-size: 14px; font-weight: 500; color: var(--tx); }
+  .row-subtitle { font-size: 12px; color: var(--tx2); margin-top: 2px; }
+
+  .chev { color: var(--tx3); font-size: 14px; }
+
+  /* Toggle */
+  .toggle {
+    width: 38px; height: 22px;
+    background: var(--bdr);
+    border-radius: 11px;
+    position: relative;
+    transition: background 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .toggle::after {
+    content: ''; width: 18px; height: 18px;
+    background: #fff; border-radius: 50%;
+    position: absolute; top: 2px; left: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .toggle.on { background: var(--leaf); }
+  .toggle.on::after { transform: translateX(16px); }
+
+  /* Badge */
+  .badge {
+    font-size: 11px; font-weight: 600;
+    padding: 2px 8px; border-radius: 10px;
+  }
+  .badge.green { background: var(--leaf-soft); color: var(--leaf); }
+  .badge.amber { background: var(--amber-soft); color: var(--amber); }
+  .badge.red { background: var(--danger-soft); color: var(--danger); }
+  .badge.gray { background: rgba(142,142,147,0.15); color: var(--tx2); }
+  .badge.purple { background: var(--purple-soft); color: var(--purple); }
+
+  /* ====== Plan cards (订阅页) ====== */
+  .plan-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .plan-card {
+    background: var(--bg);
+    border: 1.5px solid var(--bdr);
+    border-radius: 14px;
+    padding: 18px 16px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .plan-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+  .plan-card.featured {
+    border-color: var(--accent);
+    background: linear-gradient(180deg, var(--accent-soft) 0%, var(--bg) 30%);
+  }
+  .plan-card.featured::before {
+    content: '最受欢迎';
+    position: absolute;
+    top: -10px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 600;
+    padding: 3px 10px; border-radius: 10px;
+  }
+  .plan-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+  }
+  .plan-icon.free { background: var(--bg2); color: var(--tx); }
+  .plan-icon.pro { background: var(--accent-soft); color: var(--accent); }
+  .plan-icon.team { background: var(--purple-soft); color: var(--purple); }
+  .plan-icon svg { width: 18px; height: 18px; }
+  .plan-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .plan-tag { font-size: 11px; color: var(--tx2); margin-bottom: 12px; }
+  .plan-price { display: flex; align-items: baseline; gap: 2px; margin-bottom: 4px; }
+  .plan-price .currency { font-size: 13px; font-weight: 500; color: var(--tx2); }
+  .plan-price .amount { font-size: 28px; font-weight: 700; letter-spacing: -1px; }
+  .plan-price .period { font-size: 12px; color: var(--tx2); }
+  .plan-orig { font-size: 12px; color: var(--tx3); text-decoration: line-through; }
+  .plan-features {
+    margin: 12px 0 16px;
+    padding-top: 12px;
+    border-top: 0.5px solid var(--bdr);
+  }
+  .plan-feature {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 12px; color: var(--tx);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .plan-feature .check {
+    width: 14px; height: 14px; flex-shrink: 0;
+    color: var(--leaf); margin-top: 1px;
+  }
+  .plan-feature.muted { color: var(--tx2); }
+  .plan-feature.muted .check { color: var(--tx3); }
+
+  .plan-btn {
+    width: 100%;
+    padding: 8px 0;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    text-align: center;
+    border: 0;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .plan-btn.primary { background: var(--accent); color: #fff; }
+  .plan-btn.primary:hover { background: #0066D6; }
+  .plan-btn.secondary { background: var(--bg2); color: var(--tx); }
+  .plan-btn.secondary:hover { background: var(--bdr); }
+  .plan-btn.current { background: var(--leaf-soft); color: var(--leaf); cursor: default; }
+
+  /* Current plan card */
+  .current-card {
+    background: linear-gradient(135deg, var(--accent) 0%, #5856D6 100%);
+    border-radius: 14px;
+    padding: 20px 22px;
+    color: #fff;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .current-card::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+  }
+  .current-label { font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.6px; }
+  .current-name { font-size: 20px; font-weight: 700; margin: 4px 0 2px; }
+  .current-validity { font-size: 12px; opacity: 0.85; }
+  .current-actions {
+    display: flex; gap: 8px; margin-top: 14px;
+  }
+  .current-btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px; font-weight: 500;
+    border: 0; cursor: pointer;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    backdrop-filter: blur(8px);
+  }
+  .current-btn.solid { background: #fff; color: var(--accent); }
+
+  /* Usage bar */
+  .usage-block { margin: 20px 0; }
+  .usage-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .usage-label { font-size: 12px; color: var(--tx2); }
+  .usage-value { font-size: 12px; font-weight: 500; }
+  .usage-bar {
+    height: 6px;
+    background: var(--bg2);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .usage-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+  }
+  .usage-fill.warn { background: var(--amber); }
+  .usage-fill.danger { background: var(--danger); }
+
+  /* Billing toggle */
+  .billing-toggle {
+    display: inline-flex;
+    background: var(--bg2);
+    border-radius: 8px;
+    padding: 2px;
+    margin-bottom: 16px;
+  }
+  .billing-option {
+    padding: 5px 14px;
+    font-size: 12px; font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--tx2);
+  }
+  .billing-option.active { background: var(--bg); color: var(--tx); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .billing-save {
+    background: var(--leaf-soft);
+    color: var(--leaf);
+    font-size: 10px; font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+  }
+
+  /* Invoice list */
+  .invoice-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    border-bottom: 0.5px solid var(--bdr);
+  }
+  .invoice-row:last-child { border-bottom: 0; }
+  .invoice-date { font-size: 13px; font-weight: 500; min-width: 80px; }
+  .invoice-desc { flex: 1; font-size: 13px; color: var(--tx2); }
+  .invoice-amount { font-size: 13px; font-weight: 600; }
+  .invoice-icon-btn {
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 4px;
+    color: var(--accent);
+    cursor: pointer;
+  }
+  .invoice-icon-btn:hover { background: var(--accent-soft); }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 40px 0 20px;
+    color: var(--tx2); font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>MyPilot · 高级设置 + 订阅</h1>
+  <p class="subtitle">补全 V10 设计系统 · 高级设置（与 SwiftUI 对齐）+ 订阅页（新增）</p>
+
+  <div class="pages-grid">
+
+    <!-- ============================================ -->
+    <!-- 高级设置 (AdvancedSettingsView) -->
+    <!-- ============================================ -->
+    <div class="frame">
+      <div class="frame-title">高级设置 · AdvancedSettingsView</div>
+      <div class="window">
+        <div class="window-header">
+          <div class="traffic-lights">
+            <div class="traffic-light tl-red"></div>
+            <div class="traffic-light tl-yellow"></div>
+            <div class="traffic-light tl-green"></div>
+          </div>
+          <div class="window-title">高级设置</div>
+        </div>
+        <div class="window-body">
+
+          <!-- Sidebar -->
+          <div class="sidebar">
+            <div class="sidebar-section">设置</div>
+            <div class="sidebar-item">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>
+              <span>通用</span>
+            </div>
+            <div class="sidebar-item">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span>
+              <span>网络</span>
+            </div>
+            <div class="sidebar-item">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3"/><circle cx="5" cy="11" r="2.5"/><circle cx="19" cy="11" r="2.5"/></svg></span>
+              <span>Agents</span>
+            </div>
+            <div class="sidebar-item active">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg></span>
+              <span>高级</span>
+            </div>
+          </div>
+
+          <!-- Main content -->
+          <div class="main">
+            <div class="page-title">高级设置</div>
+            <div class="page-subtitle">深度配置 MyPilot 的服务、监控和扩展能力</div>
+
+            <!-- 服务 group -->
+            <div class="group">
+              <div class="group-title">服务</div>
+              <div class="group-card">
+                <div class="list-row">
+                  <div class="row-icon green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M16 16l5 5"/></svg>
+                  </div>
+                  <div class="row-content">
+                    <div class="row-title">搜索引擎与服务</div>
+                    <div class="row-subtitle">Brave Search · Gemini · LLM Context</div>
+                  </div>
+                  <span class="badge green">3 已连接</span>
+                  <span class="chev">›</span>
+                </div>
+                <div class="list-row">
+                  <div class="row-icon lime">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 18 0v5a2 2 0 0 1-2 2h-2v-7h4M3 12v5a2 2 0 0 0 2 2h2v-7H3"/></svg>
+                  </div>
+                  <div class="row-content">
+                    <div class="row-title">IM 通信渠道</div>
+                    <div class="row-subtitle">飞书 · 企业微信 · 钉钉 · Telegram · Slack</div>
+                  </div>
+                  <span class="badge green">2 已连接</span>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 监控 group -->
+            <div class="group">
+              <div class="group-title">监控</div>
+              <div class="group-card">
+                <div class="list-row">
+                  <div class="row-icon amber">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M6 17V9M11 17V5M16 17v-5M21 17v-3"/></svg>
+                  </div>
+                  <div class="row-content">
+                    <div class="row-title">运行统计</div>
+                    <div class="row-subtitle">Token 用量 · 模型分布 · 成本分析</div>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+                <div class="list-row">
+                  <div class="row-icon ink">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11a3 3 0 1 1 6 0M3 20a9 9 0 0 1 18 0"/></svg>
+                  </div>
+                  <div class="row-content">
+                    <div class="row-title">记忆读取</div>
+                    <div class="row-subtitle">查看 SOUL.md · MEMORY.md · AGENTS.md</div>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 调试 group -->
+            <div class="group">
+              <div class="group-title">调试</div>
+              <div class="group-card">
+                <div class="list-row">
+                  <div class="row-icon red">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l-4 4 4 4M15 11l4 4-4 4M14 5l-4 14"/></svg>
+                  </div>
+                  <div class="row-content">
+                    <div class="row-title">诊断中心</div>
+                    <div class="row-subtitle">实时日志 · 性能追踪 · 错误捕获</div>
+                  </div>
+                  <span class="badge red">2 警告</span>
+                  <span class="chev">›</span>
+                </div>
+                <div class="list-row">
+                  <div class="row-icon gray">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7M3 7l3-4h12l3 4M3 7h18"/></svg>
+                  </div>
+                  <div class="row-content">
+                    <div class="row-title">导出日志</div>
+                    <div class="row-subtitle">生成脱敏后的诊断包用于问题反馈</div>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+                <div class="list-row">
+                  <div class="row-icon purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>
+                  </div>
+                  <div class="row-content">
+                    <div class="row-title">重置 MyPilot</div>
+                    <div class="row-subtitle">清除所有本地配置与会话数据</div>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 实验功能 group -->
+            <div class="group">
+              <div class="group-title">实验功能</div>
+              <div class="group-card">
+                <div class="list-row">
+                  <div class="row-icon blue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg>
+                  </div>
+                  <div class="row-content">
+                    <div class="row-title">自动上下文压缩</div>
+                    <div class="row-subtitle">接近上下文上限时自动触发摘要</div>
+                  </div>
+                  <div class="toggle on"></div>
+                </div>
+                <div class="list-row">
+                  <div class="row-icon pink">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/></svg>
+                  </div>
+                  <div class="row-content">
+                    <div class="row-title">多 Agent 协同</div>
+                    <div class="row-subtitle">允许主 agent 委派任务给子 agent</div>
+                  </div>
+                  <div class="toggle"></div>
+                </div>
+                <div class="list-row">
+                  <div class="row-icon amber">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+                  </div>
+                  <div class="row-content">
+                    <div class="row-title">开发者模式</div>
+                    <div class="row-subtitle">显示调试信息、原始 RPC payload</div>
+                  </div>
+                  <div class="toggle on"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- 订阅 (SubscriptionView) -->
+    <!-- ============================================ -->
+    <div class="frame">
+      <div class="frame-title">订阅 · SubscriptionView</div>
+      <div class="window">
+        <div class="window-header">
+          <div class="traffic-lights">
+            <div class="traffic-light tl-red"></div>
+            <div class="traffic-light tl-yellow"></div>
+            <div class="traffic-light tl-green"></div>
+          </div>
+          <div class="window-title">订阅</div>
+        </div>
+        <div class="window-body" style="min-height: 720px;">
+
+          <div class="main" style="padding: 24px 32px 40px;">
+
+            <div class="page-title">订阅</div>
+            <div class="page-subtitle">升级 MyPilot 获得更多模型额度与高级功能</div>
+
+            <!-- 当前订阅 -->
+            <div class="current-card">
+              <div class="current-label">当前订阅</div>
+              <div class="current-name">Pro · 年度计划</div>
+              <div class="current-validity">有效期至 2027-01-15 · 自动续订</div>
+              <div class="current-actions">
+                <button class="current-btn solid">管理订阅</button>
+                <button class="current-btn">查看发票</button>
+              </div>
+            </div>
+
+            <!-- 用量 -->
+            <div class="group">
+              <div class="group-title">本月用量</div>
+              <div class="group-card" style="padding: 16px 18px;">
+                <div class="usage-block" style="margin: 0 0 14px;">
+                  <div class="usage-row">
+                    <span class="usage-label">Token 用量</span>
+                    <span class="usage-value">2.4M / 5M</span>
+                  </div>
+                  <div class="usage-bar"><div class="usage-fill" style="width:48%"></div></div>
+                </div>
+                <div class="usage-block" style="margin: 0 0 14px;">
+                  <div class="usage-row">
+                    <span class="usage-label">Agent 数量</span>
+                    <span class="usage-value">3 / 10</span>
+                  </div>
+                  <div class="usage-bar"><div class="usage-fill" style="width:30%"></div></div>
+                </div>
+                <div class="usage-block" style="margin: 0;">
+                  <div class="usage-row">
+                    <span class="usage-label">IM 渠道</span>
+                    <span class="usage-value">2 / 5</span>
+                  </div>
+                  <div class="usage-bar"><div class="usage-fill" style="width:40%"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 计费周期 -->
+            <div class="billing-toggle">
+              <div class="billing-option">月付</div>
+              <div class="billing-option active">年付 <span class="billing-save">省 20%</span></div>
+            </div>
+
+            <!-- 计划卡片 -->
+            <div class="plan-grid">
+              <div class="plan-card">
+                <div class="plan-icon free">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/></svg>
+                </div>
+                <div class="plan-name">免费版</div>
+                <div class="plan-tag">个人体验</div>
+                <div class="plan-price">
+                  <span class="amount">¥0</span>
+                  <span class="period">/ 永久</span>
+                </div>
+                <div class="plan-features">
+                  <div class="plan-feature"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>100K Token / 月</div>
+                  <div class="plan-feature"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>1 个 Agent</div>
+                  <div class="plan-feature"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>基础模型</div>
+                  <div class="plan-feature muted"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>高级模型</div>
+                  <div class="plan-feature muted"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>IM 集成</div>
+                </div>
+                <button class="plan-btn current">当前</button>
+              </div>
+
+              <div class="plan-card featured">
+                <div class="plan-icon pro">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                </div>
+                <div class="plan-name">Pro</div>
+                <div class="plan-tag">高级个人用户</div>
+                <div class="plan-price">
+                  <span class="currency">¥</span>
+                  <span class="amount">199</span>
+                  <span class="period">/ 月</span>
+                </div>
+                <div class="plan-orig">原价 ¥249 / 月</div>
+                <div class="plan-features">
+                  <div class="plan-feature"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>5M Token / 月</div>
+                  <div class="plan-feature"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>10 个 Agent</div>
+                  <div class="plan-feature"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>所有高级模型</div>
+                  <div class="plan-feature"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>5 个 IM 渠道</div>
+                  <div class="plan-feature"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>优先支持</div>
+                </div>
+                <button class="plan-btn primary">升级到 Pro</button>
+              </div>
+
+              <div class="plan-card">
+                <div class="plan-icon team">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3"/><circle cx="5" cy="11" r="2.5"/><circle cx="19" cy="11" r="2.5"/></svg>
+                </div>
+                <div class="plan-name">Team</div>
+                <div class="plan-tag">小团队协作</div>
+                <div class="plan-price">
+                  <span class="currency">¥</span>
+                  <span class="amount">499</span>
+                  <span class="period">/ 月</span>
+                </div>
+                <div class="plan-orig">原价 ¥599 / 月</div>
+                <div class="plan-features">
+                  <div class="plan-feature"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>20M Token / 月</div>
+                  <div class="plan-feature"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>无限 Agent</div>
+                  <div class="plan-feature"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>5 个团队成员</div>
+                  <div class="plan-feature"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>共享 Agent 工作区</div>
+                  <div class="plan-feature"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>专属客户经理</div>
+                </div>
+                <button class="plan-btn secondary">升级到 Team</button>
+              </div>
+            </div>
+
+            <!-- 增值包 -->
+            <div class="group">
+              <div class="group-title">增值包</div>
+              <div class="group-card">
+                <div class="list-row">
+                  <div class="row-icon amber">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/></svg>
+                  </div>
+                  <div class="row-content">
+                    <div class="row-title">Token 加量包</div>
+                    <div class="row-subtitle">+1M Token · 一次性</div>
+                  </div>
+                  <span class="row-title" style="font-weight:600;">¥39</span>
+                  <span class="chev">›</span>
+                </div>
+                <div class="list-row">
+                  <div class="row-icon blue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>
+                  </div>
+                  <div class="row-content">
+                    <div class="row-title">高级模型解锁</div>
+                    <div class="row-subtitle">GPT-4o · Claude 3.5 · Gemini Pro</div>
+                  </div>
+                  <span class="row-title" style="font-weight:600;">¥59</span>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 发票记录 -->
+            <div class="group">
+              <div class="group-title">发票记录</div>
+              <div class="group-card">
+                <div class="invoice-row">
+                  <div class="invoice-date">2026-01-15</div>
+                  <div class="invoice-desc">Pro 年度计划 · 自动续订</div>
+                  <div class="invoice-amount">¥2,388.00</div>
+                  <div class="invoice-icon-btn" title="下载">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 12l6 6 6-6M4 20h16"/></svg>
+                  </div>
+                </div>
+                <div class="invoice-row">
+                  <div class="invoice-date">2025-01-15</div>
+                  <div class="invoice-desc">Pro 年度计划 · 首期</div>
+                  <div class="invoice-amount">¥2,388.00</div>
+                  <div class="invoice-icon-btn" title="下载">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 12l6 6 6-6M4 20h16"/></svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    MyPilot V10 · 高级设置 + 订阅 · 与 SwiftUI 代码对齐
+  </div>
+
+</div>
+</body>
+</html>
